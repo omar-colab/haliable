@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# Xcode
+xcuserdata/
+*.xcuserstate
+build/
+DerivedData/
+
+# Secrets — never commit real keys
+Haliable/Config/Secrets.xcconfig
+
+# SwiftPM
+.swiftpm/

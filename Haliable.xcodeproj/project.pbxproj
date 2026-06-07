@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E7871BF82FCF4EE8002173CC /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = E7871BF72FCF4EE8002173CC /* CodeScanner */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		E7135D1E2FBDFE4400C53C1A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -30,11 +34,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		E7135D122FBDFE4400C53C1A /* Haliable */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Haliable;
-			sourceTree = "<group>";
-		};
 		E7135D202FBDFE4400C53C1A /* HaliableTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = HaliableTests;
@@ -45,6 +44,11 @@
 			path = HaliableUITests;
 			sourceTree = "<group>";
 		};
+		E7EA68ED2FC281330046ABC4 /* Haliable */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Haliable;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7871BF82FCF4EE8002173CC /* CodeScanner in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,7 +80,7 @@
 		E7135D072FBDFE4400C53C1A = {
 			isa = PBXGroup;
 			children = (
-				E7135D122FBDFE4400C53C1A /* Haliable */,
+				E7EA68ED2FC281330046ABC4 /* Haliable */,
 				E7135D202FBDFE4400C53C1A /* HaliableTests */,
 				E7135D2A2FBDFE4400C53C1A /* HaliableUITests */,
 				E7135D112FBDFE4400C53C1A /* Products */,
@@ -108,10 +113,11 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				E7135D122FBDFE4400C53C1A /* Haliable */,
+				E7EA68ED2FC281330046ABC4 /* Haliable */,
 			);
 			name = Haliable;
 			packageProductDependencies = (
+				E7871BF72FCF4EE8002173CC /* CodeScanner */,
 			);
 			productName = Haliable;
 			productReference = E7135D102FBDFE4400C53C1A /* Haliable.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = E7135D072FBDFE4400C53C1A;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E7871BF62FCF4EE8002173CC /* XCRemoteSwiftPackageReference "CodeScanner" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E7135D112FBDFE4400C53C1A /* Products */;
 			projectDirPath = "";
@@ -394,6 +403,9 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Haliable uses the camera to scan product barcodes and to photograph products for manual halal review.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Haliable uses your location to show halal stores and restaurants near you.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Haliable lets you attach product photos from your library for a manual halal review.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -436,6 +448,9 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Haliable uses the camera to scan product barcodes and to photograph products for manual halal review.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Haliable uses your location to show halal stores and restaurants near you.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Haliable lets you attach product photos from your library for a manual halal review.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -605,6 +620,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E7871BF62FCF4EE8002173CC /* XCRemoteSwiftPackageReference "CodeScanner" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/twostraws/CodeScanner";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E7871BF72FCF4EE8002173CC /* CodeScanner */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E7871BF62FCF4EE8002173CC /* XCRemoteSwiftPackageReference "CodeScanner" */;
+			productName = CodeScanner;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E7135D082FBDFE4400C53C1A /* Project object */;
 }

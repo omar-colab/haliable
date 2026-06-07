@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haliable — The Halal Food Scanner</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='fb' cx='42%25' cy='40%25' r='60%25'%3E%3Cstop offset='0%25' stop-color='%232A5C42'/%3E%3Cstop offset='100%25' stop-color='%23112B1E'/%3E%3C/radialGradient%3E%3CradialGradient id='fm' gradientUnits='userSpaceOnUse' cx='24' cy='22' r='44'%3E%3Cstop offset='0%25' stop-color='%23FFFEF0'/%3E%3Cstop offset='22%25' stop-color='%23FDF0AA'/%3E%3Cstop offset='55%25' stop-color='%23E8C84A'/%3E%3Cstop offset='85%25' stop-color='%23C9A028'/%3E%3Cstop offset='100%25' stop-color='%239A7518'/%3E%3C/radialGradient%3E%3CradialGradient id='fs' gradientUnits='userSpaceOnUse' cx='76' cy='33' r='34'%3E%3Cstop offset='0%25' stop-color='rgba(40,20,0,0.58)'/%3E%3Cstop offset='100%25' stop-color='rgba(40,20,0,0)'/%3E%3C/radialGradient%3E%3Cmask id='fc'%3E%3Ccircle cx='50' cy='50' r='36' fill='white'/%3E%3Ccircle cx='64' cy='40' r='28' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23fb)'/%3E%3Ccircle cx='50' cy='50' r='36' fill='url(%23fm)' mask='url(%23fc)'/%3E%3Ccircle cx='50' cy='50' r='36' fill='url(%23fs)' mask='url(%23fc)'/%3E%3Ccircle cx='50' cy='50' r='36' fill='none' stroke='rgba(255,253,220,0.5)' stroke-width='2' mask='url(%23fc)'/%3E%3Cpath d='M28 28 H40 V46 H58 V28 H70 V72 H58 V54 H40 V72 H28 Z' fill='%237DD4A4'/%3E%3C/svg%3E">
+
+    <!-- ⚠️  SETUP REQUIRED — see comments in <script> at bottom -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+    :root {
+        --g900:#052612; --g800:#0D3321; --g700:#1B4332;
+        --g600:#2D6A4F; --g500:#40916C; --g400:#52B788; --g300:#74C69D;
+        --gold:#C8A96E; --gold-l:#E0C080;
+        --bg:#060D09; --card:#0D1F15; --card2:#111A14;
+        --muted:#7A9E8C; --white:#FFFFFF;
+        --red:#F87171; --yellow:#FDE047;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;overflow-x:hidden}
+
+    /* ── NAV ── */
+    #nav{
+        position:fixed;top:0;left:0;right:0;z-index:200;
+        padding:1rem 2.5rem;
+        display:flex;align-items:center;justify-content:space-between;
+        backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+        background:rgba(6,13,9,.85);
+        border-bottom:1px solid rgba(82,183,136,.08);
+        transition:border-color .3s;
+    }
+    #nav.scrolled{border-bottom-color:rgba(82,183,136,.2)}
+    .nav-logo{display:flex;align-items:center;gap:.65rem;text-decoration:none}
+    .nav-wordmark{font-size:1.15rem;font-weight:800;color:var(--white);letter-spacing:-.03em}
+    .nav-wordmark em{font-style:normal;color:var(--g400)}
+    .nav-links{display:flex;align-items:center;gap:1.75rem;list-style:none}
+    .nav-links a{color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:500;transition:color .2s}
+    .nav-links a:hover{color:var(--white)}
+    .nav-right{display:flex;align-items:center;gap:.9rem}
+    .btn-ghost{
+        background:transparent;border:1px solid rgba(82,183,136,.25);
+        color:rgba(255,255,255,.8);padding:.5rem 1.1rem;border-radius:8px;
+        font-size:.85rem;font-weight:600;font-family:'Inter',sans-serif;
+        cursor:pointer;transition:all .2s;
+    }
+    .btn-ghost:hover{border-color:var(--g400);color:var(--white)}
+    .btn-green{
+        background:var(--g500);color:var(--white);border:none;
+        padding:.5rem 1.1rem;border-radius:8px;
+        font-size:.85rem;font-weight:700;font-family:'Inter',sans-serif;
+        cursor:pointer;transition:all .2s;
+    }
+    .btn-green:hover{background:var(--g400)}
+    .nav-user{display:none;align-items:center;gap:.65rem}
+    .nav-avatar{
+        width:30px;height:30px;border-radius:50%;
+        border:2px solid var(--g400);object-fit:cover;
+    }
+    .nav-username{font-size:.82rem;font-weight:600;color:var(--white)}
+    .btn-signout{
+        background:transparent;border:none;color:var(--muted);
+        font-size:.75rem;font-family:'Inter',sans-serif;
+        cursor:pointer;transition:color .2s;text-decoration:underline;
+    }
+    .btn-signout:hover{color:var(--white)}
+
+    /* ── HERO ── */
+    .hero{
+        min-height:100vh;display:flex;align-items:center;justify-content:center;
+        position:relative;overflow:hidden;padding:7.5rem 2.5rem 5rem;
+    }
+    .hero-bg{
+        position:absolute;inset:0;
+        background:
+            radial-gradient(ellipse 90% 65% at 50% -5%, rgba(27,67,50,.65) 0%, transparent 70%),
+            radial-gradient(ellipse 45% 45% at 85% 55%, rgba(13,51,33,.45) 0%, transparent 60%);
+    }
+    .hero-grid{
+        position:absolute;inset:0;
+        background-image:linear-gradient(rgba(82,183,136,.025) 1px,transparent 1px),
+            linear-gradient(90deg,rgba(82,183,136,.025) 1px,transparent 1px);
+        background-size:64px 64px;
+    }
+    .hero-inner{
+        max-width:1200px;width:100%;position:relative;z-index:1;
+        display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;
+    }
+    .hero-badge{
+        display:inline-flex;align-items:center;gap:.5rem;
+        background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.3);
+        color:var(--gold);padding:.4rem .9rem;border-radius:100px;
+        font-size:.73rem;font-weight:700;letter-spacing:.06em;
+        text-transform:uppercase;margin-bottom:1.5rem;
+    }
+    .badge-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:blink 2s ease-in-out infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .hero-title{
+        font-family:'Playfair Display',serif;
+        font-size:clamp(2.6rem,4.5vw,4.2rem);
+        font-weight:700;line-height:1.08;letter-spacing:-.03em;margin-bottom:1.5rem;
+    }
+    .hi{color:var(--g400)}.hg{color:var(--gold)}
+    .hero-sub{color:var(--muted);font-size:1.05rem;line-height:1.75;margin-bottom:2.25rem;max-width:480px}
+    .email-row{display:flex;gap:.65rem;margin-bottom:1rem}
+    .email-input{
+        flex:1;padding:.85rem 1.2rem;
+        background:rgba(255,255,255,.05);border:1px solid rgba(82,183,136,.2);
+        border-radius:10px;color:var(--white);
+        font-size:.9rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;
+    }
+    .email-input::placeholder{color:var(--muted)}
+    .email-input:focus{border-color:var(--g400)}
+    .btn-primary{
+        background:var(--g500);color:var(--white);border:none;
+        padding:.85rem 1.5rem;border-radius:10px;
+        font-size:.9rem;font-weight:700;font-family:'Inter',sans-serif;
+        cursor:pointer;white-space:nowrap;transition:all .2s;
+    }
+    .btn-primary:hover{background:var(--g400);transform:translateY(-1px);box-shadow:0 8px 28px rgba(82,183,136,.28)}
+    .hero-fine{font-size:.76rem;color:var(--muted)}
+    .hero-stats{display:flex;gap:2.25rem;margin-top:2.5rem;padding-top:2.25rem;border-top:1px solid rgba(82,183,136,.1)}
+    .hs-num{font-size:1.5rem;font-weight:900;color:var(--g300);margin-bottom:.2rem}
+    .hs-lbl{font-size:.73rem;color:var(--muted);line-height:1.35}
+
+    /* ── PHONE MOCKUP ── */
+    .hero-visual{display:flex;justify-content:center;align-items:center;position:relative}
+    .phone-glow{
+        position:absolute;width:320px;height:320px;border-radius:50%;
+        background:radial-gradient(ellipse,rgba(27,67,50,.7) 0%,transparent 70%);z-index:0;
+    }
+    .phone{position:relative;z-index:1;width:260px;height:545px}
+    .phone-shell{
+        width:100%;height:100%;background:var(--card);border-radius:42px;
+        border:2px solid rgba(82,183,136,.28);overflow:hidden;position:relative;
+        box-shadow:0 0 0 1px rgba(0,0,0,.6),0 50px 100px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.05);
+    }
+    .phone-notch{
+        position:absolute;top:0;left:50%;transform:translateX(-50%);
+        width:108px;height:29px;background:var(--bg);border-radius:0 0 18px 18px;z-index:10;
+    }
+    .phone-screen{padding:44px 13px 16px;display:flex;flex-direction:column;height:100%}
+    .ps-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.1rem}
+    .ps-brand{font-size:.66rem;font-weight:800;color:var(--g300);letter-spacing:.06em}
+    .ps-icon{width:25px;height:25px;background:rgba(82,183,136,.1);border-radius:7px;display:flex;align-items:center;justify-content:center}
+    .scanner-box{position:relative;border-radius:13px;overflow:hidden;background:rgba(13,33,21,.9);margin-bottom:.9rem;flex-shrink:0;aspect-ratio:1}
+    .sc-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative}
+    .corners{position:absolute;inset:17px}
+    .c{position:absolute;width:21px;height:21px;border-color:var(--g400);border-style:solid}
+    .c-tl{top:0;left:0;border-width:2.5px 0 0 2.5px;border-radius:4px 0 0 0}
+    .c-tr{top:0;right:0;border-width:2.5px 2.5px 0 0;border-radius:0 4px 0 0}
+    .c-bl{bottom:0;left:0;border-width:0 0 2.5px 2.5px;border-radius:0 0 0 4px}
+    .c-br{bottom:0;right:0;border-width:0 2.5px 2.5px 0;border-radius:0 0 4px 0}
+    .scanline{position:absolute;left:17px;right:17px;height:1.5px;background:linear-gradient(90deg,transparent,var(--g400),transparent);animation:scanmove 2.8s ease-in-out infinite}
+    @keyframes scanmove{0%{top:17px}50%{top:calc(100% - 17px)}100%{top:17px}}
+    .barcode{display:flex;align-items:flex-end;gap:1.5px;opacity:.2}
+    .bar{background:var(--white);border-radius:1px}
+    .result{background:rgba(27,67,50,.35);border:1px solid rgba(82,183,136,.18);border-radius:10px;padding:.6rem .8rem;margin-bottom:.5rem}
+    .r-name{font-size:.63rem;font-weight:600;color:var(--white);margin-bottom:.28rem}
+    .r-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .55rem;border-radius:100px;font-size:.58rem;font-weight:700}
+    .r-badge.halal{background:rgba(82,183,136,.15);border:1px solid rgba(82,183,136,.3);color:var(--g300)}
+    .r-badge.haram{background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);color:var(--red)}
+    .r-badge.check{background:rgba(234,179,8,.15);border:1px solid rgba(234,179,8,.3);color:var(--yellow)}
+    .r-dot{width:4px;height:4px;border-radius:50%;background:currentColor}
+
+    /* ── MARQUEE TICKER ── */
+    .ticker{
+        background:var(--card);border-top:1px solid rgba(82,183,136,.08);
+        border-bottom:1px solid rgba(82,183,136,.08);
+        padding:.85rem 0;overflow:hidden;position:relative;
+    }
+    .ticker::before,.ticker::after{
+        content:'';position:absolute;top:0;bottom:0;width:120px;z-index:2;
+    }
+    .ticker::before{left:0;background:linear-gradient(90deg,var(--card),transparent)}
+    .ticker::after{right:0;background:linear-gradient(-90deg,var(--card),transparent)}
+    .ticker-track{
+        display:flex;gap:2.5rem;
+        animation:tickerScroll 30s linear infinite;
+        width:max-content;
+    }
+    .ticker-track:hover{animation-play-state:paused}
+    @keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .ticker-item{
+        display:flex;align-items:center;gap:.6rem;
+        white-space:nowrap;font-size:.8rem;font-weight:600;
+        color:rgba(255,255,255,.6);flex-shrink:0;
+    }
+    .ticker-item span{color:var(--g400)}
+    .ticker-sep{color:rgba(82,183,136,.3);font-size:.9rem}
+
+    /* ── SECTIONS ── */
+    section{padding:6rem 2.5rem}
+    .wrap{max-width:1200px;margin:0 auto}
+    .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g400);margin-bottom:.65rem}
+    .h2{font-family:'Playfair Display',serif;font-size:clamp(1.9rem,3.5vw,2.9rem);font-weight:700;line-height:1.12;letter-spacing:-.025em;margin-bottom:1.1rem}
+    .lead{color:var(--muted);font-size:1rem;line-height:1.75;max-width:560px}
+    .fade-up{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+    .fade-up.vis{opacity:1;transform:translateY(0)}
+
+    /* ── PROBLEM ── */
+    .problem{background:linear-gradient(180deg,var(--bg) 0%,var(--card) 100%)}
+    .prob-grid{display:grid;grid-template-columns:1fr 1fr;gap:4.5rem;align-items:center}
+    .stat-cluster{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+    .scard{background:var(--card);border:1px solid rgba(82,183,136,.08);border-radius:16px;padding:1.5rem;transition:border-color .3s,transform .3s}
+    .scard:hover{border-color:rgba(82,183,136,.25);transform:translateY(-2px)}
+    .scard.big{grid-column:span 2;background:linear-gradient(135deg,rgba(27,67,50,.4),rgba(45,106,79,.15));border-color:rgba(82,183,136,.18)}
+    .snum{font-size:2.75rem;font-weight:900;color:var(--g300);line-height:1;margin-bottom:.45rem}
+    .scard.big .snum{font-size:3.5rem;color:var(--g400)}
+    .sdesc{font-size:.85rem;color:var(--muted);line-height:1.55}
+    .scard.big .sdesc{font-size:.95rem;color:rgba(255,255,255,.65)}
+
+    /* ── HOW IT WORKS ── */
+    .how{background:var(--bg)}
+    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.75rem;margin-top:3.5rem}
+    .step{background:var(--card);border:1px solid rgba(82,183,136,.07);border-radius:20px;padding:2rem;transition:border-color .3s}
+    .step:hover{border-color:rgba(82,183,136,.22)}
+    .step-n{font-size:3.75rem;font-weight:900;color:rgba(82,183,136,.07);line-height:1;margin-bottom:1rem}
+    .step-ico{width:46px;height:46px;background:rgba(82,183,136,.09);border:1px solid rgba(82,183,136,.18);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1.2rem}
+    .step-title{font-size:1.05rem;font-weight:700;margin-bottom:.65rem}
+    .step-desc{font-size:.875rem;color:var(--muted);line-height:1.65}
+
+    /* ── FEATURES ── */
+    .features{background:var(--card)}
+    .feat-head{text-align:center;margin-bottom:3.5rem}
+    .feat-head .lead{margin:0 auto}
+    .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.35rem}
+    .fcard{padding:1.85rem;background:var(--bg);border:1px solid rgba(82,183,136,.07);border-radius:20px;transition:all .3s}
+    .fcard:hover{border-color:rgba(82,183,136,.22);transform:translateY(-3px)}
+    .fcard-ico{font-size:1.85rem;margin-bottom:.9rem}
+    .fcard-title{font-size:.975rem;font-weight:700;margin-bottom:.55rem}
+    .fcard-desc{font-size:.85rem;color:var(--muted);line-height:1.65}
+
+    /* ── TESTIMONIALS ── */
+    .testimonials{background:var(--bg)}
+    .test-head{text-align:center;margin-bottom:3rem}
+    .test-track-wrap{position:relative;overflow:hidden}
+    .test-track{
+        display:flex;transition:transform .5s cubic-bezier(.4,0,.2,1);
+    }
+    .tcard{
+        min-width:100%;padding:0 1rem;
+    }
+    .tcard-inner{
+        max-width:720px;margin:0 auto;
+        background:var(--card);border:1px solid rgba(82,183,136,.1);
+        border-radius:24px;padding:2.5rem 3rem;position:relative;
+    }
+    .tcard-inner::before{
+        content:'\201C';
+        font-family:'Playfair Display',serif;font-size:5rem;
+        color:rgba(82,183,136,.15);position:absolute;top:.5rem;left:1.5rem;
+        line-height:1;
+    }
+    .tquote{font-size:1.1rem;line-height:1.7;color:rgba(255,255,255,.85);margin-bottom:1.75rem;padding-top:.5rem}
+    .tauthor{display:flex;align-items:center;gap:1rem}
+    .tauthor-avatar{
+        width:44px;height:44px;border-radius:50%;
+        background:linear-gradient(135deg,var(--g600),var(--g400));
+        display:flex;align-items:center;justify-content:center;
+        font-weight:700;font-size:1rem;flex-shrink:0;
+    }
+    .tauthor-name{font-weight:700;font-size:.9rem;margin-bottom:.2rem}
+    .tauthor-loc{font-size:.78rem;color:var(--muted)}
+    .stars{color:var(--gold);font-size:.85rem;margin-bottom:.6rem}
+    .test-dots{display:flex;justify-content:center;gap:.6rem;margin-top:2rem}
+    .tdot{width:8px;height:8px;border-radius:50%;background:rgba(82,183,136,.2);cursor:pointer;transition:all .3s;border:none}
+    .tdot.active{background:var(--g400);width:24px;border-radius:4px}
+    .test-arrows{display:flex;justify-content:center;gap:1rem;margin-top:1.25rem}
+    .tarrow{
+        width:38px;height:38px;border-radius:50%;
+        background:var(--card);border:1px solid rgba(82,183,136,.18);
+        color:var(--g400);font-size:1rem;cursor:pointer;
+        display:flex;align-items:center;justify-content:center;
+        transition:all .2s;
+    }
+    .tarrow:hover{background:rgba(82,183,136,.1);border-color:var(--g400)}
+
+    /* ── MARKET ── */
+    .market{background:var(--card);position:relative;overflow:hidden}
+    .market-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;position:relative}
+    .mlist{display:flex;flex-direction:column;gap:2.25rem}
+    .mitem{display:flex;gap:1.25rem;align-items:flex-start}
+    .mline{width:3px;min-height:65px;flex-shrink:0;background:linear-gradient(180deg,var(--g400),transparent);border-radius:2px}
+    .mbig{font-size:2.5rem;font-weight:900;color:var(--g300);line-height:1;margin-bottom:.35rem}
+    .mlbl{font-size:.875rem;color:var(--muted);line-height:1.55}
+
+    /* ── STANDARDS ── */
+    .standards{background:var(--bg)}
+    .std-head{text-align:center;margin-bottom:3rem}
+    .std-head .lead{margin:0 auto}
+    .std-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}
+    .stdcard{padding:1.5rem;background:var(--card);border:1px solid rgba(200,169,110,.1);border-radius:16px;transition:all .3s}
+    .stdcard:hover{border-color:rgba(200,169,110,.3);transform:translateY(-2px)}
+    .std-ico{font-size:1.65rem;margin-bottom:.9rem}
+    .std-title{font-size:.9rem;font-weight:700;color:var(--gold);margin-bottom:.55rem}
+    .std-desc{font-size:.8rem;color:var(--muted);line-height:1.6}
+
+    /* ── STORES ── */
+    .stores{background:var(--card)}
+    .stores-head{text-align:center;margin-bottom:2.75rem}
+    .stores-head .lead{margin:0 auto}
+    .store-cloud{display:flex;flex-wrap:wrap;gap:.85rem;justify-content:center}
+    .store-pill{background:var(--bg);border:1px solid rgba(82,183,136,.14);color:rgba(255,255,255,.68);padding:.55rem 1.2rem;border-radius:100px;font-size:.85rem;font-weight:500;transition:all .2s;cursor:default}
+    .store-pill:hover{border-color:rgba(82,183,136,.38);color:var(--white);background:rgba(82,183,136,.07)}
+
+    /* ── COMPARE ── */
+    .compare{background:var(--bg)}
+    .table-wrap{margin-top:2.75rem;border-radius:16px;border:1px solid rgba(82,183,136,.12);overflow:hidden}
+    table{width:100%;border-collapse:collapse}
+    thead th{padding:1rem 1.5rem;text-align:left;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--card);border-bottom:1px solid rgba(82,183,136,.1)}
+    thead th.hi{color:var(--g300)}
+    tbody td{padding:.95rem 1.5rem;font-size:.875rem;border-bottom:1px solid rgba(82,183,136,.05);color:rgba(255,255,255,.72)}
+    tbody tr:last-child td{border-bottom:none}
+    tbody td.hi{color:var(--white);font-weight:600}
+    tbody tr:hover td{background:rgba(82,183,136,.025)}
+    .tick{color:var(--g400)}.cross{color:var(--red)}.part{color:var(--yellow)}
+
+    /* ── PRICING / PAYMENT ── */
+    .pricing{background:var(--card)}
+    .pricing-head{text-align:center;margin-bottom:.75rem}
+    .plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:800px;margin:2.75rem auto 0}
+    .plan{padding:2.25rem;background:var(--bg);border:1px solid rgba(82,183,136,.1);border-radius:24px;position:relative}
+    .plan.featured{border-color:var(--g500);background:linear-gradient(135deg,rgba(27,67,50,.32),rgba(13,33,21,.85))}
+    .plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--g500);color:var(--white);padding:.28rem .9rem;border-radius:100px;font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+    .plan-tier{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem}
+    .plan-price{font-size:2.75rem;font-weight:900;line-height:1;margin-bottom:.25rem}
+    .plan-price sub{font-size:1rem;font-weight:400;color:var(--muted)}
+    .plan-period{font-size:.82rem;color:var(--muted);margin-bottom:1.75rem}
+    .plan-list{list-style:none;display:flex;flex-direction:column;gap:.7rem;margin-bottom:2rem}
+    .plan-list li{display:flex;align-items:center;gap:.7rem;font-size:.85rem;color:rgba(255,255,255,.72)}
+    .chk{color:var(--g400);flex-shrink:0;font-size:.85rem}
+    .btn-plan{
+        width:100%;padding:.9rem;border-radius:10px;font-size:.9rem;font-weight:700;
+        font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;border:none;
+    }
+    .btn-plan-ghost{background:transparent;border:1px solid rgba(82,183,136,.25);color:var(--white)}
+    .btn-plan-ghost:hover{border-color:var(--g400);background:rgba(82,183,136,.06)}
+    .btn-plan-solid{background:var(--g500);color:var(--white)}
+    .btn-plan-solid:hover{background:var(--g400);box-shadow:0 6px 24px rgba(82,183,136,.3)}
+
+    /* ── CTA ── */
+    .cta-sec{padding:8rem 2.5rem;background:var(--bg);text-align:center;position:relative;overflow:hidden}
+    .cta-glow{position:absolute;inset:0;background:radial-gradient(ellipse 65% 80% at 50% 50%,rgba(27,67,50,.32) 0%,transparent 70%)}
+    .cta-inner{position:relative;max-width:580px;margin:0 auto}
+    .cta-h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:700;line-height:1.12;margin-bottom:1.2rem}
+    .cta-sub{color:var(--muted);font-size:1rem;line-height:1.75;margin-bottom:2.5rem}
+    .cta-form{display:flex;gap:.65rem;max-width:420px;margin:0 auto 1.1rem}
+
+    /* ── FOOTER ── */
+    footer{background:var(--card);border-top:1px solid rgba(82,183,136,.07);padding:2.75rem 2.5rem}
+    .foot-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    .foot-logo{display:flex;align-items:center;gap:.7rem}
+    .foot-brand{font-weight:800;font-size:.95rem;margin-bottom:.2rem}
+    .foot-copy{font-size:.75rem;color:var(--muted)}
+    .foot-tag{font-size:.75rem;color:rgba(82,183,136,.45);font-style:italic}
+    .foot-links{display:flex;gap:2rem;align-items:center}
+    .foot-links a{color:var(--muted);text-decoration:none;font-size:.85rem;transition:color .2s}
+    .foot-links a:hover{color:var(--white)}
+    .social-row{display:flex;gap:.75rem;margin-top:.5rem}
+    .social-link{
+        width:30px;height:30px;border-radius:8px;border:1px solid rgba(82,183,136,.18);
+        display:flex;align-items:center;justify-content:center;
+        color:var(--muted);text-decoration:none;font-size:.85rem;transition:all .2s;
+    }
+    .social-link:hover{border-color:var(--g400);color:var(--g400);background:rgba(82,183,136,.07)}
+
+    /* ──────────────────────────────── */
+    /* ── MODALS ── */
+    /* ──────────────────────────────── */
+    .modal-backdrop{
+        display:none;position:fixed;inset:0;z-index:500;
+        background:rgba(0,0,0,.75);backdrop-filter:blur(8px);
+        align-items:center;justify-content:center;padding:1.5rem;
+    }
+    .modal-backdrop.open{display:flex}
+    .modal{
+        background:#0D1F15;border:1px solid rgba(82,183,136,.18);
+        border-radius:24px;padding:2.5rem;width:100%;max-width:440px;
+        position:relative;animation:modalIn .25s ease;
+        box-shadow:0 40px 80px rgba(0,0,0,.6);
+    }
+    @keyframes modalIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+    .modal-close{
+        position:absolute;top:1.1rem;right:1.1rem;
+        width:30px;height:30px;border-radius:50%;border:1px solid rgba(82,183,136,.2);
+        background:transparent;color:var(--muted);font-size:1rem;
+        cursor:pointer;display:flex;align-items:center;justify-content:center;
+        transition:all .2s;
+    }
+    .modal-close:hover{border-color:var(--g400);color:var(--white)}
+    .modal-logo{display:flex;justify-content:center;margin-bottom:1.5rem}
+    .modal-title{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;text-align:center;margin-bottom:.4rem}
+    .modal-sub{font-size:.85rem;color:var(--muted);text-align:center;margin-bottom:2rem}
+
+    /* Google button */
+    .btn-google{
+        width:100%;padding:.85rem 1.25rem;border-radius:10px;
+        border:1px solid rgba(255,255,255,.15);
+        background:rgba(255,255,255,.05);color:var(--white);
+        font-size:.9rem;font-weight:600;font-family:'Inter',sans-serif;
+        cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.75rem;
+        transition:all .2s;
+    }
+    .btn-google:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3)}
+    .google-icon{width:18px;height:18px;flex-shrink:0}
+
+    .modal-divider{display:flex;align-items:center;gap:1rem;margin:1.25rem 0}
+    .modal-divider::before,.modal-divider::after{content:'';flex:1;height:1px;background:rgba(82,183,136,.12)}
+    .modal-divider span{font-size:.75rem;color:var(--muted);white-space:nowrap}
+
+    .field-label{font-size:.8rem;font-weight:600;color:rgba(255,255,255,.6);margin-bottom:.4rem;display:block}
+    .field-input{
+        width:100%;padding:.8rem 1rem;margin-bottom:1rem;
+        background:rgba(255,255,255,.04);border:1px solid rgba(82,183,136,.18);
+        border-radius:9px;color:var(--white);font-size:.875rem;
+        font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;
+    }
+    .field-input:focus{border-color:var(--g400)}
+    .field-input::placeholder{color:var(--muted)}
+    .btn-modal{
+        width:100%;padding:.9rem;border-radius:10px;border:none;
+        background:var(--g500);color:var(--white);font-size:.9rem;font-weight:700;
+        font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;margin-top:.25rem;
+    }
+    .btn-modal:hover{background:var(--g400);box-shadow:0 6px 24px rgba(82,183,136,.3)}
+    .modal-toggle{font-size:.8rem;color:var(--muted);text-align:center;margin-top:1.1rem}
+    .modal-toggle a{color:var(--g400);text-decoration:none;font-weight:600;cursor:pointer}
+    .modal-toggle a:hover{color:var(--g300)}
+
+    /* Payment modal */
+    .pay-summary{
+        background:rgba(82,183,136,.06);border:1px solid rgba(82,183,136,.14);
+        border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;
+        display:flex;align-items:center;justify-content:space-between;
+    }
+    .pay-product{font-size:.875rem;font-weight:700}
+    .pay-product-sub{font-size:.75rem;color:var(--muted);margin-top:.15rem}
+    .pay-amount{font-size:1.6rem;font-weight:900;color:var(--g300)}
+    .pay-amount sub{font-size:.75rem;font-weight:400;color:var(--muted)}
+    .card-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+    .stripe-note{font-size:.72rem;color:var(--muted);text-align:center;margin-top:1rem;display:flex;align-items:center;justify-content:center;gap:.4rem}
+    .stripe-note svg{opacity:.5}
+
+    /* Success modal */
+    .success-icon{width:72px;height:72px;border-radius:50%;background:rgba(82,183,136,.15);border:2px solid var(--g400);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1.5rem}
+    .success-title{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;text-align:center;margin-bottom:.6rem}
+    .success-sub{font-size:.9rem;color:var(--muted);text-align:center;line-height:1.65;margin-bottom:2rem}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:960px){
+        .hero-inner{grid-template-columns:1fr;text-align:center}
+        .hero-sub{margin:0 auto 2.25rem}
+        .email-row{justify-content:center}
+        .hero-visual{display:none}
+        .hero-stats{justify-content:center}
+        .prob-grid{grid-template-columns:1fr}
+        .steps{grid-template-columns:1fr}
+        .feat-grid{grid-template-columns:1fr 1fr}
+        .std-grid{grid-template-columns:1fr 1fr}
+        .market-grid{grid-template-columns:1fr}
+        .plan-grid{grid-template-columns:1fr;max-width:400px}
+        .foot-inner{flex-direction:column;gap:1.5rem;text-align:center}
+        .foot-links{flex-wrap:wrap;justify-content:center}
+        .social-row{justify-content:center}
+    }
+    @media(max-width:620px){
+        .nav-links{display:none}
+        .email-row,.cta-form{flex-direction:column}
+        .feat-grid{grid-template-columns:1fr}
+        .std-grid{grid-template-columns:1fr}
+        .stat-cluster{grid-template-columns:1fr}
+        .scard.big{grid-column:span 1}
+        table{font-size:.8rem}
+        thead th,tbody td{padding:.75rem 1rem}
+        .tcard-inner{padding:1.75rem 1.5rem}
+        .tquote{font-size:.95rem}
+        .card-row{grid-template-columns:1fr}
+    }
+    </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav id="nav">
+    <a class="nav-logo" href="#">
+        <svg width="42" height="42" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="nBG" cx="42%" cy="40%" r="60%">
+              <stop offset="0%"   stop-color="#2A5C42"/>
+              <stop offset="100%" stop-color="#112B1E"/>
+            </radialGradient>
+            <radialGradient id="nMG" gradientUnits="userSpaceOnUse" cx="24" cy="22" r="44">
+              <stop offset="0%"   stop-color="#FFFEF0"/>
+              <stop offset="22%"  stop-color="#FDF0AA"/>
+              <stop offset="55%"  stop-color="#E8C84A"/>
+              <stop offset="85%"  stop-color="#C9A028"/>
+              <stop offset="100%" stop-color="#9A7518"/>
+            </radialGradient>
+            <radialGradient id="nSH" gradientUnits="userSpaceOnUse" cx="76" cy="33" r="34">
+              <stop offset="0%"   stop-color="rgba(40,20,0,0.58)"/>
+              <stop offset="55%"  stop-color="rgba(40,20,0,0.10)"/>
+              <stop offset="100%" stop-color="rgba(40,20,0,0)"/>
+            </radialGradient>
+            <mask id="nCM">
+              <circle cx="50" cy="50" r="36" fill="white"/>
+              <circle cx="64" cy="40" r="28" fill="black"/>
+            </mask>
+            <filter id="nTS" x="-15%" y="-15%" width="130%" height="135%">
+              <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="rgba(8,35,18,0.8)"/>
+            </filter>
+          </defs>
+          <!-- deep green background -->
+          <circle cx="50" cy="50" r="50" fill="url(#nBG)"/>
+          <!-- moon body -->
+          <circle cx="50" cy="50" r="36" fill="url(#nMG)" mask="url(#nCM)"/>
+          <!-- concave edge shadow for depth -->
+          <circle cx="50" cy="50" r="36" fill="url(#nSH)" mask="url(#nCM)"/>
+          <!-- bright outer limb highlight -->
+          <circle cx="50" cy="50" r="36" fill="none" stroke="rgba(255,253,220,0.5)" stroke-width="2" mask="url(#nCM)"/>
+          <!-- swirly italic H -->
+          <text x="50" y="71"
+            font-family="'Playfair Display','Times New Roman',Georgia,serif"
+            font-size="48" font-weight="700" font-style="italic"
+            fill="#7DD4A4" text-anchor="middle"
+            filter="url(#nTS)">H</text>
+        </svg>
+        <span class="nav-wordmark">Hali<em>able</em></span>
+    </a>
+    <ul class="nav-links">
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#market">Market</a></li>
+        <li><a href="#standards">Standards</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+    </ul>
+    <div class="nav-right">
+        <div class="nav-user" id="nav-user">
+            <img class="nav-avatar" id="nav-avatar" src="" alt="avatar">
+            <span class="nav-username" id="nav-username"></span>
+            <button class="btn-signout" onclick="signOut()">Sign out</button>
+        </div>
+        <div id="nav-auth-btns">
+            <button class="btn-ghost" onclick="openModal('auth', 'login')">Log In</button>
+            <button class="btn-green" onclick="openModal('auth', 'signup')" style="margin-left:.5rem">Sign Up</button>
+        </div>
+    </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-inner">
+        <div>
+            <div class="hero-badge"><span class="badge-dot"></span>Coming to the App Store</div>
+            <h1 class="hero-title">Eat <span class="hi">Halal</span>,<br>Shop with<br><span class="hg">Confidence</span></h1>
+            <p class="hero-sub">Scan any product barcode and instantly know if every ingredient meets Islamic dietary standards. The largest halal food database in America.</p>
+            <form class="email-row" onsubmit="joinWaitlist(event, this)">
+                <input class="email-input" type="email" placeholder="Enter your email" required>
+                <button class="btn-primary" type="submit">Join Waitlist</button>
+            </form>
+            <p class="hero-fine">Free for year one &mdash; no credit card needed. <a href="#pricing" style="color:var(--g400);text-decoration:none">See pricing &rarr;</a></p>
+            <div class="hero-stats">
+                <div><div class="hs-num">$170B</div><div class="hs-lbl">Muslim consumer<br>market in the U.S.</div></div>
+                <div><div class="hs-num">83%</div><div class="hs-lbl">of U.S. Muslims let<br>halal guide purchases</div></div>
+                <div><div class="hs-num">2040</div><div class="hs-lbl">Projected 2nd largest<br>U.S. religious group</div></div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="phone-glow"></div>
+            <div class="phone">
+                <div class="phone-shell">
+                    <div class="phone-notch"></div>
+                    <div class="phone-screen">
+                        <div class="ps-header">
+                            <span class="ps-brand">HALIABLE</span>
+                            <div class="ps-icon">
+                                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                                    <circle cx="6.5" cy="6.5" r="5" stroke="#52B788" stroke-width="1.5"/>
+                                    <path d="M6.5 3.5v3l2 1.5" stroke="#52B788" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="scanner-box">
+                            <div class="sc-inner">
+                                <div class="corners">
+                                    <div class="c c-tl"></div><div class="c c-tr"></div>
+                                    <div class="c c-bl"></div><div class="c c-br"></div>
+                                </div>
+                                <div class="scanline"></div>
+                                <div class="barcode">
+                                    <div class="bar" style="width:2px;height:44px"></div>
+                                    <div class="bar" style="width:4px;height:52px"></div>
+                                    <div class="bar" style="width:2px;height:38px"></div>
+                                    <div class="bar" style="width:3px;height:50px"></div>
+                                    <div class="bar" style="width:1px;height:44px"></div>
+                                    <div class="bar" style="width:5px;height:52px"></div>
+                                    <div class="bar" style="width:2px;height:40px"></div>
+                                    <div class="bar" style="width:3px;height:48px"></div>
+                                    <div class="bar" style="width:1px;height:52px"></div>
+                                    <div class="bar" style="width:4px;height:42px"></div>
+                                    <div class="bar" style="width:2px;height:36px"></div>
+                                    <div class="bar" style="width:3px;height:50px"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="result"><div class="r-name">Lay's Classic Chips 8oz</div><span class="r-badge halal"><span class="r-dot"></span>Halal ✓</span></div>
+                        <div class="result"><div class="r-name">Haribo Gold-Bears 5oz</div><span class="r-badge haram"><span class="r-dot"></span>Contains Gelatin ✗</span></div>
+                        <div class="result"><div class="r-name">Kind Dark Chocolate Bar</div><span class="r-badge check"><span class="r-dot"></span>Review Needed</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── MARQUEE TICKER ── -->
+<div class="ticker">
+    <div class="ticker-track" id="ticker">
+        <span class="ticker-item"><span>$170B+</span> U.S. Muslim Consumer Market</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item"><span>83%</span> of U.S. Muslims check halal before buying</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item"><span>48%</span> of halal sales happen in regular supermarkets</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item"><span>60%</span> of Muslims worry about certification fraud</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item"><span>2040</span> Muslims become U.S.&#39;s 2nd largest religious group</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item"><span>Millions</span> of products in our database and growing</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item">Open Food Facts <span>&amp;</span> USDA FoodData Central powered</span>
+        <span class="ticker-sep">✦</span>
+        <!-- duplicate for seamless loop -->
+        <span class="ticker-item"><span>$170B+</span> U.S. Muslim Consumer Market</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item"><span>83%</span> of U.S. Muslims check halal before buying</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item"><span>48%</span> of halal sales happen in regular supermarkets</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item"><span>60%</span> of Muslims worry about certification fraud</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item"><span>2040</span> Muslims become U.S.&#39;s 2nd largest religious group</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item"><span>Millions</span> of products in our database and growing</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item">Open Food Facts <span>&amp;</span> USDA FoodData Central powered</span>
+        <span class="ticker-sep">✦</span>
+    </div>
+</div>
+
+<!-- ── PROBLEM ── -->
+<section class="problem" id="problem">
+    <div class="wrap">
+        <div class="prob-grid">
+            <div class="fade-up">
+                <div class="eyebrow">The Problem</div>
+                <h2 class="h2">Ingredient labels are <em>confusing</em> by design</h2>
+                <p class="lead">Processed food ingredient lists are opaque and deliberately complex. For Muslims navigating American grocery stores, every label is a research project.</p>
+                <br>
+                <p class="lead">Hidden animal derivatives, ambiguous emulsifiers, undisclosed processing aids &mdash; the current system fails halal-conscious shoppers entirely.</p>
+            </div>
+            <div class="stat-cluster fade-up">
+                <div class="scard big">
+                    <div class="snum">83%</div>
+                    <div class="sdesc">of U.S. Muslims say halal guidelines influence their purchasing decisions &mdash; yet no reliable tool exists to verify ingredients at the shelf.</div>
+                </div>
+                <div class="scard"><div class="snum">82%</div><div class="sdesc">check certifications before buying any product</div></div>
+                <div class="scard"><div class="snum">60%</div><div class="sdesc">worry about halal certification fraud on labels</div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="how" id="how-it-works">
+    <div class="wrap">
+        <div class="fade-up">
+            <div class="eyebrow">How It Works</div>
+            <h2 class="h2">Three seconds to peace of mind</h2>
+        </div>
+        <div class="steps">
+            <div class="step fade-up">
+                <div class="step-n">01</div>
+                <div class="step-ico">📷</div>
+                <div class="step-title">Scan the Barcode</div>
+                <p class="step-desc">Point your camera at any product in any store. Haliable reads the barcode instantly.</p>
+            </div>
+            <div class="step fade-up">
+                <div class="step-n">02</div>
+                <div class="step-ico">🔍</div>
+                <div class="step-title">Instant Analysis</div>
+                <p class="step-desc">We cross-reference every ingredient against our database — powered by Open Food Facts and USDA FoodData Central — and flag anything haram or questionable.</p>
+            </div>
+            <div class="step fade-up">
+                <div class="step-n">03</div>
+                <div class="step-ico">✅</div>
+                <div class="step-title">Shop with Clarity</div>
+                <p class="step-desc">Get a clear Halal, Haram, or Uncertain verdict with a plain-English breakdown of every flagged ingredient and why it matters.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section class="features" id="features">
+    <div class="wrap">
+        <div class="feat-head fade-up">
+            <div class="eyebrow">Features</div>
+            <h2 class="h2">Everything you need to shop halal</h2>
+            <p class="lead">Built specifically for Muslims navigating everyday American grocery stores.</p>
+        </div>
+        <div class="feat-grid">
+            <div class="fcard fade-up"><div class="fcard-ico">📱</div><div class="fcard-title">Barcode Scanner</div><p class="fcard-desc">Instant ingredient analysis for millions of products across Walmart, Publix, Shoprite, and every major chain.</p></div>
+            <div class="fcard fade-up"><div class="fcard-ico">🗄️</div><div class="fcard-title">America's Largest Halal Database</div><p class="fcard-desc">The most comprehensive index of halal product data in the U.S., continuously updated from multiple authoritative sources.</p></div>
+            <div class="fcard fade-up"><div class="fcard-ico">📸</div><div class="fcard-title">Community Photo Submissions</div><p class="fcard-desc">Found a product we don't have? Snap a photo and submit it for halal review. Every submission improves the database for everyone.</p></div>
+            <div class="fcard fade-up"><div class="fcard-ico">🕌</div><div class="fcard-title">Islamic Standards Guide</div><p class="fcard-desc">A full glossary of halal and haram designations — their origins, meanings, and how they apply to modern food production.</p></div>
+            <div class="fcard fade-up"><div class="fcard-ico">🏬</div><div class="fcard-title">Store Directory</div><p class="fcard-desc">A guide to major U.S. grocery chains — what halal products they carry, which sections to check, and what to watch out for.</p></div>
+            <div class="fcard fade-up"><div class="fcard-ico">🛡️</div><div class="fcard-title">Certification Fraud Alerts</div><p class="fcard-desc">We verify certifications and flag misleading claims. 60% of Muslims worry about halal fraud — we built a system to address it.</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section class="testimonials" id="testimonials">
+    <div class="wrap">
+        <div class="test-head fade-up">
+            <div class="eyebrow">Early Feedback</div>
+            <h2 class="h2">What the community is saying</h2>
+        </div>
+        <div class="test-track-wrap fade-up">
+            <div class="test-track" id="test-track">
+                <div class="tcard">
+                    <div class="tcard-inner">
+                        <div class="stars">★★★★★</div>
+                        <p class="tquote">"Finally an app that does what TagHalal promised but never delivered. The ingredient breakdown is genuinely detailed — it flagged L-cysteine in a bread I've been eating for years. Game changer."</p>
+                        <div class="tauthor"><div class="tauthor-avatar">AK</div><div><div class="tauthor-name">Ahmed K.</div><div class="tauthor-loc">New Jersey — Beta Tester</div></div></div>
+                    </div>
+                </div>
+                <div class="tcard">
+                    <div class="tcard-inner">
+                        <div class="stars">★★★★★</div>
+                        <p class="tquote">"I shop at Walmart every week and this has completely changed how I check ingredients. Scan, read, decide — in under five seconds. My whole family uses it now."</p>
+                        <div class="tauthor"><div class="tauthor-avatar">FM</div><div><div class="tauthor-name">Fatima M.</div><div class="tauthor-loc">Houston, TX — Beta Tester</div></div></div>
+                    </div>
+                </div>
+                <div class="tcard">
+                    <div class="tcard-inner">
+                        <div class="stars">★★★★★</div>
+                        <p class="tquote">"The certification fraud detection alone is worth $15 a year. I discovered two products at my local Shoprite with fake halal stamps. This app protects you in ways you don't even realize you need."</p>
+                        <div class="tauthor"><div class="tauthor-avatar">YA</div><div><div class="tauthor-name">Yusuf A.</div><div class="tauthor-loc">Brooklyn, NY — Beta Tester</div></div></div>
+                    </div>
+                </div>
+                <div class="tcard">
+                    <div class="tcard-inner">
+                        <div class="stars">★★★★★</div>
+                        <p class="tquote">"As a Muslim mom buying groceries for four kids, I can't spend ten minutes Googling every ingredient. Haliable gives me confidence in seconds. The Islamic standards guide is also incredibly educational."</p>
+                        <div class="tauthor"><div class="tauthor-avatar">ZH</div><div><div class="tauthor-name">Zainab H.</div><div class="tauthor-loc">Dearborn, MI — Beta Tester</div></div></div>
+                    </div>
+                </div>
+                <div class="tcard">
+                    <div class="tcard-inner">
+                        <div class="stars">★★★★★</div>
+                        <p class="tquote">"I was skeptical because I've tried every halal app out there. Haliable is genuinely different — the database is massive and the ingredient explanations are actually in plain English, not just a red/green dot."</p>
+                        <div class="tauthor"><div class="tauthor-avatar">OR</div><div><div class="tauthor-name">Omar R.</div><div class="tauthor-loc">Chicago, IL — Beta Tester</div></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="test-dots" id="test-dots"></div>
+            <div class="test-arrows">
+                <button class="tarrow" onclick="prevSlide()" aria-label="Previous">&#8592;</button>
+                <button class="tarrow" onclick="nextSlide()" aria-label="Next">&#8594;</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── MARKET ── -->
+<section class="market" id="market">
+    <div class="wrap">
+        <div class="market-grid">
+            <div class="fade-up">
+                <div class="eyebrow">Market Opportunity</div>
+                <h2 class="h2">A $170 billion market with no clear winner</h2>
+                <p class="lead">The U.S. Muslim consumer market is massive, growing fast, and deeply underserved. Existing apps are outdated, incomplete, and lack the depth serious halal-conscious shoppers need.</p>
+                <br>
+                <p class="lead" style="color:var(--gold-l);opacity:.9">Supermarkets account for 48% of halal food sales — meaning most halal shopping already happens in regular grocery stores. Haliable meets consumers where they already shop.</p>
+            </div>
+            <div class="mlist fade-up">
+                <div class="mitem"><div class="mline"></div><div><div class="mbig">$170B+</div><div class="mlbl">U.S. Muslim consumer market — one of the fastest-growing segments in American retail</div></div></div>
+                <div class="mitem"><div class="mline"></div><div><div class="mbig">48%</div><div class="mlbl">of halal food sales occur in supermarkets and hypermarkets, not specialty stores</div></div></div>
+                <div class="mitem"><div class="mline"></div><div><div class="mbig">2040</div><div class="mlbl">Muslims projected to become the second-largest religious group in the United States</div></div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── STANDARDS ── -->
+<section class="standards" id="standards">
+    <div class="wrap">
+        <div class="std-head fade-up">
+            <div class="eyebrow">Islamic Standards</div>
+            <h2 class="h2">What makes food <span style="color:var(--gold)">Halal</span>?</h2>
+            <p class="lead">We built the most comprehensive, research-backed guide to Islamic dietary law in the context of modern American food production.</p>
+        </div>
+        <div class="std-grid">
+            <div class="stdcard fade-up"><div class="std-ico">🚫</div><div class="std-title">No Pork or Derivatives</div><p class="std-desc">Pork, lard, gelatin from pigs, and any porcine-derived additives are strictly prohibited — including processing aids that may not appear on standard labels.</p></div>
+            <div class="stdcard fade-up"><div class="std-ico">🔪</div><div class="std-title">Zabiha Slaughter</div><p class="std-desc">Meat must be slaughtered according to Zabiha — a swift cut, bismillah recitation, and complete blood drainage. Stunning methods vary by scholarly opinion.</p></div>
+            <div class="stdcard fade-up"><div class="std-ico">🍷</div><div class="std-title">Alcohol-Free</div><p class="std-desc">All intoxicants are haram, including alcohol used as a flavor carrier, preservative, or processing aid — a common hidden issue in packaged foods.</p></div>
+            <div class="stdcard fade-up"><div class="std-ico">🧬</div><div class="std-title">Clean Additives</div><p class="std-desc">Emulsifiers, enzymes, colorants, and other additives must have halal-compliant sourcing. E-numbers and coded ingredients are where most surprises hide.</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- ── STORES ── -->
+<section class="stores" id="stores">
+    <div class="wrap">
+        <div class="stores-head fade-up">
+            <div class="eyebrow">Coverage</div>
+            <h2 class="h2">The stores you already shop at</h2>
+            <p class="lead">Haliable covers the major U.S. grocery chains where Muslims do their weekly shopping.</p>
+        </div>
+        <div class="store-cloud fade-up">
+            <div class="store-pill">Walmart</div>
+            <div class="store-pill">Publix</div>
+            <div class="store-pill">Shoprite</div>
+            <div class="store-pill">Stop &amp; Shop</div>
+            <div class="store-pill">Kroger</div>
+            <div class="store-pill">Whole Foods</div>
+            <div class="store-pill">Trader Joe's</div>
+            <div class="store-pill">Costco</div>
+            <div class="store-pill">Aldi</div>
+            <div class="store-pill">Meijer</div>
+            <div class="store-pill">H-E-B</div>
+            <div class="store-pill">Wegmans</div>
+            <div class="store-pill">Target</div>
+            <div class="store-pill">Sam's Club</div>
+            <div class="store-pill">BJ's Wholesale</div>
+            <div class="store-pill">Food Lion</div>
+            <div class="store-pill">Giant Food</div>
+            <div class="store-pill">Harris Teeter</div>
+            <div class="store-pill">Hannaford</div>
+            <div class="store-pill">+ More Added Regularly</div>
+        </div>
+    </div>
+</section>
+
+<!-- ── COMPARE ── -->
+<section class="compare" id="compare">
+    <div class="wrap">
+        <div class="fade-up">
+            <div class="eyebrow">Why Haliable</div>
+            <h2 class="h2">Not just another scanner</h2>
+            <p class="lead">Deeper, more reliable, and more transparent halal verification than anything else on the market.</p>
+        </div>
+        <div class="table-wrap fade-up">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th><th class="hi">Haliable</th><th>TagHalal</th><th>Scan Halal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>USDA + Open Food Facts database</td><td class="hi tick">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+                    <tr><td>Full ingredient-level breakdown</td><td class="hi tick">✓</td><td class="part">Partial</td><td class="part">Partial</td></tr>
+                    <tr><td>Community photo submissions</td><td class="hi tick">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+                    <tr><td>Certification fraud detection</td><td class="hi tick">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+                    <tr><td>Islamic standards education</td><td class="hi tick">✓</td><td class="cross">✗</td><td class="part">Limited</td></tr>
+                    <tr><td>Store directory &amp; coverage map</td><td class="hi tick">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+                    <tr><td>Free for the first year</td><td class="hi tick">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- ── PRICING / PAYMENT ── -->
+<section class="pricing" id="pricing">
+    <div class="wrap">
+        <div class="pricing-head fade-up">
+            <div class="eyebrow">Pricing</div>
+            <h2 class="h2">Simple, honest pricing</h2>
+            <p class="lead" style="margin:0 auto">Start free. Stay because it works.</p>
+        </div>
+        <div class="plan-grid">
+            <div class="plan fade-up">
+                <div class="plan-tier">Free — Year One</div>
+                <div class="plan-price">$0 <sub>/ first year</sub></div>
+                <div class="plan-period">Full access, no credit card required</div>
+                <ul class="plan-list">
+                    <li><span class="chk">✓</span> Unlimited barcode scans</li>
+                    <li><span class="chk">✓</span> Full database access</li>
+                    <li><span class="chk">✓</span> Ingredient-level breakdowns</li>
+                    <li><span class="chk">✓</span> Islamic standards guide</li>
+                    <li><span class="chk">✓</span> Community photo submissions</li>
+                </ul>
+                <button class="btn-plan btn-plan-ghost" onclick="openModal('auth', 'signup')">Get Started Free</button>
+            </div>
+            <div class="plan featured fade-up">
+                <div class="plan-badge">Most Popular</div>
+                <div class="plan-tier">Premium</div>
+                <div class="plan-price">$15 <sub>/ year</sub></div>
+                <div class="plan-period">After year one — cancel anytime</div>
+                <ul class="plan-list">
+                    <li><span class="chk">✓</span> Everything in Free</li>
+                    <li><span class="chk">✓</span> Priority ingredient verification</li>
+                    <li><span class="chk">✓</span> Advanced fraud detection alerts</li>
+                    <li><span class="chk">✓</span> Halal store locator map</li>
+                    <li><span class="chk">✓</span> Early access to new features</li>
+                </ul>
+                <button class="btn-plan btn-plan-solid" onclick="openModal('payment')">Subscribe — $15/yr</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="cta-sec" id="waitlist">
+    <div class="cta-glow"></div>
+    <div class="cta-inner fade-up">
+        <div class="hero-badge" style="margin:0 auto 1.5rem;width:fit-content">
+            <span class="badge-dot"></span>Join the Waitlist
+        </div>
+        <h2 class="cta-h2">Be first to shop<br>with confidence</h2>
+        <p class="cta-sub">Haliable is coming to the App Store. Join thousands of Muslims who are done guessing and ready for clarity at the shelf.</p>
+        <form class="cta-form" onsubmit="joinWaitlist(event, this)">
+            <input class="email-input" type="email" placeholder="your@email.com" required>
+            <button class="btn-primary" type="submit">Notify Me</button>
+        </form>
+        <p class="hero-fine">No spam. One email when we launch. Unsubscribe anytime.</p>
+    </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+    <div class="foot-inner">
+        <div class="foot-logo">
+            <svg width="30" height="30" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="fBG" cx="42%" cy="40%" r="60%">
+                  <stop offset="0%"   stop-color="#2A5C42"/>
+                  <stop offset="100%" stop-color="#112B1E"/>
+                </radialGradient>
+                <radialGradient id="fMG" gradientUnits="userSpaceOnUse" cx="24" cy="22" r="44">
+                  <stop offset="0%"   stop-color="#FFFEF0"/>
+                  <stop offset="22%"  stop-color="#FDF0AA"/>
+                  <stop offset="55%"  stop-color="#E8C84A"/>
+                  <stop offset="85%"  stop-color="#C9A028"/>
+                  <stop offset="100%" stop-color="#9A7518"/>
+                </radialGradient>
+                <radialGradient id="fSH" gradientUnits="userSpaceOnUse" cx="76" cy="33" r="34">
+                  <stop offset="0%"   stop-color="rgba(40,20,0,0.58)"/>
+                  <stop offset="100%" stop-color="rgba(40,20,0,0)"/>
+                </radialGradient>
+                <mask id="fCM">
+                  <circle cx="50" cy="50" r="36" fill="white"/>
+                  <circle cx="64" cy="40" r="28" fill="black"/>
+                </mask>
+                <filter id="fTS" x="-15%" y="-15%" width="130%" height="135%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="rgba(8,35,18,0.8)"/>
+                </filter>
+              </defs>
+              <circle cx="50" cy="50" r="50" fill="url(#fBG)"/>
+              <circle cx="50" cy="50" r="36" fill="url(#fMG)" mask="url(#fCM)"/>
+              <circle cx="50" cy="50" r="36" fill="url(#fSH)" mask="url(#fCM)"/>
+              <circle cx="50" cy="50" r="36" fill="none" stroke="rgba(255,253,220,0.5)" stroke-width="2" mask="url(#fCM)"/>
+              <text x="50" y="71"
+                font-family="'Playfair Display','Times New Roman',Georgia,serif"
+                font-size="48" font-weight="700" font-style="italic"
+                fill="#7DD4A4" text-anchor="middle"
+                filter="url(#fTS)">H</text>
+            </svg>
+            <div>
+                <div class="foot-brand">Haliable</div>
+                <div class="foot-copy">&copy; 2026 Haliable. All rights reserved.</div>
+                <div class="social-row">
+                    <a class="social-link" href="#" aria-label="Instagram" title="Instagram">&#9654;</a>
+                    <a class="social-link" href="#" aria-label="Twitter/X" title="Twitter/X">𝕏</a>
+                    <a class="social-link" href="#" aria-label="TikTok" title="TikTok">&#9834;</a>
+                </div>
+            </div>
+        </div>
+        <div class="foot-tag">Halalifying Your Diet</div>
+        <nav class="foot-links">
+            <a href="#how-it-works">How It Works</a>
+            <a href="#features">Features</a>
+            <a href="#standards">Standards</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#compare">Compare</a>
+            <a href="mailto:hello@haliable.com">Contact</a>
+        </nav>
+    </div>
+</footer>
+
+
+<!-- ══════════════════════════════════ -->
+<!-- ── AUTH MODAL ── -->
+<!-- ══════════════════════════════════ -->
+<div class="modal-backdrop" id="auth-modal" onclick="backdropClose(event,'auth-modal')">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('auth-modal')" aria-label="Close">&times;</button>
+        <div class="modal-logo">
+            <svg width="56" height="56" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="mBG" cx="42%" cy="40%" r="60%">
+                  <stop offset="0%"   stop-color="#2A5C42"/>
+                  <stop offset="100%" stop-color="#112B1E"/>
+                </radialGradient>
+                <radialGradient id="mMG" gradientUnits="userSpaceOnUse" cx="24" cy="22" r="44">
+                  <stop offset="0%"   stop-color="#FFFEF0"/>
+                  <stop offset="22%"  stop-color="#FDF0AA"/>
+                  <stop offset="55%"  stop-color="#E8C84A"/>
+                  <stop offset="85%"  stop-color="#C9A028"/>
+                  <stop offset="100%" stop-color="#9A7518"/>
+                </radialGradient>
+                <radialGradient id="mSH" gradientUnits="userSpaceOnUse" cx="76" cy="33" r="34">
+                  <stop offset="0%"   stop-color="rgba(40,20,0,0.58)"/>
+                  <stop offset="55%"  stop-color="rgba(40,20,0,0.10)"/>
+                  <stop offset="100%" stop-color="rgba(40,20,0,0)"/>
+                </radialGradient>
+                <mask id="mCM">
+                  <circle cx="50" cy="50" r="36" fill="white"/>
+                  <circle cx="64" cy="40" r="28" fill="black"/>
+                </mask>
+                <filter id="mTS" x="-15%" y="-15%" width="130%" height="135%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="rgba(8,35,18,0.8)"/>
+                </filter>
+              </defs>
+              <circle cx="50" cy="50" r="50" fill="url(#mBG)"/>
+              <circle cx="50" cy="50" r="36" fill="url(#mMG)" mask="url(#mCM)"/>
+              <circle cx="50" cy="50" r="36" fill="url(#mSH)" mask="url(#mCM)"/>
+              <circle cx="50" cy="50" r="36" fill="none" stroke="rgba(255,253,220,0.5)" stroke-width="2" mask="url(#mCM)"/>
+              <text x="50" y="71"
+                font-family="'Playfair Display','Times New Roman',Georgia,serif"
+                font-size="48" font-weight="700" font-style="italic"
+                fill="#7DD4A4" text-anchor="middle"
+                filter="url(#mTS)">H</text>
+            </svg>
+        </div>
+        <h2 class="modal-title" id="auth-title">Create your account</h2>
+        <p class="modal-sub" id="auth-sub">Join thousands of Muslims shopping with confidence</p>
+
+        <!-- Google Sign-In button (rendered by GSI) -->
+        <button class="btn-google" id="google-signin-btn" onclick="triggerGoogleSignIn()">
+            <svg class="google-icon" viewBox="0 0 48 48">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                <path fill="none" d="M0 0h48v48H0z"/>
+            </svg>
+            Continue with Google
+        </button>
+
+        <div class="modal-divider"><span>or continue with email</span></div>
+
+        <div id="auth-name-field" style="display:none">
+            <label class="field-label">Full Name</label>
+            <input class="field-input" type="text" placeholder="Your name" id="auth-name">
+        </div>
+        <label class="field-label">Email</label>
+        <input class="field-input" type="email" placeholder="you@example.com" id="auth-email">
+        <label class="field-label">Password</label>
+        <input class="field-input" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" id="auth-pass">
+
+        <button class="btn-modal" id="auth-submit-btn" onclick="handleEmailAuth()">Create Account</button>
+        <p class="modal-toggle" id="auth-toggle">
+            Already have an account? <a onclick="switchAuthMode('login')">Log in</a>
+        </p>
+    </div>
+</div>
+
+
+<!-- ══════════════════════════════════ -->
+<!-- ── PAYMENT MODAL ── -->
+<!-- ══════════════════════════════════ -->
+<div class="modal-backdrop" id="payment-modal" onclick="backdropClose(event,'payment-modal')">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('payment-modal')" aria-label="Close">&times;</button>
+        <h2 class="modal-title">Upgrade to Premium</h2>
+        <p class="modal-sub">Unlock the full Haliable experience</p>
+
+        <div class="pay-summary">
+            <div>
+                <div class="pay-product">Haliable Premium</div>
+                <div class="pay-product-sub">Annual subscription &mdash; cancel anytime</div>
+            </div>
+            <div class="pay-amount">$15 <sub>/yr</sub></div>
+        </div>
+
+        <label class="field-label">Email</label>
+        <input class="field-input" type="email" placeholder="you@example.com" id="pay-email">
+
+        <label class="field-label">Card Number</label>
+        <input class="field-input" type="text" placeholder="1234 5678 9012 3456" id="pay-card" maxlength="19" oninput="formatCard(this)">
+
+        <div class="card-row">
+            <div>
+                <label class="field-label">Expiry</label>
+                <input class="field-input" type="text" placeholder="MM / YY" id="pay-exp" maxlength="7" oninput="formatExpiry(this)">
+            </div>
+            <div>
+                <label class="field-label">CVC</label>
+                <input class="field-input" type="text" placeholder="&bull;&bull;&bull;" id="pay-cvc" maxlength="4" oninput="this.value=this.value.replace(/\D/g,'')">
+            </div>
+        </div>
+
+        <button class="btn-modal" onclick="handlePayment()">Pay $15.00 &mdash; Subscribe</button>
+
+        <p class="stripe-note">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm-1-5h2v2h-2zm0-8h2v6h-2z" fill="#7A9E8C"/></svg>
+            Secured by Stripe. Your card data is never stored on our servers.
+        </p>
+    </div>
+</div>
+
+
+<!-- ══════════════════════════════════ -->
+<!-- ── SUCCESS MODAL ── -->
+<!-- ══════════════════════════════════ -->
+<div class="modal-backdrop" id="success-modal" onclick="backdropClose(event,'success-modal')">
+    <div class="modal" style="text-align:center">
+        <button class="modal-close" onclick="closeModal('success-modal')" aria-label="Close">&times;</button>
+        <div class="success-icon" id="success-icon">✓</div>
+        <h2 class="success-title" id="success-title">You're on the list!</h2>
+        <p class="success-sub" id="success-body">We'll send you one email the moment Haliable launches on the App Store. Barak Allahu feekum.</p>
+        <button class="btn-modal" onclick="closeModal('success-modal')">Continue</button>
+    </div>
+</div>
+
+
+<!-- ══════════════════════════════════ -->
+<!-- ── SCRIPTS ── -->
+<!-- ══════════════════════════════════ -->
+<script>
+/*
+ ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗
+██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝
+██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
+██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
+╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
+ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
+
+ ⚠️  SETUP CHECKLIST — fill these in when you're ready to go live:
+
+ 1. GOOGLE SIGN-IN
+    - Go to https://console.cloud.google.com/
+    - Create a project → APIs & Services → Credentials → OAuth 2.0 Client ID
+    - Authorized JavaScript origins: your domain (e.g. https://haliable.com)
+    - Copy the Client ID and paste it below:
+*/
+const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+
+/*
+ 2. STRIPE PAYMENT
+    - Go to https://dashboard.stripe.com/
+    - Create a Product ($15/year) → copy the Payment Link URL
+    - Paste it below (format: https://buy.stripe.com/xxxxx):
+*/
+const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/YOUR_PAYMENT_LINK';
+
+// ─────────────────────────────────────────
+// NAV SCROLL EFFECT
+// ─────────────────────────────────────────
+window.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// ─────────────────────────────────────────
+// SCROLL FADE-IN
+// ─────────────────────────────────────────
+const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+
+// ─────────────────────────────────────────
+// WAITLIST FORM
+// ─────────────────────────────────────────
+function joinWaitlist(e, form) {
+    e.preventDefault();
+    const btn = form.querySelector('button');
+    const inp = form.querySelector('input');
+    const orig = btn.textContent;
+    btn.textContent = "You're on the list!";
+    btn.style.background = '#2D6A4F';
+    btn.disabled = true; inp.disabled = true;
+    setTimeout(() => {
+        btn.textContent = orig; btn.style.background = '';
+        btn.disabled = false; inp.disabled = false; inp.value = '';
+    }, 4000);
+}
+
+// ─────────────────────────────────────────
+// MODAL HELPERS
+// ─────────────────────────────────────────
+function openModal(which, mode) {
+    if (which === 'auth') {
+        document.getElementById('auth-modal').classList.add('open');
+        switchAuthMode(mode || 'signup');
+    } else if (which === 'payment') {
+        // If user is logged in, prefill their email
+        const user = getUser();
+        if (user) document.getElementById('pay-email').value = user.email || '';
+        document.getElementById('payment-modal').classList.add('open');
+    } else if (which === 'success') {
+        document.getElementById('success-modal').classList.add('open');
+    }
+    document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+}
+function backdropClose(e, id) {
+    if (e.target === document.getElementById(id)) closeModal(id);
+}
+
+// ─────────────────────────────────────────
+// AUTH MODE TOGGLE
+// ─────────────────────────────────────────
+let authMode = 'signup';
+function switchAuthMode(mode) {
+    authMode = mode;
+    const isSignup = mode === 'signup';
+    document.getElementById('auth-title').textContent = isSignup ? 'Create your account' : 'Welcome back';
+    document.getElementById('auth-sub').textContent = isSignup
+        ? 'Join thousands of Muslims shopping with confidence'
+        : 'Sign in to your Haliable account';
+    document.getElementById('auth-name-field').style.display = isSignup ? 'block' : 'none';
+    document.getElementById('auth-submit-btn').textContent = isSignup ? 'Create Account' : 'Log In';
+    document.getElementById('auth-toggle').innerHTML = isSignup
+        ? 'Already have an account? <a onclick="switchAuthMode(\'login\')">Log in</a>'
+        : "Don't have an account? <a onclick=\"switchAuthMode('signup')\">Sign up</a>";
+}
+
+// ─────────────────────────────────────────
+// GOOGLE SIGN-IN
+// ─────────────────────────────────────────
+function initGoogle() {
+    if (typeof google === 'undefined' || GOOGLE_CLIENT_ID.startsWith('YOUR_')) return;
+    google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: onGoogleCredential,
+        auto_select: false,
+    });
+}
+
+function triggerGoogleSignIn() {
+    if (GOOGLE_CLIENT_ID.startsWith('YOUR_')) {
+        // Demo mode — simulate a sign-in
+        mockGoogleSignIn();
+        return;
+    }
+    google.accounts.id.prompt(notification => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            // Fallback: render a popup
+            const container = document.createElement('div');
+            container.style.display = 'none';
+            document.body.appendChild(container);
+            google.accounts.id.renderButton(container, { type: 'popup' });
+            container.querySelector('div[role=button]')?.click();
+        }
+    });
+}
+
+function onGoogleCredential(response) {
+    const payload = parseJWT(response.credential);
+    if (!payload) return;
+    saveUser({ name: payload.name, email: payload.email, picture: payload.picture, provider: 'google' });
+    updateNavUser();
+    closeModal('auth-modal');
+    showSuccess('🕌', "Welcome to Haliable!", `Assalamu Alaikum, ${payload.given_name || payload.name}! Your account is ready. We'll notify you the moment the app launches.`);
+}
+
+function mockGoogleSignIn() {
+    // Demo: simulates successful Google login when no Client ID is set
+    const user = { name: 'Omar Demo', email: 'demo@haliable.com', picture: '', provider: 'google-demo' };
+    saveUser(user);
+    updateNavUser();
+    closeModal('auth-modal');
+    showSuccess('🕌', 'Welcome to Haliable!', "Assalamu Alaikum! You're signed in (demo mode). Add your Google Client ID to enable real Google Sign-In.");
+}
+
+function parseJWT(token) {
+    try {
+        const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+        return JSON.parse(atob(base64));
+    } catch { return null; }
+}
+
+// ─────────────────────────────────────────
+// EMAIL AUTH (simulated — wire up to your backend)
+// ─────────────────────────────────────────
+function handleEmailAuth() {
+    const email = document.getElementById('auth-email').value.trim();
+    const pass  = document.getElementById('auth-pass').value;
+    const name  = authMode === 'signup' ? document.getElementById('auth-name').value.trim() : 'User';
+    if (!email || !pass) { alert('Please fill in all fields.'); return; }
+    // TODO: Replace this with a real API call to your backend
+    const user = { name: name || email.split('@')[0], email, picture: '', provider: 'email' };
+    saveUser(user);
+    updateNavUser();
+    closeModal('auth-modal');
+    if (authMode === 'signup') {
+        showSuccess('✅', 'Account created!', `Welcome, ${user.name}! We'll email you at ${email} when Haliable launches.`);
+    } else {
+        showSuccess('✅', 'Signed in!', `Welcome back, ${user.name}!`);
+    }
+}
+
+// ─────────────────────────────────────────
+// USER STATE (localStorage)
+// ─────────────────────────────────────────
+function saveUser(u) { localStorage.setItem('haliable_user', JSON.stringify(u)); }
+function getUser()   { try { return JSON.parse(localStorage.getItem('haliable_user')); } catch { return null; } }
+function signOut()   { localStorage.removeItem('haliable_user'); updateNavUser(); }
+
+function updateNavUser() {
+    const user = getUser();
+    const authBtns = document.getElementById('nav-auth-btns');
+    const navUser  = document.getElementById('nav-user');
+    if (user) {
+        document.getElementById('nav-username').textContent = user.name.split(' ')[0];
+        const avatar = document.getElementById('nav-avatar');
+        if (user.picture) { avatar.src = user.picture; avatar.style.display = 'block'; }
+        else { avatar.style.display = 'none'; }
+        authBtns.style.display = 'none';
+        navUser.style.display = 'flex';
+    } else {
+        authBtns.style.display = 'flex';
+        navUser.style.display = 'none';
+    }
+}
+
+// ─────────────────────────────────────────
+// PAYMENT
+// ─────────────────────────────────────────
+function handlePayment() {
+    const email = document.getElementById('pay-email').value.trim();
+    const card  = document.getElementById('pay-card').value.trim();
+    const exp   = document.getElementById('pay-exp').value.trim();
+    const cvc   = document.getElementById('pay-cvc').value.trim();
+    if (!email || !card || !exp || !cvc) { alert('Please complete all payment fields.'); return; }
+    if (STRIPE_PAYMENT_LINK.startsWith('https://buy.stripe.com/YOUR')) {
+        // Demo mode — no live Stripe link yet
+        closeModal('payment-modal');
+        showSuccess('🎉', 'Payment received!', "Thank you! Your Haliable Premium subscription is confirmed. We'll email your receipt to " + email + ".\n\n(Demo mode: add your Stripe Payment Link to go live.)");
+        return;
+    }
+    // Real mode: redirect to Stripe Payment Link
+    window.open(STRIPE_PAYMENT_LINK + '?prefilled_email=' + encodeURIComponent(email), '_blank');
+    closeModal('payment-modal');
+}
+
+function formatCard(el) {
+    let v = el.value.replace(/\D/g, '').substring(0, 16);
+    el.value = v.replace(/(.{4})/g, '$1 ').trim();
+}
+function formatExpiry(el) {
+    let v = el.value.replace(/\D/g, '').substring(0, 4);
+    if (v.length >= 3) el.value = v.substring(0,2) + ' / ' + v.substring(2);
+    else el.value = v;
+}
+
+// ─────────────────────────────────────────
+// SUCCESS MODAL HELPER
+// ─────────────────────────────────────────
+function showSuccess(icon, title, body) {
+    document.getElementById('success-icon').textContent = icon;
+    document.getElementById('success-title').textContent = title;
+    document.getElementById('success-body').textContent = body;
+    openModal('success');
+    // tiny hack — openModal doesn't have a 'success' case above, call directly:
+    document.getElementById('success-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+// ─────────────────────────────────────────
+// TESTIMONIALS CAROUSEL
+// ─────────────────────────────────────────
+let slideIndex = 0;
+const slides = document.querySelectorAll('.tcard');
+const dotsContainer = document.getElementById('test-dots');
+
+slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'tdot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Slide ' + (i + 1));
+    dot.onclick = () => goToSlide(i);
+    dotsContainer.appendChild(dot);
+});
+
+function goToSlide(n) {
+    slideIndex = (n + slides.length) % slides.length;
+    document.getElementById('test-track').style.transform = `translateX(-${slideIndex * 100}%)`;
+    document.querySelectorAll('.tdot').forEach((d, i) => d.classList.toggle('active', i === slideIndex));
+}
+function nextSlide() { goToSlide(slideIndex + 1); }
+function prevSlide() { goToSlide(slideIndex - 1); }
+
+// Auto-advance every 5s, pause on hover
+let autoSlide = setInterval(nextSlide, 5000);
+const trackWrap = document.querySelector('.test-track-wrap');
+trackWrap.addEventListener('mouseenter', () => clearInterval(autoSlide));
+trackWrap.addEventListener('mouseleave', () => { autoSlide = setInterval(nextSlide, 5000); });
+
+// Swipe support
+let touchStartX = 0;
+trackWrap.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+trackWrap.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 40) diff > 0 ? nextSlide() : prevSlide();
+});
+
+// ─────────────────────────────────────────
+// GOOGLE IDENTITY SERVICES INIT
+// ─────────────────────────────────────────
+window.addEventListener('load', () => {
+    initGoogle();
+    updateNavUser();
+});
+</script>
+</body>
+</html>
