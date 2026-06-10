@@ -25,6 +25,65 @@
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;overflow-x:hidden}
+    ::selection{background:rgba(82,183,136,.3);color:#fff}
+    html{scrollbar-color:var(--g600) transparent}
+    ::-webkit-scrollbar{width:10px}
+    ::-webkit-scrollbar-thumb{background:linear-gradient(var(--g600),var(--g700));border-radius:8px;border:2px solid var(--bg)}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+
+    /* ── scroll progress bar ── */
+    #scroll-prog{position:fixed;top:0;left:0;height:3px;width:0;z-index:300;
+        background:linear-gradient(90deg,var(--g400),var(--gold));box-shadow:0 0 12px rgba(200,169,110,.6)}
+
+    /* ── glowing Islamic geometry (global atmosphere) ── */
+    .atmos{position:fixed;inset:0;z-index:-4;background:
+        radial-gradient(ellipse 100% 70% at 50% -10%, var(--g800) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 110%, rgba(27,67,50,.5) 0%, transparent 55%),
+        var(--bg)}
+    .pattern{position:fixed;inset:0;z-index:-3;opacity:.13;
+        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110' viewBox='0 0 110 110'%3E%3Cg fill='none' stroke='%23C8A96E' stroke-width='1.1'%3E%3Cpath d='M55 6 L104 55 L55 104 L6 55 Z'/%3E%3Cpath d='M22 22 L88 22 L88 88 L22 88 Z'/%3E%3Ccircle cx='55' cy='55' r='15'/%3E%3Cpath d='M55 0 L55 14 M55 96 L55 110 M0 55 L14 55 M96 55 L110 55'/%3E%3C/g%3E%3C/svg%3E");
+        background-size:110px 110px}
+    .glow{position:fixed;inset:0;z-index:-2;pointer-events:none;mix-blend-mode:screen;overflow:hidden}
+    .orb{position:absolute;will-change:transform}
+    .orb .core{position:absolute;inset:0;border-radius:50%;filter:blur(16px);will-change:transform,opacity}
+    .orb1{top:-8%;left:-8%;width:44vw;height:44vw;animation:wander1 34s ease-in-out infinite}
+    .orb1 .core{background:radial-gradient(circle,rgba(82,183,136,.5) 0%,rgba(82,183,136,0) 62%);animation:pulse 7s ease-in-out infinite}
+    .orb2{top:18%;right:-10%;width:38vw;height:38vw;animation:wander2 41s ease-in-out infinite}
+    .orb2 .core{background:radial-gradient(circle,rgba(200,169,110,.46) 0%,rgba(200,169,110,0) 62%);animation:pulse 9s ease-in-out infinite .8s}
+    .orb3{bottom:-12%;left:25%;width:42vw;height:42vw;animation:wander3 47s ease-in-out infinite}
+    .orb3 .core{background:radial-gradient(circle,rgba(116,198,157,.42) 0%,rgba(116,198,157,0) 62%);animation:pulse 8s ease-in-out infinite .4s}
+    .scrim{position:fixed;inset:0;z-index:-1;pointer-events:none;
+        background:linear-gradient(180deg,rgba(6,13,9,.30) 0%,rgba(6,13,9,.5) 40%,rgba(6,13,9,.5) 100%)}
+    @keyframes pulse{0%,100%{transform:scale(.78);opacity:.5}50%{transform:scale(1.28);opacity:1}}
+    @keyframes wander1{0%{transform:translate(0,0)}13%{transform:translate(38vw,14vh)}27%{transform:translate(62vw,46vh)}41%{transform:translate(22vw,64vh)}56%{transform:translate(70vw,28vh)}70%{transform:translate(14vw,40vh)}85%{transform:translate(48vw,8vh)}100%{transform:translate(0,0)}}
+    @keyframes wander2{0%{transform:translate(0,0)}15%{transform:translate(-34vw,22vh)}30%{transform:translate(-12vw,58vh)}45%{transform:translate(-50vw,38vh)}60%{transform:translate(-18vw,10vh)}76%{transform:translate(-44vw,54vh)}90%{transform:translate(-8vw,30vh)}100%{transform:translate(0,0)}}
+    @keyframes wander3{0%{transform:translate(0,0)}14%{transform:translate(26vw,-30vh)}29%{transform:translate(-20vw,-12vh)}43%{transform:translate(40vw,-44vh)}58%{transform:translate(8vw,-20vh)}72%{transform:translate(-28vw,-38vh)}88%{transform:translate(34vw,-8vh)}100%{transform:translate(0,0)}}
+
+    /* ── premium button shine + click ripple ── */
+    .btn-primary,.btn-green,.btn-plan-solid,.btn-modal{position:relative;overflow:hidden;isolation:isolate}
+    .btn-primary::before,.btn-green::before,.btn-plan-solid::before,.btn-modal::before{content:'';position:absolute;inset:0;z-index:-1;
+        background:linear-gradient(120deg,transparent 20%,rgba(255,255,255,.28) 50%,transparent 80%);
+        transform:translateX(-120%);transition:transform .6s ease}
+    .btn-primary:hover::before,.btn-green:hover::before,.btn-plan-solid:hover::before,.btn-modal:hover::before{transform:translateX(120%)}
+    .btn-primary:active,.btn-green:active,.btn-plan-solid:active,.btn-modal:active{transform:scale(.96)}
+    .ripple{position:absolute;border-radius:50%;transform:scale(0);background:rgba(255,255,255,.45);pointer-events:none;animation:ripple .6s ease-out;z-index:-1}
+    @keyframes ripple{to{transform:scale(4);opacity:0}}
+
+    /* ── premium accents ── */
+    .hero-title .hi{background:linear-gradient(120deg,var(--g300),var(--g400) 50%,var(--g300));background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sheen 6s linear infinite;font-style:italic}
+    @keyframes sheen{to{background-position:200% center}}
+    .nav-links a{position:relative}
+    .nav-links a::after{content:'';position:absolute;left:0;right:100%;bottom:-5px;height:1px;background:var(--g400);transition:right .3s}
+    .nav-links a:hover::after{right:0}
+    .phone{animation:float 6s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+    .divider-geo{display:flex;align-items:center;justify-content:center;gap:1rem;padding:0 2.5rem;opacity:.55}
+    .divider-geo .ln{height:1px;width:min(200px,26vw);background:linear-gradient(90deg,transparent,rgba(200,169,110,.5))}
+    .divider-geo .ln.r{background:linear-gradient(90deg,rgba(200,169,110,.5),transparent)}
+    .divider-geo .st{width:20px;height:20px;flex-shrink:0;animation:spin 26s linear infinite;
+        background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 110'%3E%3Cg fill='none' stroke='%23C8A96E' stroke-width='4'%3E%3Cpath d='M55 6 L104 55 L55 104 L6 55 Z'/%3E%3Cpath d='M22 22 L88 22 L88 88 L22 88 Z'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media(prefers-reduced-motion:reduce){.orb,.orb .core,.phone,.hero-title .hi,.divider-geo .st{animation:none}}
 
     /* ── NAV ── */
     #nav{
@@ -171,7 +230,7 @@
 
     /* ── MARQUEE TICKER ── */
     .ticker{
-        background:var(--card);border-top:1px solid rgba(82,183,136,.08);
+        background:rgba(13,31,21,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-top:1px solid rgba(82,183,136,.08);
         border-bottom:1px solid rgba(82,183,136,.08);
         padding:.85rem 0;overflow:hidden;position:relative;
     }
@@ -205,7 +264,7 @@
     .fade-up.vis{opacity:1;transform:translateY(0)}
 
     /* ── PROBLEM ── */
-    .problem{background:linear-gradient(180deg,var(--bg) 0%,var(--card) 100%)}
+    .problem{background:transparent}
     .prob-grid{display:grid;grid-template-columns:1fr 1fr;gap:4.5rem;align-items:center}
     .stat-cluster{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
     .scard{background:var(--card);border:1px solid rgba(82,183,136,.08);border-radius:16px;padding:1.5rem;transition:border-color .3s,transform .3s}
@@ -217,7 +276,7 @@
     .scard.big .sdesc{font-size:.95rem;color:rgba(255,255,255,.65)}
 
     /* ── HOW IT WORKS ── */
-    .how{background:var(--bg)}
+    .how{background:transparent}
     .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.75rem;margin-top:3.5rem}
     .step{background:var(--card);border:1px solid rgba(82,183,136,.07);border-radius:20px;padding:2rem;transition:border-color .3s}
     .step:hover{border-color:rgba(82,183,136,.22)}
@@ -227,7 +286,7 @@
     .step-desc{font-size:.875rem;color:var(--muted);line-height:1.65}
 
     /* ── FEATURES ── */
-    .features{background:var(--card)}
+    .features{background:transparent}
     .feat-head{text-align:center;margin-bottom:3.5rem}
     .feat-head .lead{margin:0 auto}
     .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.35rem}
@@ -238,7 +297,7 @@
     .fcard-desc{font-size:.85rem;color:var(--muted);line-height:1.65}
 
     /* ── TESTIMONIALS ── */
-    .testimonials{background:var(--bg)}
+    .testimonials{background:transparent}
     .test-head{text-align:center;margin-bottom:3rem}
     .test-track-wrap{position:relative;overflow:hidden}
     .test-track{
@@ -283,7 +342,7 @@
     .tarrow:hover{background:rgba(82,183,136,.1);border-color:var(--g400)}
 
     /* ── MARKET ── */
-    .market{background:var(--card);position:relative;overflow:hidden}
+    .market{background:transparent;position:relative;overflow:hidden}
     .market-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;position:relative}
     .mlist{display:flex;flex-direction:column;gap:2.25rem}
     .mitem{display:flex;gap:1.25rem;align-items:flex-start}
@@ -292,7 +351,7 @@
     .mlbl{font-size:.875rem;color:var(--muted);line-height:1.55}
 
     /* ── STANDARDS ── */
-    .standards{background:var(--bg)}
+    .standards{background:transparent}
     .std-head{text-align:center;margin-bottom:3rem}
     .std-head .lead{margin:0 auto}
     .std-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}
@@ -303,7 +362,7 @@
     .std-desc{font-size:.8rem;color:var(--muted);line-height:1.6}
 
     /* ── STORES ── */
-    .stores{background:var(--card)}
+    .stores{background:transparent}
     .stores-head{text-align:center;margin-bottom:2.75rem}
     .stores-head .lead{margin:0 auto}
     .store-cloud{display:flex;flex-wrap:wrap;gap:.85rem;justify-content:center}
@@ -311,7 +370,7 @@
     .store-pill:hover{border-color:rgba(82,183,136,.38);color:var(--white);background:rgba(82,183,136,.07)}
 
     /* ── COMPARE ── */
-    .compare{background:var(--bg)}
+    .compare{background:transparent}
     .table-wrap{margin-top:2.75rem;border-radius:16px;border:1px solid rgba(82,183,136,.12);overflow:hidden}
     table{width:100%;border-collapse:collapse}
     thead th{padding:1rem 1.5rem;text-align:left;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--card);border-bottom:1px solid rgba(82,183,136,.1)}
@@ -323,7 +382,7 @@
     .tick{color:var(--g400)}.cross{color:var(--red)}.part{color:var(--yellow)}
 
     /* ── PRICING / PAYMENT ── */
-    .pricing{background:var(--card)}
+    .pricing{background:transparent}
     .pricing-head{text-align:center;margin-bottom:.75rem}
     .plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:800px;margin:2.75rem auto 0}
     .plan{padding:2.25rem;background:var(--bg);border:1px solid rgba(82,183,136,.1);border-radius:24px;position:relative}
@@ -346,7 +405,7 @@
     .btn-plan-solid:hover{background:var(--g400);box-shadow:0 6px 24px rgba(82,183,136,.3)}
 
     /* ── CTA ── */
-    .cta-sec{padding:8rem 2.5rem;background:var(--bg);text-align:center;position:relative;overflow:hidden}
+    .cta-sec{padding:8rem 2.5rem;background:transparent;text-align:center;position:relative;overflow:hidden}
     .cta-glow{position:absolute;inset:0;background:radial-gradient(ellipse 65% 80% at 50% 50%,rgba(27,67,50,.32) 0%,transparent 70%)}
     .cta-inner{position:relative;max-width:580px;margin:0 auto}
     .cta-h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:700;line-height:1.12;margin-bottom:1.2rem}
@@ -487,6 +546,17 @@
 </head>
 <body>
 
+<!-- ── ATMOSPHERE (glowing Islamic geometry) ── -->
+<div class="atmos"></div>
+<div class="pattern"></div>
+<div class="glow">
+    <span class="orb orb1"><span class="core"></span></span>
+    <span class="orb orb2"><span class="core"></span></span>
+    <span class="orb orb3"><span class="core"></span></span>
+</div>
+<div class="scrim"></div>
+<div id="scroll-prog"></div>
+
 <!-- ── NAV ── -->
 <nav id="nav">
     <a class="nav-logo" href="#">
@@ -531,7 +601,7 @@
             fill="#7DD4A4" text-anchor="middle"
             filter="url(#nTS)">H</text>
         </svg>
-        <span class="nav-wordmark">Hali<em>able</em></span>
+        <span class="nav-wordmark">Ha<em>liable</em></span>
     </a>
     <ul class="nav-links">
         <li><a href="#how-it-works">How It Works</a></li>
@@ -560,8 +630,8 @@
     <div class="hero-inner">
         <div>
             <div class="hero-badge"><span class="badge-dot"></span>Coming to the App Store</div>
-            <h1 class="hero-title">Eat <span class="hi">Halal</span>,<br>Shop with<br><span class="hg">Confidence</span></h1>
-            <p class="hero-sub">Scan any product barcode and instantly know if every ingredient meets Islamic dietary standards. The largest halal food database in America.</p>
+            <h1 class="hero-title">You're <span class="hi">liable</span> for the food you consume.</h1>
+            <p class="hero-sub"><span class="hg">Haliable</span> is the largest database of halal products across America — scan any barcode and know, in seconds, whether every ingredient meets Islamic dietary standards.</p>
             <form class="email-row" onsubmit="joinWaitlist(event, this)">
                 <input class="email-input" type="email" placeholder="Enter your email" required>
                 <button class="btn-primary" type="submit">Join Waitlist</button>
@@ -709,6 +779,8 @@
     </div>
 </section>
 
+<div class="divider-geo"><span class="ln"></span><span class="st"></span><span class="ln r"></span></div>
+
 <!-- ── FEATURES ── -->
 <section class="features" id="features">
     <div class="wrap">
@@ -818,6 +890,8 @@
         </div>
     </div>
 </section>
+
+<div class="divider-geo"><span class="ln"></span><span class="st"></span><span class="ln r"></span></div>
 
 <!-- ── STORES ── -->
 <section class="stores" id="stores">
@@ -1171,7 +1245,10 @@ const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/YOUR_PAYMENT_LINK';
 // ─────────────────────────────────────────
 window.addEventListener('scroll', () => {
     document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
-});
+    const h = document.documentElement;
+    const sp = document.getElementById('scroll-prog');
+    if (sp) sp.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+}, { passive: true });
 
 // ─────────────────────────────────────────
 // SCROLL FADE-IN
@@ -1182,20 +1259,64 @@ const io = new IntersectionObserver(entries => {
 document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
 
 // ─────────────────────────────────────────
+// BUTTON CLICK RIPPLE
+// ─────────────────────────────────────────
+document.querySelectorAll('.btn-primary,.btn-green,.btn-plan-solid,.btn-modal').forEach(btn => {
+    btn.addEventListener('click', e => {
+        const r = document.createElement('span');
+        r.className = 'ripple';
+        const rect = btn.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        r.style.width = r.style.height = size + 'px';
+        r.style.left = (e.clientX - rect.left - size / 2) + 'px';
+        r.style.top  = (e.clientY - rect.top  - size / 2) + 'px';
+        btn.appendChild(r);
+        setTimeout(() => r.remove(), 600);
+    });
+});
+
+// ─────────────────────────────────────────
 // WAITLIST FORM
 // ─────────────────────────────────────────
-function joinWaitlist(e, form) {
+async function joinWaitlist(e, form) {
     e.preventDefault();
     const btn = form.querySelector('button');
     const inp = form.querySelector('input');
     const orig = btn.textContent;
-    btn.textContent = "You're on the list!";
-    btn.style.background = '#2D6A4F';
+    const email = inp.value.trim();
+
     btn.disabled = true; inp.disabled = true;
+    btn.textContent = 'Joining…';
+
+    try {
+        const res = await fetch('/.netlify/functions/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok) {
+            btn.textContent = "You're on the list! ✓";
+            btn.style.background = '#2D6A4F';
+            inp.value = '';
+        } else {
+            btn.textContent = data.error || 'Please try again';
+            btn.style.background = '#7F1D1D';
+        }
+    } catch {
+        // Happens when opened as a local file (file://) with no server,
+        // or offline. The function only runs on Netlify or `netlify dev`.
+        btn.textContent = 'Network error — retry';
+        btn.style.background = '#7F1D1D';
+    }
+
     setTimeout(() => {
-        btn.textContent = orig; btn.style.background = '';
-        btn.disabled = false; inp.disabled = false; inp.value = '';
-    }, 4000);
+        btn.textContent = orig;
+        btn.style.background = '';
+        btn.disabled = false;
+        inp.disabled = false;
+    }, 4500);
 }
 
 // ─────────────────────────────────────────

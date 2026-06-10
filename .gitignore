@@ -12,3 +12,11 @@ Haliable/Config/Secrets.xcconfig
 
 # SwiftPM
 .swiftpm/
+
+# Netlify
+.netlify/
+
+# Local env files — never commit API tokens
+.env
+.env.*
+!.env.example

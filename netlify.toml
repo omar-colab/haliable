@@ -1,0 +1,16 @@
+# Netlify configuration for the Haliable landing site.
+
+[build]
+  # The site is a single static index.html at the repo root.
+  publish = "."
+  # Serverless functions live here.
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# ⚠️  NOTE: publish = "." serves the WHOLE repo, which includes the iOS
+# Xcode source. Nothing links to those files, but they'd be reachable by
+# direct URL. Fine for a private repo / pre-launch. To fully isolate the
+# site later, move index.html into its own folder (e.g. "site/") and set
+# publish = "site". Ask me and I'll do that restructure.
