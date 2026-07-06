@@ -4,6 +4,7 @@
     "ingredient": "Pork",
     "aliases": ["pork", "pork fat", "bacon", "ham", "pork rind", "pancetta", "prosciutto"],
     "eNumber": null,
+    "category": "meat",
     "verdict": "haram",
     "reason": "Pork and all of its derivatives are explicitly prohibited (Qur'an 2:173). Any pork-derived ingredient renders a product haram.",
     "source": { "body": "IFANCA", "title": "Halal Digest — Prohibited Ingredients", "url": "https://www.ifanca.org/halal-info/", "year": 2024 }
@@ -13,6 +14,7 @@
     "ingredient": "Lard",
     "aliases": ["lard", "pork lard", "rendered pork fat"],
     "eNumber": null,
+    "category": "meat",
     "verdict": "haram",
     "reason": "Lard is rendered pork fat and is therefore haram.",
     "source": { "body": "IFANCA", "title": "Halal Digest — Prohibited Ingredients", "url": "https://www.ifanca.org/halal-info/", "year": 2024 }
@@ -22,6 +24,7 @@
     "ingredient": "Wine",
     "aliases": ["wine", "red wine", "white wine", "cooking wine", "sherry", "mirin", "rum", "brandy"],
     "eNumber": null,
+    "category": "alcohol",
     "verdict": "haram",
     "reason": "Khamr (intoxicating wine and liquor) is prohibited (Qur'an 5:90). Added wine or liquor makes a product haram even if some alcohol cooks off.",
     "source": { "body": "AMJA", "title": "Resolutions on Foods & Intoxicants", "url": "https://www.amjaonline.org/", "year": 2023 }
@@ -31,6 +34,7 @@
     "ingredient": "Gelatin",
     "aliases": ["gelatin", "gelatine", "gelatin (unspecified)"],
     "eNumber": "E441",
+    "category": "gelatin",
     "verdict": "doubtful",
     "reason": "Gelatin is made from animal collagen. If the source is unstated it may be pork, non-zabiha beef, or fish. Halal only when explicitly from a halal-slaughtered or fish/plant source — otherwise Questionable.",
     "source": { "body": "ISNA", "title": "Guidance on Gelatin Sources", "url": "https://isna.net/", "year": 2022 }
@@ -40,6 +44,7 @@
     "ingredient": "Natural flavors",
     "aliases": ["natural flavor", "natural flavors", "natural flavouring", "natural flavoring", "natural and artificial flavors"],
     "eNumber": null,
+    "category": "additive",
     "verdict": "doubtful",
     "reason": "\"Natural flavors\" is an umbrella term that can include animal-derived or alcohol-based carriers. Because the manufacturer does not disclose the source, it cannot be confirmed halal — marked Questionable.",
     "source": { "body": "IFANCA", "title": "Understanding Natural Flavors", "url": "https://www.ifanca.org/halal-info/", "year": 2024 }
@@ -49,6 +54,7 @@
     "ingredient": "Carmine (cochineal)",
     "aliases": ["carmine", "cochineal", "cochineal extract", "carminic acid", "crimson lake"],
     "eNumber": "E120",
+    "category": "additive",
     "verdict": "doubtful",
     "reason": "Carmine is a red dye extracted from cochineal insects. Scholars differ on consuming insect-derived colorants, so it is treated as Questionable rather than a forced ruling.",
     "source": { "body": "AMJA", "title": "Ruling on Insect-Derived Colorants", "url": "https://www.amjaonline.org/", "year": 2023 }
@@ -58,6 +64,7 @@
     "ingredient": "Mono- and diglycerides",
     "aliases": ["mono and diglycerides", "monoglycerides", "diglycerides", "mono- and diglycerides"],
     "eNumber": "E471",
+    "category": "additive",
     "verdict": "doubtful",
     "reason": "Emulsifiers that may be derived from either plant oils or animal fat. When the source is unstated the animal possibility cannot be excluded — Questionable.",
     "source": { "body": "ISNA", "title": "E-Number Source Guidance", "url": "https://isna.net/", "year": 2022 }
@@ -67,6 +74,7 @@
     "ingredient": "Glycerin / Glycerol",
     "aliases": ["glycerin", "glycerine", "glycerol", "e422"],
     "eNumber": "E422",
+    "category": "additive",
     "verdict": "doubtful",
     "reason": "Glycerin can be plant-based, synthetic, or animal-fat derived. Unspecified glycerin is Questionable until the source is confirmed.",
     "source": { "body": "IFANCA", "title": "Halal Status of Glycerin", "url": "https://www.ifanca.org/halal-info/", "year": 2024 }
@@ -76,6 +84,7 @@
     "ingredient": "L-Cysteine",
     "aliases": ["l-cysteine", "cysteine", "l-cysteine hydrochloride"],
     "eNumber": "E920",
+    "category": "additive",
     "verdict": "doubtful",
     "reason": "A dough conditioner often produced from human hair, duck feathers, or animal sources; a synthetic/plant form also exists. Source is rarely disclosed — Questionable.",
     "source": { "body": "AMJA", "title": "Ruling on L-Cysteine (E920)", "url": "https://www.amjaonline.org/", "year": 2023 }
@@ -85,6 +94,7 @@
     "ingredient": "Rennet",
     "aliases": ["rennet", "animal rennet", "enzymes", "microbial enzymes"],
     "eNumber": null,
+    "category": "enzyme",
     "verdict": "doubtful",
     "reason": "Rennet/enzymes used in cheese may be animal (often non-zabiha calf stomach), microbial, or plant based. Unspecified enzymes are Questionable.",
     "source": { "body": "ISNA", "title": "Cheese & Rennet Guidance", "url": "https://isna.net/", "year": 2022 }
@@ -94,6 +104,7 @@
     "ingredient": "Whey",
     "aliases": ["whey", "whey powder", "whey protein"],
     "eNumber": null,
+    "category": "enzyme",
     "verdict": "doubtful",
     "reason": "Whey is a cheese by-product and may carry the same rennet/enzyme uncertainty. Questionable unless made with halal/microbial enzymes.",
     "source": { "body": "ISNA", "title": "Cheese & Rennet Guidance", "url": "https://isna.net/", "year": 2022 }
@@ -103,6 +114,7 @@
     "ingredient": "Shellac",
     "aliases": ["shellac", "confectioner's glaze", "resinous glaze"],
     "eNumber": "E904",
+    "category": "additive",
     "verdict": "doubtful",
     "reason": "A glaze secreted by the lac insect. As with other insect-derived ingredients, scholars differ — treated as Questionable.",
     "source": { "body": "AMJA", "title": "Ruling on Insect-Derived Ingredients", "url": "https://www.amjaonline.org/", "year": 2023 }
@@ -112,6 +124,7 @@
     "ingredient": "Alcohol / Ethanol",
     "aliases": ["alcohol", "ethanol", "ethyl alcohol", "denatured alcohol"],
     "eNumber": null,
+    "category": "alcohol",
     "verdict": "doubtful",
     "reason": "Added alcohol as a solvent or carrier (e.g. in extracts) is disputed: trace amounts from non-khamr sources are tolerated by some scholars and not others. Marked Questionable.",
     "source": { "body": "AMJA", "title": "Resolutions on Foods & Intoxicants", "url": "https://www.amjaonline.org/", "year": 2023 }
@@ -121,6 +134,7 @@
     "ingredient": "Vanilla extract",
     "aliases": ["vanilla extract", "pure vanilla extract"],
     "eNumber": null,
+    "category": "alcohol",
     "verdict": "doubtful",
     "reason": "Pure vanilla extract is typically suspended in ethanol (~35%). Because of the alcohol carrier it is Questionable; vanilla flavor without alcohol is acceptable.",
     "source": { "body": "IFANCA", "title": "Flavor Extracts & Alcohol", "url": "https://www.ifanca.org/halal-info/", "year": 2024 }
@@ -130,6 +144,7 @@
     "ingredient": "Stearic acid / Magnesium stearate",
     "aliases": ["stearic acid", "magnesium stearate", "calcium stearate", "stearate"],
     "eNumber": "E470",
+    "category": "additive",
     "verdict": "doubtful",
     "reason": "Stearates can be sourced from plant or animal fat. Unspecified source makes them Questionable.",
     "source": { "body": "ISNA", "title": "E-Number Source Guidance", "url": "https://isna.net/", "year": 2022 }
@@ -139,6 +154,7 @@
     "ingredient": "Pepsin",
     "aliases": ["pepsin"],
     "eNumber": null,
+    "category": "enzyme",
     "verdict": "doubtful",
     "reason": "A digestive enzyme commonly derived from pork stomach. Unless a non-animal source is stated, it is Questionable and may be haram.",
     "source": { "body": "AMJA", "title": "Ruling on Enzymes of Animal Origin", "url": "https://www.amjaonline.org/", "year": 2023 }
@@ -148,6 +164,7 @@
     "ingredient": "Lecithin",
     "aliases": ["lecithin", "soy lecithin", "sunflower lecithin"],
     "eNumber": "E322",
+    "category": "additive",
     "verdict": "halal",
     "reason": "Lecithin used in food is overwhelmingly derived from soy or sunflower (plant sources), which are halal. Egg lecithin is also halal.",
     "source": { "body": "IFANCA", "title": "Halal Status of Lecithin", "url": "https://www.ifanca.org/halal-info/", "year": 2024 }
