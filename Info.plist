@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>HALIABLE_API_BASE</key>
+	<string>$(HALIABLE_API_BASE)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>SUPABASE_ANON_KEY</key>
+	<string>$(SUPABASE_ANON_KEY)</string>
+	<key>SUPABASE_URL</key>
+	<string>$(SUPABASE_URL)</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Nunito-Italic.ttf</string>
+		<string>Yellowtail-Regular.ttf</string>
+		<string>PlayfairDisplay-Italic.ttf</string>
+		<string>PlayfairDisplay.ttf</string>
+		<string>RomieTrial-Light.otf</string>
+		<string>RomieTrial-Regular.otf</string>
+		<string>RomieTrial-Medium.otf</string>
+		<string>ErnestTrial-Regular.otf</string>
+	</array>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>LaunchBackground</string>
+		<key>UIImageName</key>
+		<string>LaunchMark</string>
+		<key>UIImageRespectsSafeAreaInsets</key>
+		<false/>
+	</dict>
+	<key>USDA_API_KEY</key>
+	<string>$(USDA_API_KEY)</string>
+</dict>
+</plist>
