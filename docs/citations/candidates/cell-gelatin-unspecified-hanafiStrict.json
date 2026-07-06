@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "gelatin",
+    "origin" : "unspecified",
+    "position" : "hanafiStrict"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "Malaysian Journal of Syariah and Law — Gelatin in Halal Pharmaceutical Products (Tukiran, Ahmad Anuar & Jamaludin)",
+      "reference" : "MJSL Vol. 11 No. 1 (2023), DOI 10.33102/mjsl.vol11no1.344",
+      "date" : "2023",
+      "tier" : 2,
+      "paraphrase" : "Peer-reviewed study holding that gelatin is halal only when the source animal is established as permissible and properly slaughtered; where the source is unestablished, halal status cannot be affirmed and istihalah does not cure an impermissible or unverified origin."
+    },
+    {
+      "sourceName" : "Heliyon — Towards halal pharmaceutical: Exploring alternatives to animal-based ingredients (Herdiana et al.)",
+      "reference" : "Heliyon 10(1):e23624, DOI 10.1016/j.heliyon.2023.e23624 (PMID 38187251)",
+      "date" : "2023-12-13",
+      "tier" : 2,
+      "paraphrase" : "Peer-reviewed review noting gelatin is predominantly sourced from pig and bovine tissue and that halal certification is essential to establish a permissible source; gelatin of unspecified origin cannot be treated as halal without verified halal provenance."
+    }
+  ],
+  "researcherNote" : "Hanafi-strict position (JAKIM/MUI/ESMA). Unverified animal origin cannot satisfy the strict slaughter requirement, supporting seeded draft grade 4 (Questionable - widely avoided). Two INDEPENDENT tier-2 sources. APPROVED by owner 2026-06-28.",
+  "decision" : "approved"
+}

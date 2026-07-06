@@ -1,0 +1,18 @@
+{
+  "target": {
+    "kind": "certifier",
+    "subject": "esma",
+    "position": "lenient"
+  },
+  "proposed": [
+    {
+      "sourceName": "UAE Ministry of Industry & Advanced Technology (MOIAT / ESMA) — National Halal Program (UAE.S 2055-1 & UAE.S/GSO 993, Cabinet Decree 10/2014)",
+      "reference": "https://moiat.gov.ae/en/programs/halal",
+      "date": "2014-01-01",
+      "tier": 1,
+      "paraphrase": "The UAE national halal standard comfortably exceeds the lenient bar."
+    }
+  ],
+  "researcherNote": "ESMA/MOIAT permits stunning under GSO conditions → correctly NOT mapped to zabiha. hanafiStrict rests on strict alcohol/prohibited-substance controls; seafood axis is the known unenforced gap (flagged). APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

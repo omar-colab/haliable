@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E472",
+    "origin": "unspecified",
+    "position": "lenient"
+  },
+  "proposed": [
+    {
+      "sourceName": "South African National Halaal Authority (SANHA) — E472(e) Acetyltartaric Acid Glycerol Esters",
+      "reference": "https://sanha.org.za/2009/12/17/e472e-acetyltartaric-acid-glycerol-esters/",
+      "date": "2009-12-17",
+      "tier": 1,
+      "paraphrase": "SANHA classifies E472(e)/DATEM as Mushbooh (doubtful): it is esters of acetic acid, glycerol, tartaric acid and fatty acids, so the source of the glycerol and fatty acids (plant oil vs animal/pork fat) must be checked to determine halal status."
+    },
+    {
+      "sourceName": "American Halal Foundation (AHF) — 'Are Mono Diglycerides Halal?' (Azmi Anees)",
+      "reference": "https://halalfoundation.org/are-mono-diglycerides-halal/",
+      "date": "2025-05-25",
+      "tier": 1,
+      "paraphrase": "AHF notes mono/diglycerides (the fatty-acid backbone of E472 esters) may derive from plant oils, halal-slaughtered beef, non-zabiha beef, or pork; the pork-derived possibility is never halal and the chemical change is not considered complete, so undisclosed-origin ester emulsifiers remain doubtful (avoid unless labeled vegetable or halal-certified) rather than presumptively permissible."
+    }
+  ],
+  "researcherNote": "E472 seeded lenient grade 3 (contested). Kept doubtful, not accepted: pork-derived esters are never cleared even leniently (AHF); SANHA advises verifying the source. Two independent tier-1. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

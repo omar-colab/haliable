@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "gelatin",
+    "origin" : "animalNonZabiha",
+    "position" : "lenient"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "IFANCA — The Halal Gelatin Story (M. Munir Chaudry, Ph.D.)",
+      "reference" : "https://ifanca.org/resources/the-halal-gelatin-story/",
+      "date" : "2000-09-30",
+      "tier" : 1,
+      "paraphrase" : "IFANCA recounts rejecting certificates for cattle-bone gelatin once it was clear the cattle were not slaughtered by Muslims, and requires cattle to be slaughtered by Muslims reciting Tasmiyyah and Takbir; gelatin from non-Islamically-slaughtered animals is therefore not certified halal."
+    },
+    {
+      "sourceName" : "Heliyon — Towards halal pharmaceutical: Exploring alternatives to animal-based ingredients (Herdiana et al.)",
+      "reference" : "Heliyon 10(1):e23624, DOI 10.1016/j.heliyon.2023.e23624 (PMID 38187251); PMC10770512",
+      "date" : "2023-12-13",
+      "tier" : 2,
+      "paraphrase" : "Peer-reviewed review stating gelatin is collagen-derived from pig and bovine tissue and that halal certification is essential for gelatin from non-halal animals; non-halal-slaughtered animal gelatin is not permissible absent halal certification."
+    }
+  ],
+  "researcherNote" : "Lenient (most permissive synthesized) position. A MINORITY of scholars permit non-zabiha gelatin via istihalah (complete chemical transformation), but the dominant authorities (IFANCA, JAKIM, MUI, HMC, European Council for Fatwa) reject it, so it remains 'widely avoided' even under a lenient lens -> seeded draft grade 4. Lenient requires two independent sources; IFANCA standard body + Heliyon peer-reviewed present. The istihalah divergence is surfaced in the contested appendix. APPROVED by owner 2026-06-28.",
+  "decision" : "approved"
+}

@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E627",
+    "origin": "unspecified",
+    "position": "lenient"
+  },
+  "proposed": [
+    {
+      "sourceName": "Muslim Judicial Council Halaal Trust (MJCHT) — 'Flavour Enhancer E627'",
+      "reference": "https://mjchalaaltrust.co.za/flavour-enhancer-e627/",
+      "date": "2020-09-20",
+      "tier": 1,
+      "paraphrase": "MJCHT states E627 (disodium guanylate) can be obtained from sardines, baker's yeast or other extracts, rejects as false the claim that it derives only from non-halal animals, and holds products bearing E627 'most certainly halal' when MJCHT-certified — while counselling that 'when in doubt (uncertain) about the halal status, it's best to abstain'. For E627 of unverified origin without certification, that abstention principle applies."
+    },
+    {
+      "sourceName": "South African National Halaal Authority (SANHA) — E627 (Sodium Guanylate)",
+      "reference": "https://sanha.org.za/2009/12/14/e627-sodium-guanylate/",
+      "date": "2009-12-14",
+      "tier": 1,
+      "paraphrase": "SANHA classifies E627 (sodium guanylate) as Halaal, listing its source as synthetic guanylic acid — the permissive side of the scholarly spread on this flavour enhancer."
+    }
+  ],
+  "researcherNote": "E627 recovery (was deferred: SANHA-says-halal contradiction). Resolved with MJCHT (2020-09-20, fetch-verified): E627 from sardines/yeast/extracts, halal-if-certified, and 'when in doubt ... best to abstain' — the cautious/conditional side; SANHA (halal, synthetic) cited as the permissive side of the contested spread. FLAG for owner: both bodies lean permissive for verified origins; seeded grades (z4/h3/g3/l3) rest on worst-case unverified origin. APPROVED by owner (batch pre-approval, continued 2026-07-02).",
+  "decision": "approved"
+}

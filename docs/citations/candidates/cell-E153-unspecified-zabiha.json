@@ -1,0 +1,19 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E153",
+    "origin": "unspecified",
+    "position": "zabiha"
+  },
+  "proposed": [
+    {
+      "sourceName": "South African National Halaal Authority (SANHA) — E153 (Carbon Black)",
+      "reference": "https://sanha.org.za/2009/12/17/e153-carbon-black/",
+      "date": "2009-12-17",
+      "tier": 1,
+      "paraphrase": "SANHA classifies E153 (carbon black / vegetable carbon) as Mushbooh (doubtful): it is charred material of animal or vegetable origin (bone char vs wood/plant), so the source must be verified to determine halal status."
+    }
+  ],
+  "researcherNote": "E153/unspecified seeded zabiha grade 4 (widely avoided). SANHA classifies E153 mushbooh (may be bone char); the strict follower avoids unverified bone-source carbon. One tier-1 source (non-high-traffic, non-lenient → one clearing citation suffices). APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

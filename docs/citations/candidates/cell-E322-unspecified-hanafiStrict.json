@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "E322",
+    "origin" : "unspecified",
+    "position" : "hanafiStrict"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "South African National Halaal Authority (SANHA) — 'E322 (Lecithin)'",
+      "reference" : "https://sanha.org.za/2009/12/15/e322-lecithin/",
+      "date" : "2009-12-15",
+      "tier" : 1,
+      "paraphrase" : "SANHA classifies lecithin (E322) as Halaal, with soybean as the predominant commercial source (also egg and leguminous seeds); the overwhelming majority of commercial E322 is plant-derived, so undisclosed-source lecithin is very widely accepted as halal though alternative origins exist."
+    },
+    {
+      "sourceName" : "American Halal Foundation (AHF) — 'Are Emulsifiers Halal?' (Azmi Anees)",
+      "reference" : "https://halalfoundation.org/are-emulsifiers-halal/",
+      "date" : "2025-03-17",
+      "tier" : 1,
+      "paraphrase" : "AHF states soy and sunflower lecithin (E322) are plant-derived and generally considered halal, but lecithin extracted with ethanol-based solvents or of unclear origin may require verification / halal certification — i.e. unspecified-source lecithin is widely accepted yet warrants confirmation."
+    }
+  ],
+  "researcherNote" : "E322 unspecified origin = grade 2 (Questionable — widely accepted). ~70-80% of commercial lecithin is soy/plant and all authorities treat lecithin as presumptively halal, so unspecified sits at 'widely accepted' (grade 2) — not grade 3/4 — with a minor verify-source/ethanol-extraction caveat (rare egg/animal variants exist). Two independent tier-1 sources (SANHA + AHF). APPROVED by owner 2026-07-01.",
+  "decision" : "approved"
+}

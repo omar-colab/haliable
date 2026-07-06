@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "E120",
+    "origin" : "unspecified",
+    "position" : "zabiha"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "Darul Ifta Birmingham — 'Ruling of Carmine (E120) Cochineal Insects' (Maulana Mohammed Haroon Hussain)",
+      "reference" : "https://islamqa.org/hanafi/daruliftaa-birmingham/244749/what-is-the-ruling-of-carmine-cochineal-insects/",
+      "date" : "accessed 2026-07-01",
+      "tier" : 1,
+      "paraphrase" : "This Hanafi fatwa rules carmine (E120) from cochineal insects impermissible to consume — insects are khabaith and only locusts/necessity/negligible-unavoidable amounts are excepted; deliberately added carmine does not qualify. The strict/cautious consumer therefore avoids it."
+    },
+    {
+      "sourceName" : "Darul-Ifta, al-Jamia al-Ulum al-Islamiyya (Binnori Town) — 'Ruling on Carmine in Food' via SeekersGuidance (Mawlana Ilyas Patel)",
+      "reference" : "https://seekersguidance.org/answers/halal-and-haram/what-is-the-ruling-on-carmine-in-food-and-non-food-items/",
+      "date" : "accessed 2026-07-01",
+      "tier" : 1,
+      "paraphrase" : "Per the majority of jurists, consuming carmine (cochineal insect dye) is impermissible because insects are khabaith (Qur'an 7:157) — supporting strict avoidance of E120 in food."
+    }
+  ],
+  "researcherNote" : "E120 seeded zabiha = grade 4 (Questionable — widely avoided). The strict/cautious (zabiha-conscious) position follows the majority prohibition on insect consumption, so it avoids carmine. Two independent tier-1 fatwas ruling impermissible. APPROVED by owner 2026-07-01.",
+  "decision" : "approved"
+}

@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E631",
+    "origin": "unspecified",
+    "position": "lenient"
+  },
+  "proposed": [
+    {
+      "sourceName": "South African National Halaal Authority (SANHA) — E631 (Sodium 5-Inosinate)",
+      "reference": "https://sanha.org.za/2009/12/17/e631-sodium-5-inosinate/",
+      "date": "2009-12-17",
+      "tier": 1,
+      "paraphrase": "SANHA classifies E631 (disodium/sodium 5-inosinate) as Mushbooh (doubtful): it may be derived from meat extract, dried sardines, or microbiological fermentation, so the source must be verified — pork or non-halal-meat sourced E631 is not permissible."
+    },
+    {
+      "sourceName": "Darul Ifta, Darul Uloom Deoband — Fatwa 790=559/H on E-code additives (incl. E631)",
+      "reference": "https://islamqa.org/hanafi/darulifta-deoband/109248/are-food-items-with-ingredients-codes-e473-e478-e631-e635-e640-e920-halaal-or-haraam/",
+      "date": "accessed 2026-07-02",
+      "tier": 1,
+      "paraphrase": "Asked whether foods with additive codes E473–E478, E631, E635, E640 and E920 are halal or haram, Darul Uloom Deoband declined a blanket prohibition: 'We have no confirmation about the code numbers being Haram. You should write the ingredients of the product, then we can have a say' — the status of E631 turns on its actual source and must be examined case by case."
+    }
+  ],
+  "researcherNote": "E631-lenient recovery (was: needed 2nd source). Darul Uloom Deoband fatwa 790=559/H (read via islamqa.org mirror — deoband.com blocks fetching; mirror preserves the verbatim answer) declines blanket haram and requires ingredient examination — honest documentation of the contested grade-3 status alongside SANHA's mushbooh. APPROVED by owner (batch pre-approval, continued 2026-07-02).",
+  "decision": "approved"
+}

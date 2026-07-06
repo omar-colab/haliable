@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "gelatin",
+    "origin" : "animalNonZabiha",
+    "position" : "general"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "IFANCA — The Halal Gelatin Story (M. Munir Chaudry, Ph.D.)",
+      "reference" : "https://ifanca.org/resources/the-halal-gelatin-story/",
+      "date" : "2000-09-30",
+      "tier" : 1,
+      "paraphrase" : "IFANCA recounts rejecting gelatin certificates for cattle-bone gelatin once it was clear the cattle were not slaughtered by Muslims; IFANCA requires cattle to be slaughtered by Muslims reciting Tasmiyyah and Takbir, so gelatin from non-Islamically-slaughtered animals is not certified halal."
+    },
+    {
+      "sourceName" : "Heliyon — Towards halal pharmaceutical: Exploring alternatives to animal-based ingredients (Herdiana et al.)",
+      "reference" : "Heliyon 10(1):e23624, DOI 10.1016/j.heliyon.2023.e23624 (PMID 38187251)",
+      "date" : "2023-12-13",
+      "tier" : 2,
+      "paraphrase" : "Peer-reviewed review stating gelatin is collagen-derived from pig and bovine skin/bone, and that halal certification is essential for gelatin sourced from non-halal animals — i.e., non-halal-slaughtered animal gelatin is not permissible absent halal certification."
+    }
+  ],
+  "researcherNote" : "General position is governed by IFANCA/ISNA; the tier-1 source IS IFANCA's own published account. Both sources independently support a non-halal grade for non-zabiha animal gelatin. Supports the seeded draft grade 4 (Questionable — widely avoided). High-traffic → two independent sources present. APPROVED by owner 2026-06-27.",
+  "decision" : "approved"
+}

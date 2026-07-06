@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E570",
+    "origin": "unspecified",
+    "position": "general"
+  },
+  "proposed": [
+    {
+      "sourceName": "South African National Halaal Authority (SANHA) — E570 (Stearic Acid)",
+      "reference": "https://sanha.org.za/2009/12/17/e570-stearic-acid/",
+      "date": "2009-12-17",
+      "tier": 1,
+      "paraphrase": "SANHA classifies E570 (stearic acid) as Mushbooh (doubtful): it may come from animal or vegetable oils (or synthetically from vegetable oils), so the source must be verified — plant-derived is halal, animal-derived only if the animal was slaughtered Islamically."
+    },
+    {
+      "sourceName": "SeekersGuidance — 'Is It Permissible to Use Products That Contain Stearic Acid?' (Ustadh Salman Younas)",
+      "reference": "https://islamqa.org/hanafi/seekersguidance-hanafi/107206/is-it-permissible-to-use-products-that-contain-stearic-acid/",
+      "date": "2014-12-08",
+      "tier": 1,
+      "paraphrase": "A Hanafi answer holding that products containing stearic acid are permissible even if the source could be animal (including non-halal), because it has undergone an essential chemical change (istihalat al-'ayn); it adds that using a product from only permissible sources remains superior — the permissive side of the dispute."
+    }
+  ],
+  "researcherNote": "E570 seeded general grade 3 (contested) — genuine split: SANHA mushbooh/verify vs SeekersGuidance istihalah-permits. Two independent tier-1. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

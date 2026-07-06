@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "E422",
+    "origin" : "unspecified",
+    "position" : "lenient"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "Darul Ifta Birmingham — 'Skin Care Products Containing Glycerine or Alcohol' (Mufti Mohammed Tosir Miah)",
+      "reference" : "https://daruliftabirmingham.co.uk/skin-care-products-containing-glycerine-or-alcohol/",
+      "date" : "2024-09-01",
+      "tier" : 1,
+      "paraphrase" : "A Hanafi fatwa holding that where the source of glycerine is uncertain and cannot reasonably be confirmed, it is permissible to assume it is halal, since investigating every ingredient's source causes undue hardship — the permissive stance a lenient consumer relies upon (given regarding externally-used products)."
+    },
+    {
+      "sourceName" : "Islam Q&A — Fatwa 97541 (citing the Standing Committee for Issuing Fatwas)",
+      "reference" : "https://islamqa.info/en/answers/97541",
+      "date" : "2007-05-03",
+      "tier" : 1,
+      "paraphrase" : "For non-meat products the basic presumption is permissibility unless haram content is established from trustworthy sources, and glycerine whose animal fat has undergone istihalah (chemical transformation into a genuinely different substance) can become permissible — but pig-derived or improperly-slaughtered glycerine remains haram, so the presumption is not unconditional."
+    }
+  ],
+  "researcherNote" : "E422 seeded lenient = grade 3 (Questionable — contested), NOT grade 2. The lenient position leans on the permissive rulings (Birmingham assume-halal under hardship; IslamQA basic-presumption + istihalah), but it stays CONTESTED rather than 'widely accepted' because an unknown source could be pork, which is haram in all schools and is not cleared by the narrow istihalah view. INTEGRITY: did not raise lenient to grade 2. Two independent tier-1 Sunni sources. APPROVED by owner 2026-07-01.",
+  "decision" : "approved"
+}

@@ -1,0 +1,18 @@
+{
+  "target": {
+    "kind": "certifier",
+    "subject": "ifanca",
+    "position": "general"
+  },
+  "proposed": [
+    {
+      "sourceName": "Islamic Food & Nutrition Council of America (IFANCA) — Five-Star Halal Identification System",
+      "reference": "https://ifanca.org/unique-five-star-halal-identification-system/",
+      "date": "2015-06-10",
+      "tier": 1,
+      "paraphrase": "IFANCA certifies only Muslim-performed slaughter (it does not accept meat slaughtered by non-Muslims) with Tasmiyah/Takbir; it accepts mechanical poultry slaughter (machine started by a Muslim reciting the Tasmiyah, with a Muslim on the line) and controlled stunning under veterinary confirmation — meeting the mainstream general-halal baseline (machine slaughter accepted)."
+    }
+  ],
+  "researcherNote": "IFANCA accepts mechanical slaughter + controlled stunning → correctly mapped to general/lenient only (its stricter Star-5 tier is non-stun, but the body as a whole certifies mechanical/stunned). APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

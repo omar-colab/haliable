@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "gelatin",
+    "origin" : "animalNonZabiha",
+    "position" : "zabiha"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "Halal Monitoring Committee (HMC) — Criteria for Halal",
+      "reference" : "https://halalhmc.org/about/hmc-criteria-for-halal/",
+      "date" : "accessed 2026-06-28",
+      "tier" : 1,
+      "paraphrase" : "HMC's halal criteria require a swift hand-slaughter that renders the animal insensible to pain, with the Tasmiyah recited by a Muslim slaughterman on each animal; animals not slaughtered by these Islamic rites do not qualify as halal, so gelatin derived from non-zabiha animals is impermissible under HMC's standard."
+    },
+    {
+      "sourceName" : "Heliyon — Towards halal pharmaceutical: Exploring alternatives to animal-based ingredients (Herdiana et al.)",
+      "reference" : "Heliyon 10(1):e23624, DOI 10.1016/j.heliyon.2023.e23624 (PMID 38187251)",
+      "date" : "2023-12-13",
+      "tier" : 2,
+      "paraphrase" : "Peer-reviewed review stating gelatin is collagen-derived from pig and bovine skin/bone and that halal certification is essential for gelatin from non-halal animals — gelatin from animals not slaughtered according to Islamic law is not permissible absent halal certification."
+    }
+  ],
+  "researcherNote" : "Zabiha position is governed by HMC/HFSAA; the tier-1 source IS HMC's own published criteria, which require hand-slaughter by a Muslim with Tasmiyah. Non-zabiha slaughter fails that bar, supporting the strictest seeded draft grade 5 (Haram). High-traffic -> two independent sources (HMC standard body + Heliyon peer-reviewed). APPROVED by owner 2026-06-28.",
+  "decision" : "approved"
+}

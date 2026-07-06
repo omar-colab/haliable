@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "gelatin",
+    "origin" : "unspecified",
+    "position" : "zabiha"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "Halal Monitoring Committee (HMC) — Criteria for Halal",
+      "reference" : "https://halalhmc.org/about/hmc-criteria-for-halal/",
+      "date" : "accessed 2026-06-28",
+      "tier" : 1,
+      "paraphrase" : "HMC certifies as halal only meat and animal derivatives from animals hand-slaughtered by a Muslim with the Tasmiyah recited and verified through the supply chain; where the animal source of gelatin is unverified, the zabiha condition cannot be confirmed and the gelatin is not accepted as halal."
+    },
+    {
+      "sourceName" : "Heliyon — Towards halal pharmaceutical: Exploring alternatives to animal-based ingredients (Herdiana et al.)",
+      "reference" : "Heliyon 10(1):e23624, DOI 10.1016/j.heliyon.2023.e23624 (PMID 38187251)",
+      "date" : "2023-12-13",
+      "tier" : 2,
+      "paraphrase" : "Peer-reviewed review noting gelatin is predominantly sourced from pig and bovine tissue and that halal certification is essential to establish a permissible source; absent verified halal-slaughter provenance, gelatin of unspecified origin cannot be treated as halal."
+    }
+  ],
+  "researcherNote" : "Zabiha position (HMC/HFSAA). Under the strictest position, unverified animal origin cannot satisfy the zabiha condition, supporting seeded draft grade 5 (Haram). Two independent sources (HMC standard body + Heliyon peer-reviewed). APPROVED by owner 2026-06-28.",
+  "decision" : "approved"
+}

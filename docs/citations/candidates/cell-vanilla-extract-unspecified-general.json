@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "vanilla extract",
+    "origin": "unspecified",
+    "position": "general"
+  },
+  "proposed": [
+    {
+      "sourceName": "Majlis Ugama Islam Singapura (MUIS) — Fatwa Committee ruling on Ethanol",
+      "reference": "https://www.muis.gov.sg/resources/khutbah-and-religious-advice/fatwa/ethanol--english/",
+      "date": "2025-02-21",
+      "tier": 1,
+      "paraphrase": "The MUIS Fatwa Committee permits ethanol (natural or synthetic, not derived from khamr) used exclusively as a solvent/carrier for food flavourings, provided the ethanol in the flavouring does not exceed 0.5% and in the final product does not exceed 0.1% — i.e. below intoxicating levels."
+    },
+    {
+      "sourceName": "Fatawa Center — 'Is Vanilla Extract Halal if it Contains Alcohol?' (Dr. Mahmoud A. Omar, Al-Azhar Fatwa Council member)",
+      "reference": "https://fatawacenter.com/is-vanilla-extract-halal-if-it-contains-alcohol/",
+      "date": "2026-07-01",
+      "tier": 1,
+      "paraphrase": "Holds vanilla extract containing alcohol permissible per many contemporary scholars when the alcohol is only a non-khamr solvent present in residual, non-intoxicating amounts and the product is used in cooking/baking (judged by intended use, maqasid, with reference to AAOIFI Shariah Standard 18), while noting a stricter minority that deems any added ethyl alcohol impermissible regardless of quantity. (Standing fatwa, accessed 2026-07-01.)"
+    }
+  ],
+  "researcherNote": "vanilla extract seeded general grade 3 (contested). MUIS permits carriers only up to 0.5% (which vanilla extract (~35% ethanol, non-khamr) does not automatically satisfy) and Fatawa Center records a stricter minority deeming any added ethyl alcohol impermissible — a genuine dispute. Two independent tier-1. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

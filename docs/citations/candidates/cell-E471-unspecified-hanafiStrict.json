@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "E471",
+    "origin" : "unspecified",
+    "position" : "hanafiStrict"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "Darul Iftaa, Jaamia Madinatul Uloom (Trinidad) — 'Is Mono and di-glycerides (E471) permissible?' (Mufti Arshad Ali)",
+      "reference" : "https://fatwa-tt.com/index.php/is-mono-and-di-glycerides-e471-permissible/",
+      "date" : "2023-05-03",
+      "tier" : 1,
+      "paraphrase" : "A Hanafi Darul Iftaa fatwa holding that E471 is permissible only when plant-derived; animal-derived is impermissible unless the animal was slaughtered per Islamic law. It instructs Muslims to avoid products with mono/diglycerides unless labeled 100% vegetable and to verify unlisted sources — so the strict Hanafi reading avoids undisclosed-origin E471."
+    },
+    {
+      "sourceName" : "American Halal Foundation (AHF) — 'Are Mono Diglycerides Halal?' (Azmi Anees)",
+      "reference" : "https://halalfoundation.org/are-mono-diglycerides-halal/",
+      "date" : "2025-05-25",
+      "tier" : 1,
+      "paraphrase" : "AHF notes pork-derived mono/diglycerides remain haram even under the Hanafi view because the transformation (istihalah) is not considered complete, and non-zabiha beef is likewise not halal; it advises avoiding E471 unless labeled vegetable or halal-certified. For undisclosed origin the strict Hanafi position therefore avoids it."
+    }
+  ],
+  "researcherNote" : "E471 seeded hanafiStrict = grade 4 (Questionable — widely avoided). Even the Hanafi istihalah latitude does NOT rescue undisclosed E471, because pork-derived mono/diglycerides are held to be incompletely transformed (still haram) and non-zabiha beef is impermissible — so the strict Hanafi position avoids. Primary source is itself a Hanafi Darul Iftaa fatwa; AHF independently confirms the Hanafi-specific point. Two independent tier-1 sources. APPROVED by owner 2026-07-01.",
+  "decision" : "approved"
+}

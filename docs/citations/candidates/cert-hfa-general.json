@@ -1,0 +1,18 @@
+{
+  "target": {
+    "kind": "certifier",
+    "subject": "hfa",
+    "position": "general"
+  },
+  "proposed": [
+    {
+      "sourceName": "Halal Food Authority (HFA UK) — Halal Standard / FAQs",
+      "reference": "https://halalfoodauthority.com/faqs/",
+      "date": "2026-07-01",
+      "tier": 1,
+      "paraphrase": "HFA requires manual slaughter by qualified Muslim slaughtermen reciting the invocation live on each animal, and permits only reversible controlled electric stun (no stun-to-kill, veterinary-verified; captive-bolt/percussion prohibited) — meeting the mainstream general-halal baseline. (Accessed 2026-07-01.)"
+    }
+  ],
+  "researcherNote": "FLAG: HFA ceased certifying MECHANICAL slaughter in 2014 and now requires hand-slaughter by Muslims with reversible-stun-only — STRICTER than the app's draft rationale ('permits mechanical slaughter and pre-stunning → looser'). general/lenient claims remain true; draft could later promote HFA. Flagged for owner. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

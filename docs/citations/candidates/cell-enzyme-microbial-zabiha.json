@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "enzyme",
+    "origin": "microbial",
+    "position": "zabiha"
+  },
+  "proposed": [
+    {
+      "sourceName": "Darul Iftaa New York — 'Hanafi Ruling on Rennet from Non-Pork Animals not Zabiha' (Mufti Muajul I. Chowdhury)",
+      "reference": "https://askthemufti.us/hanafi-ruling-on-rennet-from-non-pork-animals-not-zabiha/",
+      "date": "2024-08-01",
+      "tier": 1,
+      "paraphrase": "A Hanafi darul-iftaa ruling that although rennet itself is pure and halal from non-pork animals, the conventional commercial extraction also draws out parts of the stomach (haram unless the animal was slaughtered appropriately), so most animal rennet in today's products is not permissible; pure microbial rennet or rennet from a properly slaughtered animal is halal."
+    },
+    {
+      "sourceName": "Fiqh IslamOnline — 'Islamic Ruling on Parmesan Cheese'",
+      "reference": "https://fiqh.islamonline.net/en/islamic-ruling-on-parmesan-cheese/",
+      "date": "2026-02-14",
+      "tier": 1,
+      "paraphrase": "States that microbial, vegetable, or non-animal rennet cheese is halal by consensus; for animal rennet from a non-Islamically-slaughtered animal it reports the Shafi'i/Maliki/Hanbali view that it is impure and forbidden versus the Hanafi view that the rennet is pure regardless of slaughter and therefore permissible."
+    }
+  ],
+  "researcherNote": "enzyme/microbial seeded grade 1 (Halal). Microbial/FPC rennet has no animal source; halal by consensus. Two independent tier-1 sources. Determinate origin (microbial) so not blocked by §8.4. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

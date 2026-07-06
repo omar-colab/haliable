@@ -1,0 +1,18 @@
+{
+  "target": {
+    "kind": "certifier",
+    "subject": "hfa",
+    "position": "lenient"
+  },
+  "proposed": [
+    {
+      "sourceName": "Halal Food Authority (HFA UK) — Halal Standard / FAQs",
+      "reference": "https://halalfoodauthority.com/faqs/",
+      "date": "2026-07-01",
+      "tier": 1,
+      "paraphrase": "HFA's Muslim hand-slaughter standard comfortably exceeds the lenient bar. (Accessed 2026-07-01.)"
+    }
+  ],
+  "researcherNote": "FLAG: HFA ceased certifying MECHANICAL slaughter in 2014 and now requires hand-slaughter by Muslims with reversible-stun-only — STRICTER than the app's draft rationale ('permits mechanical slaughter and pre-stunning → looser'). general/lenient claims remain true; draft could later promote HFA. Flagged for owner. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

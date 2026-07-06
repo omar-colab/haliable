@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "E322",
+    "origin" : "plant",
+    "position" : "lenient"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "South African National Halaal Authority (SANHA) — 'E322 (Lecithin)'",
+      "reference" : "https://sanha.org.za/2009/12/15/e322-lecithin/",
+      "date" : "2009-12-15",
+      "tier" : 1,
+      "paraphrase" : "SANHA classifies lecithin (E322) as Halaal, noting its predominant commercial source is soybean (also derived from eggs and leguminous seeds) — i.e. named plant/soy lecithin is halal."
+    },
+    {
+      "sourceName" : "Darul Fiqh — 'Is soy lecithin halal?' (Mufti Faraz Adam)",
+      "reference" : "https://darulfiqh.com/is-soy-lecithin-halal-2/",
+      "date" : "accessed 2026-07-01",
+      "tier" : 1,
+      "paraphrase" : "The fatwa rules soy lecithin permissible because it is derived from soya, a vegetable source; lecithin from egg yolks or plant sources is likewise permissible (only animal-source lecithin depends on the body part and manner of slaughter)."
+    }
+  ],
+  "researcherNote" : "E322 plant origin (soy/sunflower/egg, named) = grade 1 Halal. Determinate plant origin (not origin-undeterminable, so NOT blocked by 8.4). All madhabs treat soy/sunflower lecithin as halal without reservation. Two independent tier-1 sources (SANHA national authority + Darul Fiqh). APPROVED by owner 2026-07-01.",
+  "decision" : "approved"
+}

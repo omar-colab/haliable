@@ -1,0 +1,19 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E542",
+    "origin": "unspecified",
+    "position": "zabiha"
+  },
+  "proposed": [
+    {
+      "sourceName": "Islam Q&A — Fatwa 258312 'Ruling on bones from non-halal meat and vessels made from them'",
+      "reference": "https://islamqa.info/en/answers/258312/ruling-on-bones-from-non-halal-meat-and-vessels-made-from-them",
+      "date": "2017-07-16",
+      "tier": 1,
+      "paraphrase": "This fatwa records the majority position (Maliki, Shafi'i, Hanbali) that bones from animals not islamically slaughtered are impure — consumption of the impure being impermissible — while noting the Hanafi/Ibn Taymiyyah view that bone is pure, and advises avoidance 'to be on the safe side regarding his religious commitment'. Under the strictest zabiha position, edible bone phosphate of unverified origin (worst case: porcine or non-slaughtered bones) is treated as haram."
+    }
+  ],
+  "researcherNote": "E542-zabiha recovery (was: no tier-1 backed grade 5). Islam Q&A 258312 (fetch-verified) records majority-school impurity of bones from non-slaughtered animals + safer-course avoidance; grade 5 rests on that plus worst-case unverified origin (possible porcine bone, categorically haram). FLAG for owner: fatwa's immediate context is bone vessels and it notes the Hanafi purity view; SANHA grades E542 only Mushbooh — owner may prefer grade 4. Paraphrase reports the split honestly. APPROVED by owner (batch pre-approval, continued 2026-07-02).",
+  "decision": "approved"
+}

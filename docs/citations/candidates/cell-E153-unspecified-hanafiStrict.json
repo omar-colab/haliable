@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E153",
+    "origin": "unspecified",
+    "position": "hanafiStrict"
+  },
+  "proposed": [
+    {
+      "sourceName": "South African National Halaal Authority (SANHA) — E153 (Carbon Black)",
+      "reference": "https://sanha.org.za/2009/12/17/e153-carbon-black/",
+      "date": "2009-12-17",
+      "tier": 1,
+      "paraphrase": "SANHA classifies E153 (carbon black / vegetable carbon) as Mushbooh (doubtful): it is charred material of animal or vegetable origin (bone char vs wood/plant), so the source must be verified to determine halal status."
+    },
+    {
+      "sourceName": "Islam Q&A — Fatwa 233750 'Ruling on sugar refined using bone char'",
+      "reference": "https://islamqa.info/en/answers/233750",
+      "date": "2020-02-18",
+      "tier": 1,
+      "paraphrase": "Holds that bones burned into charcoal/ash undergo istihalah (complete transformation) and thereby become pure (tahir) and permissible — the view of the Hanafi and Maliki schools and the Permanent Committee, favored by Ibn Taymiyyah and Ibn al-Qayyim — regardless of the bones' original source."
+    }
+  ],
+  "researcherNote": "E153/unspecified seeded hanafiStrict grade 3 (contested). SANHA mushbooh/verify vs Islam Q&A istihalah-to-purity for bone char. Two independent tier-1, both sides. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

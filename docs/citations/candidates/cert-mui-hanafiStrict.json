@@ -1,0 +1,18 @@
+{
+  "target": {
+    "kind": "certifier",
+    "subject": "mui",
+    "position": "hanafiStrict"
+  },
+  "proposed": [
+    {
+      "sourceName": "LPPOM MUI (Majelis Ulama Indonesia) — Halal Assurance System HAS 23000 & MUI Fatwa No. 10/2018 on ethanol",
+      "reference": "https://halalmui.org/understand-fatwa-mui-about-ethanol-levels-in-food-and-beverage-products/",
+      "date": "2018-01-01",
+      "tier": 1,
+      "paraphrase": "MUI's HAS 23000 requires Muslim slaughter with the name of Allah and fully halal-verified materials, and Fatwa 10/2018 forbids khamr-derived ethanol and classes any drink with ≥0.5% ethanol as khamr (haram) — meeting the hanafi-strict bar on alcohol/additive strictness. (Seafood caveat: MUI follows the Shafi'i view permitting all seafood, an axis the app's hanafi-strict flags but does not currently enforce in the grade matrix.)"
+    }
+  ],
+  "researcherNote": "MUI permits manual OR mechanical slaughter with reversible stunning → correctly NOT mapped to zabiha. hanafiStrict rests on MUI's strict alcohol/najs standard; seafood axis is a known unenforced carried gap (flagged). APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

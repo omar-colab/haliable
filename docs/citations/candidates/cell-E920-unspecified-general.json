@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E920",
+    "origin": "unspecified",
+    "position": "general"
+  },
+  "proposed": [
+    {
+      "sourceName": "Darul Iftaa Mahmudiyyah (Lusaka, Zambia) — Fatwa #1297 (Mufti Bilal Pandor)",
+      "reference": "https://daruliftaazambia.com/fatwa/?id=1297",
+      "date": "2024-12-11",
+      "tier": 1,
+      "paraphrase": "Holds that bread containing L-cysteine is doubtful (mushbooh) and should be avoided unless the source is verified, because E920 may be derived from human hair or pork; it is permissible only when sourced from bird feathers, halal animals, or vegetables."
+    },
+    {
+      "sourceName": "Islam Q&A — Fatwa 248124 'Ruling on eating foods that contain L-cysteine (E920)'",
+      "reference": "https://islamqa.info/en/answers/248124",
+      "date": "2016-12-06",
+      "tier": 1,
+      "paraphrase": "Rules L-cysteine permissible to consume regardless of source (including human hair) because it undergoes a chemical process (istihalah) transforming it into a different, pure substance; cites the European Council for Fatwa and Research (Fatwa 34) and the Islamic Fiqh Academy's medical council."
+    }
+  ],
+  "researcherNote": "E920/unspecified seeded general grade 3 (contested). Real split: Zambia says avoid-unless-verified (mushbooh) vs Islam Q&A permits regardless of source via istihalah. Cited both sides, two independent tier-1. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

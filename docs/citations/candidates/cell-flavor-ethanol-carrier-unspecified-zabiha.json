@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "flavor ethanol carrier",
+    "origin" : "unspecified",
+    "position" : "zabiha"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "Mufti Muhammad ibn Adam al-Kawthari — Darul Iftaa, Leicester (in 'Alcohol: Its Kinds, Usage and Rulings', central-mosque.com)",
+      "reference" : "https://central-mosque.com/index.php/General-Fiqh/alcohol-its-kinds-usage-and-rulings.html",
+      "date" : "accessed 2026-06-29",
+      "tier" : 1,
+      "paraphrase" : "Fatwa relied upon (mufta bihi) per Imam Muhammad and held across the four Sunni schools that all types of alcohol are unlawful (haram) and impure (najis) even in small quantities, so cautious/strict practice avoids added ethanol in food — including flavor ethanol carriers."
+    },
+    {
+      "sourceName" : "MUIS (Islamic Religious Council of Singapore) — Fatwa on Ethanol in Food Flavorings",
+      "reference" : "https://www.muis.gov.sg/resources/khutbah-and-religious-advice/fatwa/ethanol--english/",
+      "date" : "2025-02-21",
+      "tier" : 1,
+      "paraphrase" : "MUIS permits ethanol (natural or synthetic) as a flavoring solvent when not produced from prohibited products and within strict limits (<=0.5% in flavoring, <=0.1% in final product) — representing the permissive side of a genuinely contested question."
+    }
+  ],
+  "researcherNote" : "Owner chose option (1): regraded zabiha 4 -> 3 (Questionable - CONTESTED) in GradeMatrix line 237, because contemporary authorities genuinely split on non-khamr ethanol carriers. Cited BOTH sides honestly: the strict-avoidance fatwa (Ibn Adam / Imam Muhammad mufta-bihi) and a permissive fatwa (MUIS). Two independent tier-1 authorities. APPROVED by owner 2026-06-29.",
+  "decision" : "approved"
+}

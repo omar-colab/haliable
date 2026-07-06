@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "alcohol",
+    "origin": "unspecified",
+    "position": "hanafiStrict"
+  },
+  "proposed": [
+    {
+      "sourceName": "Mathabah Institute — 'Ethanol Alcohol in Food and Drinks' (Fatwa 133736)",
+      "reference": "https://islamqa.org/hanafi/mathabah/133736/ethanol-alcohol-in-food-and-drinks/",
+      "date": "2026-07-01",
+      "tier": 1,
+      "paraphrase": "A Hanafi answer permitting non-khamr (synthetic) ethanol in small non-intoxicating amounts per Abu Hanifa and Abu Yusuf, while noting Imam Muhammad's stricter view and advising that where a lawful alternative is easily available abstention is preferable — the cautious basis on which strict consumers avoid alcohol carriers. (Standing fatwa, accessed 2026-07-01.)"
+    },
+    {
+      "sourceName": "Fatawa Center — 'Is Vanilla Extract Halal if it Contains Alcohol?' (Dr. Mahmoud A. Omar, Al-Azhar Fatwa Council member)",
+      "reference": "https://fatawacenter.com/is-vanilla-extract-halal-if-it-contains-alcohol/",
+      "date": "2026-07-01",
+      "tier": 1,
+      "paraphrase": "Holds vanilla extract containing alcohol permissible per many contemporary scholars when the alcohol is only a non-khamr solvent present in residual, non-intoxicating amounts and the product is used in cooking/baking (judged by intended use, maqasid, with reference to AAOIFI Shariah Standard 18), while noting a stricter minority that deems any added ethyl alcohol impermissible regardless of quantity. (Standing fatwa, accessed 2026-07-01.)"
+    }
+  ],
+  "researcherNote": "alcohol seeded hanafiStrict grade 4 (widely avoided). Cited the cautious side only (MUIS permits ≤0.5% carriers, so it is not used here): Mathabah records Imam Muhammad's stricter Hanafi view and abstention-preferable counsel, and Fatawa Center records the stricter minority holding any added ethyl alcohol impermissible. Two independent tier-1 on the cautious side. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

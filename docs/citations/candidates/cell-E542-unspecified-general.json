@@ -1,0 +1,19 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E542",
+    "origin": "unspecified",
+    "position": "general"
+  },
+  "proposed": [
+    {
+      "sourceName": "South African National Halaal Authority (SANHA) — E542 (Edible Bone Phosphate)",
+      "reference": "https://sanha.org.za/2009/12/17/e542-edible-bone-phosphate/",
+      "date": "2009-12-17",
+      "tier": 1,
+      "paraphrase": "SANHA classifies E542 (edible bone phosphate) as Mushbooh (doubtful): it is derived from animal bones, so the animal source (pork/non-zabiha vs halal) must be verified before it can be considered permissible."
+    }
+  ],
+  "researcherNote": "E542 seeded general grade 4 (widely avoided). SANHA mushbooh — animal-bone source, verify. One tier-1. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

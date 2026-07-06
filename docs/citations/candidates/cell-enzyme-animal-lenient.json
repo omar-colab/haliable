@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "enzyme",
+    "origin": "animal",
+    "position": "lenient"
+  },
+  "proposed": [
+    {
+      "sourceName": "Islam Q&A — Fatwa 2841 'Is Animal Rennet Halal?'",
+      "reference": "https://islamqa.info/en/answers/2841",
+      "date": "1998-09-28",
+      "tier": 1,
+      "paraphrase": "Presents the two scholarly positions on rennet from an animal not slaughtered Islamically: the majority (Maliki, Shafi'i, Hanbali) hold it najis (impure) and haram on the basis of the prohibition of carrion, while the minority (Abu Hanifa and one narration from Imam Ahmad, favored by Ibn Taymiyyah) hold it tahir (pure) because the enzyme does not die with the animal; it concludes the layperson must follow a qualified scholar on either view."
+    },
+    {
+      "sourceName": "Darul Iftaa New York — 'Hanafi Ruling on Rennet from Non-Pork Animals not Zabiha' (Mufti Muajul I. Chowdhury)",
+      "reference": "https://askthemufti.us/hanafi-ruling-on-rennet-from-non-pork-animals-not-zabiha/",
+      "date": "2024-08-01",
+      "tier": 1,
+      "paraphrase": "A Hanafi darul-iftaa ruling that although rennet itself is pure and halal from non-pork animals, the conventional commercial extraction also draws out parts of the stomach (haram unless the animal was slaughtered appropriately), so most animal rennet in today's products is not permissible; pure microbial rennet or rennet from a properly slaughtered animal is halal."
+    }
+  ],
+  "researcherNote": "enzyme/animal seeded lenient grade 3 (contested). Kept CONTESTED, not raised to accepted: the permissive Abu Hanifa purity view is real but extraction contamination and the majority impurity view keep it doubtful. Two independent tier-1. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

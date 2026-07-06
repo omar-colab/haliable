@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "gelatin",
+    "origin" : "unspecified",
+    "position" : "general"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "IFANCA — The Halal Gelatin Story (M. Munir Chaudry, Ph.D.)",
+      "reference" : "https://ifanca.org/resources/the-halal-gelatin-story/",
+      "date" : "2000-09-30",
+      "tier" : 1,
+      "paraphrase" : "IFANCA states that in commercial gelatin production all halal and non-halal bones are mixed together regardless of source, so cow bones are mixed with pig bones; gelatin appearing on a label without a stated halal source must therefore be avoided."
+    },
+    {
+      "sourceName" : "Heliyon — Towards halal pharmaceutical: Exploring alternatives to animal-based ingredients (Herdiana et al.)",
+      "reference" : "Heliyon 10(1):e23624, DOI 10.1016/j.heliyon.2023.e23624 (PMID 38187251)",
+      "date" : "2023-12-13",
+      "tier" : 2,
+      "paraphrase" : "Peer-reviewed review noting the most common gelatin raw material is porcine, and that halal status depends on source — undisclosed-source gelatin cannot be assumed permissible without halal certification."
+    }
+  ],
+  "researcherNote" : "Unspecified-origin gelatin: IFANCA's own account explains why unlabeled gelatin defaults to mixed pig/cattle bone and must be avoided. Grade is non-halal (draft 4), so the origin-undeterminable rule does not block it. High-traffic → two independent sources present. APPROVED by owner 2026-06-27.",
+  "decision" : "approved"
+}

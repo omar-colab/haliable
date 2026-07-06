@@ -1,0 +1,18 @@
+{
+  "target": {
+    "kind": "certifier",
+    "subject": "hmc",
+    "position": "hanafiStrict"
+  },
+  "proposed": [
+    {
+      "sourceName": "Halal Monitoring Committee (HMC UK) — 'HMC Criteria for Halal'",
+      "reference": "https://halalhmc.org/about/hmc-criteria-for-halal/",
+      "date": "2026-07-01",
+      "tier": 1,
+      "paraphrase": "HMC's hand-slaughter, no-stun, per-animal-Tasmiyah regime with continuous on-site monitoring and cross-contamination checks is at least as strict as the hanafi-strict position on slaughter and doubtful inputs. (Accessed 2026-07-01.)"
+    }
+  ],
+  "researcherNote": "HMC = hand-slaughter, no-stun, Tasmiyah on each animal (its own published criteria) → genuinely satisfies all four positions. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

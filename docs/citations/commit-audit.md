@@ -1,0 +1,152 @@
+# Commit audit — 2026-07-02
+
+148 committed · 0 rejected · 0 skipped.
+
+- ✓ `cell::E120::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::E120::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::E120::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::E120::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::E153::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::E153::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::E153::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::E153::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::E322::plant::general` — committed: clears the live cell gate
+- ✓ `cell::E322::plant::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::E322::plant::lenient` — committed: clears the live cell gate
+- ✓ `cell::E322::plant::zabiha` — committed: clears the live cell gate
+- ✓ `cell::E322::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::E322::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::E322::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::E322::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::E422::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::E422::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::E422::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::E422::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::E470::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::E470::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::E470::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::E470::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::E471::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::E471::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::E471::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::E471::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::E472::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::E472::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::E472::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::E472::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::E542::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::E542::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::E542::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::E542::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::E570::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::E570::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::E570::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::E570::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::E627::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::E627::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::E627::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::E627::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::E631::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::E631::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::E631::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::E631::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::E904::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::E904::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::E904::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::E904::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::E920::animal::general` — committed: clears the live cell gate
+- ✓ `cell::E920::animal::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::E920::animal::lenient` — committed: clears the live cell gate
+- ✓ `cell::E920::animal::zabiha` — committed: clears the live cell gate
+- ✓ `cell::E920::synthetic::general` — committed: clears the live cell gate
+- ✓ `cell::E920::synthetic::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::E920::synthetic::lenient` — committed: clears the live cell gate
+- ✓ `cell::E920::synthetic::zabiha` — committed: clears the live cell gate
+- ✓ `cell::E920::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::E920::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::E920::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::E920::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::alcohol::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::alcohol::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::alcohol::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::alcohol::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::enzyme::animal::general` — committed: clears the live cell gate
+- ✓ `cell::enzyme::animal::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::enzyme::animal::lenient` — committed: clears the live cell gate
+- ✓ `cell::enzyme::animal::zabiha` — committed: clears the live cell gate
+- ✓ `cell::enzyme::microbial::general` — committed: clears the live cell gate
+- ✓ `cell::enzyme::microbial::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::enzyme::microbial::lenient` — committed: clears the live cell gate
+- ✓ `cell::enzyme::microbial::zabiha` — committed: clears the live cell gate
+- ✓ `cell::enzyme::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::enzyme::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::enzyme::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::enzyme::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::flavor ethanol carrier::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::flavor ethanol carrier::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::flavor ethanol carrier::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::gelatin::animalNonZabiha::general` — committed: clears the live cell gate
+- ✓ `cell::gelatin::animalNonZabiha::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::gelatin::animalNonZabiha::lenient` — committed: clears the live cell gate
+- ✓ `cell::gelatin::animalNonZabiha::zabiha` — committed: clears the live cell gate
+- ✓ `cell::gelatin::microbial::general` — committed: clears the live cell gate
+- ✓ `cell::gelatin::microbial::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::gelatin::microbial::lenient` — committed: clears the live cell gate
+- ✓ `cell::gelatin::microbial::zabiha` — committed: clears the live cell gate
+- ✓ `cell::gelatin::plant::general` — committed: clears the live cell gate
+- ✓ `cell::gelatin::plant::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::gelatin::plant::lenient` — committed: clears the live cell gate
+- ✓ `cell::gelatin::plant::zabiha` — committed: clears the live cell gate
+- ✓ `cell::gelatin::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::gelatin::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::gelatin::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::gelatin::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::meat::animalNonZabiha::general` — committed: clears the live cell gate
+- ✓ `cell::meat::animalNonZabiha::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::meat::animalNonZabiha::lenient` — committed: clears the live cell gate
+- ✓ `cell::meat::animalNonZabiha::zabiha` — committed: clears the live cell gate
+- ✓ `cell::meat::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::meat::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::meat::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::meat::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::natural flavors::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::natural flavors::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::natural flavors::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::natural flavors::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::vanilla extract::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::vanilla extract::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::vanilla extract::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::vanilla extract::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::vitamin d3::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::vitamin d3::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::vitamin d3::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::vitamin d3::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cell::whey::unspecified::general` — committed: clears the live cell gate
+- ✓ `cell::whey::unspecified::hanafiStrict` — committed: clears the live cell gate
+- ✓ `cell::whey::unspecified::lenient` — committed: clears the live cell gate
+- ✓ `cell::whey::unspecified::zabiha` — committed: clears the live cell gate
+- ✓ `cert::ahf::general` — committed: clears the live certifier gate
+- ✓ `cert::ahf::lenient` — committed: clears the live certifier gate
+- ✓ `cert::esma::general` — committed: clears the live certifier gate
+- ✓ `cert::esma::hanafiStrict` — committed: clears the live certifier gate
+- ✓ `cert::esma::lenient` — committed: clears the live certifier gate
+- ✓ `cert::hfa::general` — committed: clears the live certifier gate
+- ✓ `cert::hfa::lenient` — committed: clears the live certifier gate
+- ✓ `cert::hfsaa::general` — committed: clears the live certifier gate
+- ✓ `cert::hfsaa::hanafiStrict` — committed: clears the live certifier gate
+- ✓ `cert::hfsaa::lenient` — committed: clears the live certifier gate
+- ✓ `cert::hfsaa::zabiha` — committed: clears the live certifier gate
+- ✓ `cert::hmc::general` — committed: clears the live certifier gate
+- ✓ `cert::hmc::hanafiStrict` — committed: clears the live certifier gate
+- ✓ `cert::hmc::lenient` — committed: clears the live certifier gate
+- ✓ `cert::hmc::zabiha` — committed: clears the live certifier gate
+- ✓ `cert::ifanca::general` — committed: clears the live certifier gate
+- ✓ `cert::ifanca::lenient` — committed: clears the live certifier gate
+- ✓ `cert::isna::general` — committed: clears the live certifier gate
+- ✓ `cert::isna::lenient` — committed: clears the live certifier gate
+- ✓ `cert::jakim::general` — committed: clears the live certifier gate
+- ✓ `cert::jakim::hanafiStrict` — committed: clears the live certifier gate
+- ✓ `cert::jakim::lenient` — committed: clears the live certifier gate
+- ✓ `cert::mui::general` — committed: clears the live certifier gate
+- ✓ `cert::mui::hanafiStrict` — committed: clears the live certifier gate
+- ✓ `cert::mui::lenient` — committed: clears the live certifier gate

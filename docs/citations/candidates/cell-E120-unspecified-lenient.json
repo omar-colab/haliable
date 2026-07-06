@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "E120",
+    "origin" : "unspecified",
+    "position" : "lenient"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "MUI (Indonesian Council of Ulama) — Fatwa No. 33 of 2011 on Cochineal Coloring",
+      "reference" : "https://halalmui.org/en/mui-cochineal-fatwa-decision-taken-from-the-opinions-of-many-experts/",
+      "date" : "2011",
+      "tier" : 1,
+      "paraphrase" : "MUI Fatwa No. 33/2011 declares cochineal-derived food and drink colorings halal, reasoning that the cochineal insect is analogous to the (permitted) locust, lives on cactus/clean plants and feeds on plants rather than filth, and poses no harm — representing the permissive side of a genuinely contested question."
+    },
+    {
+      "sourceName" : "General Iftaa' Department of Jordan — Fatwa No. 3240 on Carmine (E120)",
+      "reference" : "https://www.aliftaa.jo/research-fatwa-english/3240/What-is-the-ruling-of-Sharia-on-using-Carmine-E120-a-colourant-extracted-from-insects",
+      "date" : "2016-10-27",
+      "tier" : 1,
+      "paraphrase" : "Jordan's state Iftaa Department permits carmine (E120) via istihalah — when the cochineal-derived material undergoes chemical transformation into a new edible substance it is rendered permissible — subject to conditions (genuine transformation, need, limited amount, no harm); the permissive/lenient reading relies on this transformation argument."
+    }
+  ],
+  "researcherNote" : "E120 seeded lenient = grade 2 (Questionable — widely accepted). The lenient position follows real authorities that permit carmine: MUI (analogy to locust) and Jordan's Iftaa Department (istihalah/transformation). Both tier-1 state/national fatwa bodies, independent of each other. NOTE: this is the permissive side of a genuine split whose strict side (majority prohibition) grounds the grade-4 general/zabiha/hanafiStrict cells — cited honestly on each side. Two independent sources. APPROVED by owner 2026-07-01.",
+  "decision" : "approved"
+}

@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "gelatin",
+    "origin" : "microbial",
+    "position" : "hanafiStrict"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "Heliyon — Towards halal pharmaceutical: Exploring alternatives to animal-based ingredients (Herdiana et al.)",
+      "reference" : "Heliyon 10(1):e23624, DOI 10.1016/j.heliyon.2023.e23624 (PMID 38187251); PMC10770512",
+      "date" : "2023-12-13",
+      "tier" : 2,
+      "paraphrase" : "Peer-reviewed review noting microbial/recombinant gelatin can be a halal alternative but that the use of non-halal growth media for microbial cultivation raises concerns regarding permissibility, so halal status is conditional and requires verifying the media and host are halal-compliant."
+    },
+    {
+      "sourceName" : "Trends in Food Science & Technology — Principles of halal-compliant fermentations: Microbial alternatives for the halal food industry (Karahalil)",
+      "reference" : "Trends Food Sci. Technol. 98:1-9 (2020), DOI 10.1016/j.tifs.2020.01.031",
+      "date" : "2020",
+      "tier" : 2,
+      "paraphrase" : "Peer-reviewed review presenting guidelines for halal-compliant fermentation, holding that microbial substitutes are halal only when the production process — growth media, host strain, processing aids and any genetic modification — is itself halal-compliant; otherwise compliance must be verified case by case."
+    }
+  ],
+  "researcherNote" : "Microbial gelatin regraded to 2 (conditional, verify certification). Two independent peer-reviewed sources honestly describe the conditional status. APPROVED by owner 2026-06-28.",
+  "decision" : "approved"
+}

@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "E471",
+    "origin" : "unspecified",
+    "position" : "lenient"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "American Halal Foundation (AHF) — 'Are Mono Diglycerides Halal?' (Azmi Anees)",
+      "reference" : "https://halalfoundation.org/are-mono-diglycerides-halal/",
+      "date" : "2025-05-25",
+      "tier" : 1,
+      "paraphrase" : "AHF notes E471 may be derived from plant oils, halal-slaughtered beef, non-zabiha beef, or pork. Even under a lenient reading the pork-derived possibility cannot be cleared — pork-derived mono/diglycerides are never halal, and the chemical transformation is not considered complete — so undisclosed-origin E471 remains doubtful (avoid unless labeled vegetable or halal-certified) rather than presumptively permissible."
+    },
+    {
+      "sourceName" : "Darul Iftaa, Jaamia Madinatul Uloom (Trinidad) — 'Is Mono and di-glycerides (E471) permissible?' (Mufti Arshad Ali)",
+      "reference" : "https://fatwa-tt.com/index.php/is-mono-and-di-glycerides-e471-permissible/",
+      "date" : "2023-05-03",
+      "tier" : 1,
+      "paraphrase" : "The fatwa permits plant-derived E471 but rules animal-derived impermissible unless from an Islamically-slaughtered animal, and advises abstaining from products with mono/diglycerides unless labeled 100% vegetable. It stresses that abstaining from doubtful/haram food is a core obligation — so even a lenient consumer is directed to verify rather than assume permissibility."
+    }
+  ],
+  "researcherNote" : "E471 seeded lenient = grade 3 (Questionable — contested). The lenient position does NOT reach halal because the undisclosed source could be pork, which is haram under all positions and not cleared even by the Hanafi istihalah view for incomplete transformation. Both tier-1 sources support 'doubtful, verify source.' Two independent sources. APPROVED by owner 2026-07-01.",
+  "decision" : "approved"
+}

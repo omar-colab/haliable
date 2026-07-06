@@ -1,0 +1,18 @@
+{
+  "target": {
+    "kind": "certifier",
+    "subject": "jakim",
+    "position": "lenient"
+  },
+  "proposed": [
+    {
+      "sourceName": "JAKIM e-SMAF — Muzakarah Jawatankuasa Fatwa MKI, 'Hukum Mengenai Stunning Haiwan' (2005)",
+      "reference": "http://e-smaf.islam.gov.my/e-smaf/index.php/main/mainv1/fatwa/pr/15293 (archived: https://web.archive.org/web/20220812213032/http://e-smaf.islam.gov.my/e-smaf/index.php/main/mainv1/fatwa/pr/15293)",
+      "date": "2005-01-01",
+      "tier": 1,
+      "paraphrase": "Malaysia's National Fatwa Committee regime published by JAKIM (captive-bolt prohibited; only non-lethal, head-only electrical stunning under accredited Muslim supervision; Islamic slaughter throughout) comfortably exceeds the lenient bar, which requires only lawful slaughter and halal ingredients."
+    }
+  ],
+  "researcherNote": "JAKIM recovery (was deferred: no fetch-verifiable MS 1500 source — portal 404s/ECONNREFUSED, PDFs binary-corrupt). Resolved via JAKIM's own e-SMAF national fatwa database, read in full through Wayback Machine archives of the live pages (canonical URL + archive URL both in the reference). Stunning fatwa (2005) backs general/lenient; Special Muzakarah alcohol decision (2011) backs hanafiStrict on the same alcohol axis as MUI/ESMA, with the seafood-axis gap flagged in the paraphrase. JAKIM permits controlled stunning → correctly NOT mapped to zabiha. APPROVED by owner (batch pre-approval, continued 2026-07-02).",
+  "decision": "approved"
+}

@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "natural flavors",
+    "origin" : "unspecified",
+    "position" : "general"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "US FDA — 21 CFR §101.22(a)(3), definition of natural flavor",
+      "reference" : "21 CFR §101.22(a)(3); https://www.law.cornell.edu/cfr/text/21/101.22",
+      "date" : "accessed 2026-06-28",
+      "tier" : 1,
+      "paraphrase" : "The US federal definition of 'natural flavor' permits derivation from 'meat, seafood, poultry, eggs, dairy products, or fermentation products thereof' as well as plant material, and the specific constituents need not be disclosed on the label — so a bare 'natural flavors' declaration does not establish whether the source is halal."
+    },
+    {
+      "sourceName" : "American Halal Foundation — Halal Certification for Natural & Artificial Flavors",
+      "reference" : "https://halalfoundation.org/insights/flavors/",
+      "date" : "accessed 2026-06-28",
+      "tier" : 1,
+      "paraphrase" : "The American Halal Foundation states natural flavors are not halal by default: flavors sourced from haram animal sources or produced with animal derivatives are haram, and flavors using ethanol extraction with residuals above 5000 ppm are haram; halal status therefore requires source/process verification."
+    }
+  ],
+  "researcherNote" : "'Natural flavors' is an undisclosed FDA umbrella that may be animal-derived or alcohol-extracted, so absent certification its halal status is genuinely doubtful -> seeded draft grade 3 (Questionable - contested) at the general position. Two independent tier-1 sources (FDA regulatory standard + AHF halal certifier). High-traffic -> two independent sources present. APPROVED by owner 2026-06-28.",
+  "decision" : "approved"
+}

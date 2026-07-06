@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "E422",
+    "origin" : "unspecified",
+    "position" : "zabiha"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "Darul Iftaa Mahmudiyyah (Lusaka, Zambia) — Fatwa #326 on Glycerine",
+      "reference" : "https://daruliftaazambia.com/fatwa/?id=326",
+      "date" : "2020-01-08",
+      "tier" : 1,
+      "paraphrase" : "Plant and synthetic glycerine is permissible, but glycerine obtained from an animal source is not permissible since the fat is generally derived from a non-halal animal; one should check the source of the glycerine before use and exercise caution when it is unverified."
+    },
+    {
+      "sourceName" : "Islam Q&A — Fatwa 97541 (citing the Standing Committee for Issuing Fatwas)",
+      "reference" : "https://islamqa.info/en/answers/97541",
+      "date" : "2007-05-03",
+      "tier" : 1,
+      "paraphrase" : "Glycerine from pigs or from animals not slaughtered Islamically is haram — one may not eat, drink or use it when haram content is certain or strongly likely — and is permissible only when from a lawfully and properly slaughtered animal (an istihalah exception applies where the fat is chemically transformed into a genuinely different substance)."
+    }
+  ],
+  "researcherNote" : "E422 seeded zabiha = grade 4 (Questionable — widely avoided). Glycerol of unknown source could be non-zabiha animal fat or pork; both tier-1 Sunni fatwas require a lawfully-slaughtered source / verification, so the strict zabiha position avoids unverified E422. Two independent tier-1 sources. APPROVED by owner 2026-07-01.",
+  "decision" : "approved"
+}

@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "E422",
+    "origin" : "unspecified",
+    "position" : "general"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "Darul Ifta Birmingham — 'Skin Care Products Containing Glycerine or Alcohol' (Mufti Mohammed Tosir Miah)",
+      "reference" : "https://daruliftabirmingham.co.uk/skin-care-products-containing-glycerine-or-alcohol/",
+      "date" : "2024-09-01",
+      "tier" : 1,
+      "paraphrase" : "A Hanafi fatwa holding plant/synthetic glycerine permissible without verification, and that where the source of glycerine is uncertain and cannot reasonably be confirmed it is permissible to assume it is halal — invoking the principle that investigating every ingredient's source causes undue hardship (answer given regarding externally-used products)."
+    },
+    {
+      "sourceName" : "Darul Iftaa Mahmudiyyah (Lusaka, Zambia) — Fatwa #326 on Glycerine",
+      "reference" : "https://daruliftaazambia.com/fatwa/?id=326",
+      "date" : "2020-01-08",
+      "tier" : 1,
+      "paraphrase" : "By contrast, this fatwa rules glycerine from an animal source not permissible (fat generally from a non-halal animal) and advises checking the source before use — representing the cautious side of a genuine scholarly disagreement over unverified-source glycerine."
+    }
+  ],
+  "researcherNote" : "E422 seeded general = grade 3 (Questionable — contested). Glycerol is frequently plant/synthetic (so not 'widely avoided'), yet animal-fat sources exist and authorities genuinely split: permissive (Birmingham: assume halal under hardship) vs cautious (Zambia: animal source not permissible, verify). Cited both sides honestly. Two independent tier-1 Sunni sources. APPROVED by owner 2026-07-01.",
+  "decision" : "approved"
+}

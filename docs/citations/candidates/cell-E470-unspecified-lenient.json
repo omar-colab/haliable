@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E470",
+    "origin": "unspecified",
+    "position": "lenient"
+  },
+  "proposed": [
+    {
+      "sourceName": "South African National Halaal Authority (SANHA) — E470b Magnesium Salts of Fatty Acids",
+      "reference": "https://sanha.org.za/2009/12/17/e470b-magnesium-salts-of-fatty-acids/",
+      "date": "2009-12-17",
+      "tier": 1,
+      "paraphrase": "SANHA classifies E470b (magnesium salts of fatty acids / magnesium stearate) as Mushbooh (doubtful): the fatty acids may be plant- or animal-derived, so the source must be checked to determine halal status."
+    },
+    {
+      "sourceName": "SeekersGuidance — 'Is It Permissible to Use Products That Contain Stearic Acid?' (Ustadh Salman Younas)",
+      "reference": "https://islamqa.org/hanafi/seekersguidance-hanafi/107206/is-it-permissible-to-use-products-that-contain-stearic-acid/",
+      "date": "2014-12-08",
+      "tier": 1,
+      "paraphrase": "A Hanafi answer holding that products containing stearic acid / magnesium stearate are permissible even if the source could be animal (including non-halal), because the substance has undergone an essential chemical change (istihalat al-'ayn); it adds that using a product made only from permissible sources remains superior."
+    }
+  ],
+  "researcherNote": "E470 seeded lenient grade 3 (contested) — genuine contest: SANHA classifies E470b mushbooh (verify source) while SeekersGuidance permits it via istihalat al-'ayn. Two independent tier-1. (Note: E470 zabiha grade 4 is deliberately NOT staged — only one cautious tier-1 (SANHA) exists; the other tier-1s permit via istihalah, so two independent sources cannot honestly back a 'widely avoided' zabiha grade. Left pending rather than stretch a source.) APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

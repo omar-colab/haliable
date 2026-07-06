@@ -1,0 +1,18 @@
+{
+  "target": {
+    "kind": "certifier",
+    "subject": "jakim",
+    "position": "hanafiStrict"
+  },
+  "proposed": [
+    {
+      "sourceName": "JAKIM e-SMAF — Muzakarah Khas Jawatankuasa Fatwa MKI, 'Alkohol Dalam Makanan, Minuman, Pewangi Dan Ubat-Ubatan' (14–16 July 2011)",
+      "reference": "http://e-smaf.islam.gov.my/e-smaf/index.php/main/mainv1/fatwa/pr/10281 (archived: https://web.archive.org/web/20250316124307/http://e-smaf.islam.gov.my/e-smaf/index.php/main/mainv1/fatwa/pr/10281)",
+      "date": "2011-07-16",
+      "tier": 1,
+      "paraphrase": "The Special Muzakarah of Malaysia's National Fatwa Committee, published in JAKIM's e-SMAF fatwa database, rules alcohol from khamr production haram and najis, permits soft drinks below 1% v/v only when not produced as khamr, and caps non-khamr alcohol used to stabilise flavourings/colourings at 0.5% in the final product — an alcohol/additive regime at least as strict as the hanafi-strict position. (Seafood caveat: Malaysia follows the Shafi'i view permitting all seafood, an axis the app's hanafi-strict flags but does not currently enforce in the grade matrix.)"
+    }
+  ],
+  "researcherNote": "JAKIM recovery (was deferred: no fetch-verifiable MS 1500 source — portal 404s/ECONNREFUSED, PDFs binary-corrupt). Resolved via JAKIM's own e-SMAF national fatwa database, read in full through Wayback Machine archives of the live pages (canonical URL + archive URL both in the reference). Stunning fatwa (2005) backs general/lenient; Special Muzakarah alcohol decision (2011) backs hanafiStrict on the same alcohol axis as MUI/ESMA, with the seafood-axis gap flagged in the paraphrase. JAKIM permits controlled stunning → correctly NOT mapped to zabiha. APPROVED by owner (batch pre-approval, continued 2026-07-02).",
+  "decision": "approved"
+}

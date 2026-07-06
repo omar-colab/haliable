@@ -1,0 +1,18 @@
+{
+  "target": {
+    "kind": "certifier",
+    "subject": "ifanca",
+    "position": "lenient"
+  },
+  "proposed": [
+    {
+      "sourceName": "Islamic Food & Nutrition Council of America (IFANCA) — Five-Star Halal Identification System",
+      "reference": "https://ifanca.org/unique-five-star-halal-identification-system/",
+      "date": "2015-06-10",
+      "tier": 1,
+      "paraphrase": "IFANCA's Muslim-slaughter, halal-ingredient standard comfortably meets the lenient bar."
+    }
+  ],
+  "researcherNote": "IFANCA accepts mechanical slaughter + controlled stunning → correctly mapped to general/lenient only (its stricter Star-5 tier is non-stun, but the body as a whole certifies mechanical/stunned). APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

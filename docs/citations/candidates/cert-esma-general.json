@@ -1,0 +1,18 @@
+{
+  "target": {
+    "kind": "certifier",
+    "subject": "esma",
+    "position": "general"
+  },
+  "proposed": [
+    {
+      "sourceName": "UAE Ministry of Industry & Advanced Technology (MOIAT / ESMA) — National Halal Program (UAE.S 2055-1 & UAE.S/GSO 993, Cabinet Decree 10/2014)",
+      "reference": "https://moiat.gov.ae/en/programs/halal",
+      "date": "2014-01-01",
+      "tier": 1,
+      "paraphrase": "The UAE.S 2055 / GSO 993 halal standard (Islamic slaughter, prohibited-substance controls) meets the mainstream general-halal baseline."
+    }
+  ],
+  "researcherNote": "ESMA/MOIAT permits stunning under GSO conditions → correctly NOT mapped to zabiha. hanafiStrict rests on strict alcohol/prohibited-substance controls; seafood axis is the known unenforced gap (flagged). APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

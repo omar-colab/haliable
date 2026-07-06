@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "whey",
+    "origin" : "unspecified",
+    "position" : "zabiha"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "SeekersGuidance (Hanafi) — 'Is Rennet in Cheese Halal or Haram to Consume?' (Mawlana Ilyas Patel, checked by Shaykh Faraz Rabbani)",
+      "reference" : "https://seekersguidance.org/answers/hanafi-fiqh/is-rennet-in-cheese-halal-or-haram-to-consume/",
+      "date" : "2011-02-05",
+      "tier" : 1,
+      "paraphrase" : "Because whey/cheese rennet may come from an animal not slaughtered per shariah and the Sunni schools differ on its permissibility, the answer holds it is better to avoid whenever reasonably possible when the source is unknown, owing to the difference of opinion and the doubt therein — supporting strict avoidance for the cautious consumer."
+    },
+    {
+      "sourceName" : "Darul Iftaa New York — 'Hanafi Ruling on Rennet from Non-Pork Animals not Zabiha' (Mufti Muajul I. Chowdhury)",
+      "reference" : "https://askthemufti.us/hanafi-ruling-on-rennet-from-non-pork-animals-not-zabiha/",
+      "date" : "2024-08-01",
+      "tier" : 1,
+      "paraphrase" : "The fatwa concludes that although rennet is pure in itself under Hanafi fiqh, conventional extraction pulls stomach tissue (impure unless the animal was properly slaughtered) into the product, rendering most contemporary animal rennet najis; only microbial rennet or rennet from a properly-slaughtered animal qualifies as lawful — so whey of unknown rennet source is avoided by the zabiha position."
+    }
+  ],
+  "researcherNote" : "whey seeded zabiha = grade 4 (Questionable — widely avoided). Rennet source unknown; the strict zabiha position avoids because the animal rennet may be non-zabiha and modern extraction contaminates with stomach tissue. Two independent tier-1 fatwas directly recommending avoidance / limiting lawfulness to microbial or properly-slaughtered rennet. APPROVED by owner 2026-07-01.",
+  "decision" : "approved"
+}

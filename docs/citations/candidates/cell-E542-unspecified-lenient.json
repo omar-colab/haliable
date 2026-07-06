@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E542",
+    "origin": "unspecified",
+    "position": "lenient"
+  },
+  "proposed": [
+    {
+      "sourceName": "South African National Halaal Authority (SANHA) — E542 (Edible Bone Phosphate)",
+      "reference": "https://sanha.org.za/2009/12/17/e542-edible-bone-phosphate/",
+      "date": "2009-12-17",
+      "tier": 1,
+      "paraphrase": "SANHA classifies E542 (edible bone phosphate) as Mushbooh (doubtful): it is derived from animal bones, so the animal source (pork/non-zabiha vs halal) must be verified before it can be considered permissible."
+    },
+    {
+      "sourceName": "Islam Q&A — Fatwa 233750 'Ruling on sugar refined using bone char'",
+      "reference": "https://islamqa.info/en/answers/233750",
+      "date": "2020-02-18",
+      "tier": 1,
+      "paraphrase": "Holds that bone material burned/processed into a different substance undergoes istihalah (complete transformation) and becomes pure (tahir) — the view of the Hanafi and Maliki schools and the Permanent Committee — the permissive side of the dispute over bone-derived additives."
+    }
+  ],
+  "researcherNote": "E542 seeded lenient grade 4 (widely avoided). Kept at avoid: SANHA mushbooh (animal bone) vs the istihalah-purity view — a genuine dispute, and unspecified bone source could be pork, so even leniently verification is required. Two independent tier-1. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

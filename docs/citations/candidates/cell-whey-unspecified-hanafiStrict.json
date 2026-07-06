@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "whey",
+    "origin" : "unspecified",
+    "position" : "hanafiStrict"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "Darul Iftaa New York — 'Hanafi Ruling on Rennet from Non-Pork Animals not Zabiha' (Mufti Muajul I. Chowdhury)",
+      "reference" : "https://askthemufti.us/hanafi-ruling-on-rennet-from-non-pork-animals-not-zabiha/",
+      "date" : "2024-08-01",
+      "tier" : 1,
+      "paraphrase" : "Within the Hanafi school itself the ruling is contested: rennet is pure/halal in itself (Imam Abu Hanifa held the stomach moisture is not impure), yet conventional extraction contaminates it with stomach tissue that is impure unless the animal was slaughtered per shariah, which this fatwa says renders most contemporary animal rennet najis — leaving unknown-source whey doubtful even for a strict Hanafi."
+    },
+    {
+      "sourceName" : "SeekersGuidance (Hanafi) — 'Is Rennet in Cheese Halal or Haram to Consume?' (Mawlana Ilyas Patel, checked by Shaykh Faraz Rabbani)",
+      "reference" : "https://seekersguidance.org/answers/hanafi-fiqh/is-rennet-in-cheese-halal-or-haram-to-consume/",
+      "date" : "2011-02-05",
+      "tier" : 1,
+      "paraphrase" : "The Hanafi answer permits rennet from non-porcine animals in principle (no circulating blood, so it cannot 'die'), but advises it is better to avoid when the source is unknown because of the difference of opinion between the schools and the doubt involved — so the strict Hanafi reading treats unknown-source whey as contested/doubtful."
+    }
+  ],
+  "researcherNote" : "whey seeded hanafiStrict = grade 3 (Questionable — contested). Genuine intra-Hanafi split (Abu Hanifa: rennet pure/permissible vs the Saahibayn: stomach liquids impure on death) plus the modern extraction-contamination caveat = contested, not clean-halal. Two independent tier-1 Hanafi fatwas documenting the disagreement. APPROVED by owner 2026-07-01.",
+  "decision" : "approved"
+}

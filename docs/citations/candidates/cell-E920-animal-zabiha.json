@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E920",
+    "origin": "animal",
+    "position": "zabiha"
+  },
+  "proposed": [
+    {
+      "sourceName": "Darul Iftaa Mahmudiyyah (Lusaka, Zambia) — Fatwa #1297 (Mufti Bilal Pandor)",
+      "reference": "https://daruliftaazambia.com/fatwa/?id=1297",
+      "date": "2024-12-11",
+      "tier": 1,
+      "paraphrase": "Holds that bread containing L-cysteine is doubtful (mushbooh) and should be avoided unless the source is verified, because E920 may be derived from human hair or pork; it is permissible only when sourced from bird feathers, halal animals, or vegetables."
+    },
+    {
+      "sourceName": "Askimam (Darul Iftaa, Mufti Ebrahim Desai) — Fatwa 13859 on L-cysteine source",
+      "reference": "https://islamqa.org/hanafi/askimam/13859/",
+      "date": "2026-07-01",
+      "tier": 1,
+      "paraphrase": "A Hanafi ruling that L-cysteine (E920) is halal if made from chicken/duck feathers but not halal if made from human hair — the ruling depends entirely on the verified source. (Standing fatwa, accessed 2026-07-01.)"
+    }
+  ],
+  "researcherNote": "E920/animal seeded zabiha grade 5 (Haram). Worst-case animal source (human hair / pork): Zambia rules it not permissible when human-hair/pork-derived; Askimam rules human-hair L-cysteine not halal. Two independent tier-1 on the strict side. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

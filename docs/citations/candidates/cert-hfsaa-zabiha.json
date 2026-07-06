@@ -1,0 +1,18 @@
+{
+  "target": {
+    "kind": "certifier",
+    "subject": "hfsaa",
+    "position": "zabiha"
+  },
+  "proposed": [
+    {
+      "sourceName": "Halal Food Standards Alliance of America (HFSAA) — Official Halal Standard ('About')",
+      "reference": "https://www.hfsaa.org/about",
+      "date": "2026-07-01",
+      "tier": 1,
+      "paraphrase": "HFSAA requires slaughter by the hand of a Muslim (machine slaughter is explicitly non-conforming) with the name of God recited over every individual animal — meeting the zabiha hand-slaughtered-only bar. (Stunning, where necessary, must be reversible and never lethal; the animal must be alive at slaughter.) (Accessed 2026-07-01.)"
+    }
+  ],
+  "researcherNote": "HFSAA = hand-slaughter (no machine), Tasmiyah each, reversible-stun-only (its own standard). Zabiha claim noted: HFSAA permits reversible stunning where necessary, but requires hand-slaughter + name on each animal, which meets the app's zabiha definition; HMC is stricter still (no stun at all). APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

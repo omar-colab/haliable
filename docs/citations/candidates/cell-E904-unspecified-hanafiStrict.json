@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E904",
+    "origin": "unspecified",
+    "position": "hanafiStrict"
+  },
+  "proposed": [
+    {
+      "sourceName": "Darul Iftaa, Jaamia Madinatul Uloom Trinidad — 'Is Shellac Halaal?' (Mufti Arshad Ali)",
+      "reference": "https://fatwa-tt.com/index.php/is-shellac-halaal/",
+      "date": "2016-03-22",
+      "tier": 1,
+      "paraphrase": "Rules that shellac (E904), the lac-insect resin used as a glaze in confectionery, bakery and pharmaceutical products, is halal (referencing SANHA)."
+    },
+    {
+      "sourceName": "Darul Ifta Birmingham — 'Confused As to Whether or Not Shellac Is Permissible' (checked by Mufti Mohammed Tosir Miah)",
+      "reference": "https://daruliftabirmingham.co.uk/home/confused-as-to-whether-or-not-shellac-is-permissible/",
+      "date": "2021-02-05",
+      "tier": 1,
+      "paraphrase": "Rules shellac (E904) impermissible (haram) to consume because it is insect-produced content and insects fall under the 'Hawwam' category that is unlawful to eat — hence confectionery containing shellac is not lawful."
+    }
+  ],
+  "researcherNote": "E904 seeded hanafiStrict grade 3 (contested). Sharp real split between tier-1 darul-iftaas: Trinidad (citing SANHA) rules shellac halal; Birmingham rules it haram as insect (Hawwam) content. Two independent tier-1, both sides. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

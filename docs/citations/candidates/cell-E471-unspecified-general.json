@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "E471",
+    "origin" : "unspecified",
+    "position" : "general"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "American Halal Foundation (AHF) — 'Are Mono Diglycerides Halal?' (Azmi Anees)",
+      "reference" : "https://halalfoundation.org/are-mono-diglycerides-halal/",
+      "date" : "2025-05-25",
+      "tier" : 1,
+      "paraphrase" : "AHF classifies E471 (mono- and diglycerides) as source-dependent: halal only when derived from 100% plant oils (palm, soy, canola) or carrying a recognized halal logo; non-zabiha beef and pork-derived forms are not halal. Because labels rarely disclose the source, most certifiers including AHF advise consumers to AVOID E471 unless it is explicitly labeled 'vegetable mono & diglycerides' or the finished product bears a halal mark — i.e. it is doubtful (mushbooh) at the general position."
+    },
+    {
+      "sourceName" : "Darul Iftaa, Jaamia Madinatul Uloom (Trinidad) — 'Is Mono and di-glycerides (E471) permissible?' (Mufti Arshad Ali)",
+      "reference" : "https://fatwa-tt.com/index.php/is-mono-and-di-glycerides-e471-permissible/",
+      "date" : "2023-05-03",
+      "tier" : 1,
+      "paraphrase" : "The fatwa holds that E471 is permissible when plant-derived and impermissible when animal-derived unless the animal was slaughtered per Islamic law; it advises Muslims to avoid products containing mono- and diglycerides unless labeled 100% vegetable, and to contact the manufacturer to verify origin when the source is unlisted — treating undisclosed-origin E471 as doubtful."
+    }
+  ],
+  "researcherNote" : "E471 seeded general = grade 3 (Questionable — contested). Undisclosed source: majority commercial E471 is now plant (~60%) but animal (incl. pork/non-zabiha) remains common and labels don't disclose, so mainstream/general practice treats it as genuinely doubtful — matches grade 3. Two independent tier-1 sources (AHF certification body + Trinidad Darul Iftaa), both directly supporting the doubtful/verify-source stance. High-traffic -> two independent sources present. APPROVED by owner 2026-07-01.",
+  "decision" : "approved"
+}

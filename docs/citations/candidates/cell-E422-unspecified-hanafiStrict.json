@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "E422",
+    "origin" : "unspecified",
+    "position" : "hanafiStrict"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "Darul Iftaa Mahmudiyyah (Lusaka, Zambia) — Fatwa #326 on Glycerine",
+      "reference" : "https://daruliftaazambia.com/fatwa/?id=326",
+      "date" : "2020-01-08",
+      "tier" : 1,
+      "paraphrase" : "A Hanafi darul-iftaa ruling that plant and synthetic glycerine is permissible while glycerine from an animal source is not permissible (the fat being generally from a non-halal animal), and that one should check the source and exercise caution when it is unverified — so the strict Hanafi practitioner avoids unverified glycerine."
+    },
+    {
+      "sourceName" : "Islam Q&A — Fatwa 97541 (citing the Standing Committee for Issuing Fatwas)",
+      "reference" : "https://islamqa.info/en/answers/97541",
+      "date" : "2007-05-03",
+      "tier" : 1,
+      "paraphrase" : "Where haram content (pig-derived or improperly-slaughtered animal glycerine) is certain or strongly suspected, it is obligatory to avoid eating, drinking or using it; only a lawfully-slaughtered source (or genuine istihalah) makes it permissible — supporting strict avoidance of doubtful-source E422."
+    }
+  ],
+  "researcherNote" : "E422 seeded hanafiStrict = grade 4 (Questionable — widely avoided). The strict Hanafi position follows the cautious 'animal source not permissible / avoid when haram suspected' rulings; the more permissive 'assume-halal under hardship' Hanafi view (Darul Ifta Birmingham) maps to the general/lenient positions, not this one. Two independent tier-1 Sunni sources. APPROVED by owner 2026-07-01.",
+  "decision" : "approved"
+}

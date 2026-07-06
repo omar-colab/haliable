@@ -1,0 +1,18 @@
+{
+  "target": {
+    "kind": "certifier",
+    "subject": "ahf",
+    "position": "general"
+  },
+  "proposed": [
+    {
+      "sourceName": "American Halal Foundation (AHF) — AHF Halal Standard (HCS-001)",
+      "reference": "https://halalfoundation.org/ahf-halal-standards/",
+      "date": "2024-11-28",
+      "tier": 1,
+      "paraphrase": "AHF's HCS-001 standard requires manual slaughter by a practicing Muslim with Tasmiyah/Takbir on each animal, only reversible stunning (animal alive at slaughter), and prohibits pork, blood and khamr (≥1% ethanol) — comfortably meeting the mainstream general-halal baseline."
+    }
+  ],
+  "researcherNote": "FLAG: AHF's published HCS-001 (2024-11-28) actually requires MANUAL slaughter (machine non-conforming) + reversible-stun-only + Tasmiyah on each — STRICTER than the app's draft rationale ('mainstream US; accept mechanical slaughter'). The general/lenient claims remain true (AHF satisfies them and more); the draft could later PROMOTE AHF toward hanafiStrict. Flagged for owner — not cited beyond the model's confidentlySatisfies set. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

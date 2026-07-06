@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "flavor ethanol carrier",
+    "origin" : "unspecified",
+    "position" : "general"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "MUI (Indonesian Ulema Council) — Fatwa No. 10 of 2018 on Food & Beverage Products Containing Alcohol/Ethanol",
+      "reference" : "MUI Fatwa No. 10/2018; https://halalmui.org/understand-fatwa-mui-about-ethanol-levels-in-food-and-beverage-products/",
+      "date" : "2018",
+      "tier" : 1,
+      "paraphrase" : "MUI's fatwa permits ethanol as a solvent/carrier in flavors and seasonings provided it is NOT derived from the khamr (alcoholic-beverage) industry — synthetic or non-khamr fermentation ethanol is allowed — with the final beverage product tolerated below 0.5%; khamr-derived ethanol is impermissible and unclean."
+    },
+    {
+      "sourceName" : "MUIS (Islamic Religious Council of Singapore) — Fatwa on Ethanol in Food Flavorings",
+      "reference" : "https://www.muis.gov.sg/resources/khutbah-and-religious-advice/fatwa/ethanol--english/",
+      "date" : "2025-02-21",
+      "tier" : 1,
+      "paraphrase" : "MUIS rules that ethanol (natural or synthetic) used as a solvent in food flavorings is allowed when not produced from prohibited products, with ethanol in the flavoring not exceeding 0.5% and in the final product not exceeding 0.1%, used exclusively for flavoring."
+    }
+  ],
+  "researcherNote" : "Flavor ethanol carrier at the general position. Major halal authorities (MUI, MUIS) permit non-khamr ethanol carriers below threshold, and industrial flavor ethanol is generally non-khamr, so the general position widely accepts it -> seeded draft grade 2 (Questionable - widely accepted). Two independent tier-1 halal authorities. High-traffic -> two independent sources present. APPROVED by owner 2026-06-29.",
+  "decision" : "approved"
+}

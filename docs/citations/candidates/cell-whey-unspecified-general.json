@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "whey",
+    "origin" : "unspecified",
+    "position" : "general"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "SeekersGuidance (Hanafi) — 'Is Rennet in Cheese Halal or Haram to Consume?' (Mawlana Ilyas Patel, checked by Shaykh Faraz Rabbani)",
+      "reference" : "https://seekersguidance.org/answers/hanafi-fiqh/is-rennet-in-cheese-halal-or-haram-to-consume/",
+      "date" : "2011-02-05",
+      "tier" : 1,
+      "paraphrase" : "There is a genuine cross-school difference: the Hanafi school permits rennet from non-porcine animals even if not slaughtered per shariah (rennet has no circulating blood, so it cannot 'die'), while the Shafi'i and Hanbali schools differ — creating uncertainty. When the source is unknown it is better to avoid because of this difference of opinion and the doubt therein; porcine-derived rennet is prohibited outright."
+    },
+    {
+      "sourceName" : "Darul Iftaa New York — 'Hanafi Ruling on Rennet from Non-Pork Animals not Zabiha' (Mufti Muajul I. Chowdhury)",
+      "reference" : "https://askthemufti.us/hanafi-ruling-on-rennet-from-non-pork-animals-not-zabiha/",
+      "date" : "2024-08-01",
+      "tier" : 1,
+      "paraphrase" : "The fatwa notes the Hanafi school considers non-pork rennet pure regardless of slaughter method, whereas the other legal schools regard rennet from an improperly-slaughtered animal as haram and najis; combined with modern extraction contaminating the product with stomach tissue, unknown-source whey is genuinely contested across the schools."
+    }
+  ],
+  "researcherNote" : "whey seeded general = grade 3 (Questionable — contested). Whey is a cheese byproduct; when the rennet source is unknown the schools genuinely split (Hanafi permits non-pork rennet even non-zabiha; Shafi'i/Hanbali treat it as maytah/haram) and porcine pepsin is a possibility — so mainstream/general status is contested. Two independent tier-1 sources documenting the split. APPROVED by owner 2026-07-01.",
+  "decision" : "approved"
+}

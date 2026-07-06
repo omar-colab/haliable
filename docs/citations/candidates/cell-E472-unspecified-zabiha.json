@@ -1,0 +1,19 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E472",
+    "origin": "unspecified",
+    "position": "zabiha"
+  },
+  "proposed": [
+    {
+      "sourceName": "South African National Halaal Authority (SANHA) — E472(e) Acetyltartaric Acid Glycerol Esters",
+      "reference": "https://sanha.org.za/2009/12/17/e472e-acetyltartaric-acid-glycerol-esters/",
+      "date": "2009-12-17",
+      "tier": 1,
+      "paraphrase": "SANHA classifies E472(e)/DATEM as Mushbooh (doubtful): it is esters of acetic acid, glycerol, tartaric acid and fatty acids, so the source of the glycerol and fatty acids (plant oil vs animal/pork fat) must be checked to determine halal status."
+    }
+  ],
+  "researcherNote": "E472 seeded zabiha grade 4 (widely avoided). SANHA classes E472(e)/DATEM mushbooh (verify glycerol/fatty-acid source); strict follower avoids unverified ester emulsifiers. One tier-1 (non-high-traffic, non-lenient → one clearing citation suffices). APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

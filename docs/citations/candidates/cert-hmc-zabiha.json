@@ -1,0 +1,18 @@
+{
+  "target": {
+    "kind": "certifier",
+    "subject": "hmc",
+    "position": "zabiha"
+  },
+  "proposed": [
+    {
+      "sourceName": "Halal Monitoring Committee (HMC UK) — 'HMC Criteria for Halal'",
+      "reference": "https://halalhmc.org/about/hmc-criteria-for-halal/",
+      "date": "2026-07-01",
+      "tier": 1,
+      "paraphrase": "HMC requires every animal to be hand-slaughtered by a practicing Muslim with the Tasmiyah recited over each one, prohibits all machine/mechanical slaughter and all stunning, and requires the animal to be alive and healthy at slaughter — fully meeting the zabiha (hand-slaughtered only) bar. (Standing criteria, accessed 2026-07-01.)"
+    }
+  ],
+  "researcherNote": "HMC = hand-slaughter, no-stun, Tasmiyah on each animal (its own published criteria) → genuinely satisfies all four positions. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

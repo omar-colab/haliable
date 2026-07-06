@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "flavor ethanol carrier",
+    "origin" : "unspecified",
+    "position" : "hanafiStrict"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "Mufti Muhammad ibn Adam al-Kawthari — Darul Iftaa, Leicester (in 'Alcohol: Its Kinds, Usage and Rulings', central-mosque.com)",
+      "reference" : "https://central-mosque.com/index.php/General-Fiqh/alcohol-its-kinds-usage-and-rulings.html",
+      "date" : "accessed 2026-06-29",
+      "tier" : 1,
+      "paraphrase" : "Within the Hanafi school the relied-upon (mufta bihi) fatwa follows Imam Muhammad — that all alcohols are unlawful (haram) and impure (najis) even in small quantities — so the strict Hanafi reading avoids added ethanol carriers in food."
+    },
+    {
+      "sourceName" : "Mufti Ismail Kotwal — Mathabah Institute (Darul Iftaa) — Ethanol Alcohol in Food and Drinks",
+      "reference" : "https://islamqa.org/hanafi/mathabah/133736/ethanol-alcohol-in-food-and-drinks/",
+      "date" : "accessed 2026-06-29",
+      "tier" : 1,
+      "paraphrase" : "A contemporary Hanafi fatwa holding that the relied-upon position permits consuming NON-khamr alcohol in a non-intoxicating amount (following Abu Hanifa and Abu Yusuf), while advising it is better to abstain when an alternative is available — representing the permissive side of the genuine intra-Hanafi split."
+    }
+  ],
+  "researcherNote" : "Owner chose option (1): regraded hanafiStrict 4 -> 3 (Questionable - CONTESTED) in GradeMatrix line 237. The Hanafi school is itself split: Imam Muhammad's mufta-bihi view (Ibn Adam) avoids ALL ethanol, while Abu Hanifa/Abu Yusuf's view (Kotwal/Mathabah) permits non-khamr in non-intoxicating amounts. Both verified tier-1 Hanafi fatwas, cited honestly to show the contestation. Two independent sources. APPROVED by owner 2026-06-29.",
+  "decision" : "approved"
+}

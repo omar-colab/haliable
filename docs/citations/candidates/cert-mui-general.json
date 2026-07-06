@@ -1,0 +1,18 @@
+{
+  "target": {
+    "kind": "certifier",
+    "subject": "mui",
+    "position": "general"
+  },
+  "proposed": [
+    {
+      "sourceName": "LPPOM MUI (Majelis Ulama Indonesia) — Halal Assurance System HAS 23000 & MUI Fatwa No. 10/2018 on ethanol",
+      "reference": "https://halalmui.org/understand-fatwa-mui-about-ethanol-levels-in-food-and-beverage-products/",
+      "date": "2018-01-01",
+      "tier": 1,
+      "paraphrase": "MUI's HAS 23000 (Muslim slaughter under Islamic conditions, halal-verified inputs, khamr prohibited) meets the mainstream general-halal baseline."
+    }
+  ],
+  "researcherNote": "MUI permits manual OR mechanical slaughter with reversible stunning → correctly NOT mapped to zabiha. hanafiStrict rests on MUI's strict alcohol/najs standard; seafood axis is a known unenforced carried gap (flagged). APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

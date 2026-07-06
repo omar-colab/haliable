@@ -1,0 +1,19 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E570",
+    "origin": "unspecified",
+    "position": "zabiha"
+  },
+  "proposed": [
+    {
+      "sourceName": "South African National Halaal Authority (SANHA) — E570 (Stearic Acid)",
+      "reference": "https://sanha.org.za/2009/12/17/e570-stearic-acid/",
+      "date": "2009-12-17",
+      "tier": 1,
+      "paraphrase": "SANHA classifies E570 (stearic acid) as Mushbooh (doubtful): it may come from animal or vegetable oils (or synthetically from vegetable oils), so the source must be verified — plant-derived is halal, animal-derived only if the animal was slaughtered Islamically."
+    }
+  ],
+  "researcherNote": "E570 seeded zabiha grade 4 (widely avoided) — SANHA mushbooh (verify source); the strict follower avoids unverified stearic acid. One tier-1 (non-high-traffic). APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

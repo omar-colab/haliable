@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "whey",
+    "origin" : "unspecified",
+    "position" : "lenient"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "SeekersGuidance (Hanafi) — 'Is Rennet in Cheese Halal or Haram to Consume?' (Mawlana Ilyas Patel, checked by Shaykh Faraz Rabbani)",
+      "reference" : "https://seekersguidance.org/answers/hanafi-fiqh/is-rennet-in-cheese-halal-or-haram-to-consume/",
+      "date" : "2011-02-05",
+      "tier" : 1,
+      "paraphrase" : "Even on the permissive Hanafi view that non-porcine rennet is lawful, the answer still advises avoiding when the source is unknown and stresses that porcine-derived rennet is prohibited — so a lenient consumer cannot simply presume unknown-source whey halal, because the source could be porcine."
+    },
+    {
+      "sourceName" : "Darul Iftaa New York — 'Hanafi Ruling on Rennet from Non-Pork Animals not Zabiha' (Mufti Muajul I. Chowdhury)",
+      "reference" : "https://askthemufti.us/hanafi-ruling-on-rennet-from-non-pork-animals-not-zabiha/",
+      "date" : "2024-08-01",
+      "tier" : 1,
+      "paraphrase" : "The fatwa holds that even under the lenient Hanafi principle that non-pork rennet is pure, conventional extraction contaminates the product with impure stomach tissue, so most contemporary animal rennet is najis; only microbial or properly-slaughtered rennet is clearly lawful — leaving unknown-source whey doubtful rather than presumptively permissible."
+    }
+  ],
+  "researcherNote" : "whey seeded lenient = grade 3 (Questionable — contested), NOT grade 2. The lenient (Hanafi-permit) position still does not reach 'widely accepted' for UNKNOWN-source whey, because (a) the source could be porcine pepsin (haram in all schools) and (b) the modern extraction-contamination caveat. Both tier-1 sources support 'avoid/doubtful when source unknown.' Two independent sources. INTEGRITY: did not stretch lenient to halal. APPROVED by owner 2026-07-01.",
+  "decision" : "approved"
+}

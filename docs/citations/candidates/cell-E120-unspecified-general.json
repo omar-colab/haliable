@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "E120",
+    "origin" : "unspecified",
+    "position" : "general"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "Darul Ifta Birmingham — 'Ruling of Carmine (E120) Cochineal Insects' (Maulana Mohammed Haroon Hussain)",
+      "reference" : "https://islamqa.org/hanafi/daruliftaa-birmingham/244749/what-is-the-ruling-of-carmine-cochineal-insects/",
+      "date" : "accessed 2026-07-01",
+      "tier" : 1,
+      "paraphrase" : "This Hanafi fatwa rules carmine (E120), derived from cochineal insects, impermissible to consume: insects fall under khabaith (things sound human disposition finds repugnant), and only locusts, extreme necessity, or negligible unavoidable amounts are excepted — carmine is added deliberately and avoidably, so it does not qualify."
+    },
+    {
+      "sourceName" : "Darul-Ifta, al-Jamia al-Ulum al-Islamiyya (Binnori Town) — 'Ruling on Carmine in Food' via SeekersGuidance (Mawlana Ilyas Patel)",
+      "reference" : "https://seekersguidance.org/answers/halal-and-haram/what-is-the-ruling-on-carmine-in-food-and-non-food-items/",
+      "date" : "accessed 2026-07-01",
+      "tier" : 1,
+      "paraphrase" : "Per the majority of jurists, consuming carmine (cochineal insect dye) in food is impermissible because insects are khabaith (vile things) per Qur'an 7:157; the pigment is ritually pure for wudu and permissible in cosmetics, but not lawful to eat."
+    }
+  ],
+  "researcherNote" : "E120 seeded general = grade 4 (Questionable — widely avoided). Carmine is unambiguously insect-derived (single-possibility E-number); the majority position (Hanafi/Shafi'i/Hanbali) treats insects other than locust as khabaith, so mainstream/general practice avoids it. Two independent tier-1 Hanafi darul-ifta fatwas, both directly ruling impermissible. High-traffic -> two independent sources. APPROVED by owner 2026-07-01.",
+  "decision" : "approved"
+}

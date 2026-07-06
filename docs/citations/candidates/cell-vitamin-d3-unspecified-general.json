@@ -1,0 +1,19 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "vitamin d3",
+    "origin": "unspecified",
+    "position": "general"
+  },
+  "proposed": [
+    {
+      "sourceName": "Darul Ifta Birmingham — 'Is Vitamin D3 from Sheep Wool Halal?' (Maulana Muddasser Dhedhy)",
+      "reference": "https://daruliftabirmingham.co.uk/home/is-vitamin-d3-from-sheep-wool-halal/",
+      "date": "2026-07-01",
+      "tier": 1,
+      "paraphrase": "A Hanafi ruling that vitamin D3 (cholecalciferol) extracted from sheep-wool lanolin is halal, because wool contains no blood and is pure (tahir) whether from a living or non-slaughtered animal, and lanolin is a byproduct of shearing a living sheep. (Standing fatwa, accessed 2026-07-01.)"
+    }
+  ],
+  "researcherNote": "vitamin d3 seeded general grade 2 (widely accepted). Lanolin-derived D3 permissible (Darul Ifta Birmingham). One tier-1. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

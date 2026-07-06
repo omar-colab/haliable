@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E470",
+    "origin": "unspecified",
+    "position": "zabiha"
+  },
+  "proposed": [
+    {
+      "sourceName": "South African National Halaal Authority (SANHA) — E470b Magnesium Salts of Fatty Acids",
+      "reference": "https://sanha.org.za/2009/12/17/e470b-magnesium-salts-of-fatty-acids/",
+      "date": "2009-12-17",
+      "tier": 1,
+      "paraphrase": "SANHA classifies E470b (magnesium salts of fatty acids / magnesium stearate) as Mushbooh (doubtful): the fatty acids may be plant- or animal-derived, so the source must be checked to determine halal status."
+    },
+    {
+      "sourceName": "Council of Islamic Organizations of Greater Chicago (CIOGC) — 'List of Halal and Haram Food Ingredients'",
+      "reference": "https://www.ciogc.org/list-of-halal-and-haram-food-ingredients/",
+      "date": "accessed 2026-07-02",
+      "tier": 1,
+      "paraphrase": "CIOGC's published ingredient list (from Hussaini & Sakr, 'Islamic Dietary Laws and Practices') rules magnesium stearate / stearic acid 'Haram when derived from animal source' — under the strictest position, unspecified-origin E470 whose fatty acids may be animal-derived is therefore avoided."
+    }
+  ],
+  "researcherNote": "E470-zabiha recovery (was: only 1 cautious tier-1). Second distinct cautious identity: CIOGC published list ('Haram when derived from animal source', fetch-verified 2026-07-02). Both sources cautious/direction-matched for grade 4. High-traffic → 2 distinct identities satisfied. APPROVED by owner (batch pre-approval, continued 2026-07-02).",
+  "decision": "approved"
+}

@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "meat",
+    "origin": "animalNonZabiha",
+    "position": "hanafiStrict"
+  },
+  "proposed": [
+    {
+      "sourceName": "Islam Q&A — Fatwa 11609 'Eating beef that has not been slaughtered properly'",
+      "reference": "https://islamqa.info/en/answers/11609",
+      "date": "2001-04-15",
+      "tier": 1,
+      "paraphrase": "Rules that meat from an animal killed without proper Islamic slaughter (e.g. by stunning, strangulation, or a blow) is maytah and haram per Quran 16:115, whether done by Muslims or others; the People-of-the-Book allowance applies only to meat actually slaughtered by a lawful method."
+    },
+    {
+      "sourceName": "About Islam — 'Can I Eat Meat not Islamically Slaughtered?' (Dr. Muhammad Salah, Shari'ah Academy)",
+      "reference": "https://aboutislam.net/counseling/ask-the-scholar/food-slaughter/can-eat-meat-not-islamically-slaughtered/",
+      "date": "2017-12-28",
+      "tier": 1,
+      "paraphrase": "Holds non-Islamically-slaughtered meat forbidden except meat of the People of the Book slaughtered by an actual cut with Allah's name invoked — excluding animals killed by shooting, suffocation or strangulation and anything slaughtered in another name; since modern industrial conditions often fail these, unspecified non-zabiha meat must be verified and is otherwise avoided."
+    }
+  ],
+  "researcherNote": "meat/animalNonZabiha seeded hanafiStrict grade 4 (widely avoided). Non-zabiha meat avoided; the People-of-the-Book allowance requires a verified proper slaughter (often unmet). Two independent tier-1. APPROVED by owner 2026-07-01 (batch pre-approval).",
+  "decision": "approved"
+}

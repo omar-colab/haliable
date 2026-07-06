@@ -1,0 +1,26 @@
+{
+  "target" : {
+    "kind" : "cell",
+    "subject" : "gelatin",
+    "origin" : "plant",
+    "position" : "hanafiStrict"
+  },
+  "proposed" : [
+    {
+      "sourceName" : "American Halal Foundation — Is Gelatin Halal? (Mohammad A. Hussaini, Executive Director)",
+      "reference" : "https://halalfoundation.org/is-gelatin-halal/",
+      "date" : "2024-11-23",
+      "tier" : 1,
+      "paraphrase" : "The American Halal Foundation states that plant-derived gelling substitutes — agar-agar, carrageenan, and pectin — are halal by default because they are sourced from plants and involve no animal slaughter."
+    },
+    {
+      "sourceName" : "Heliyon — Towards halal pharmaceutical: Exploring alternatives to animal-based ingredients (Herdiana et al.)",
+      "reference" : "Heliyon 10(1):e23624, DOI 10.1016/j.heliyon.2023.e23624 (PMID 38187251); PMC10770512",
+      "date" : "2023-12-13",
+      "tier" : 2,
+      "paraphrase" : "Peer-reviewed review describing agar-agar, carrageenan, pectin and other plant/algae-derived gelling agents as non-animal substitutes that constitute 100% halal ingredients, requiring no animal source or slaughter."
+    }
+  ],
+  "researcherNote" : "Plant origin involves no animal and no slaughter, so it satisfies the strict (hanafiStrict) position. Two independent sources support seeded draft grade 1 (Halal). APPROVED by owner 2026-06-28.",
+  "decision" : "approved"
+}
