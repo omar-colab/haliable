@@ -10,14 +10,22 @@ import Foundation
 // USDA FoodData Central — our FALLBACK when Open Food Facts
 // doesn't have a product. USDA's Branded Foods dataset has
 // ~1.5M US grocery items with real ingredient statements.
-final class USDAFoodDataService {
+final class USDAFoodDataService: ProductLookupSource {
 
-    // Read from Info.plist (← Secrets.xcconfig). Falls back to USDA's public
-    // demo key so the app still builds before you add your own.
-    private let apiKey: String = {
+    // The USDA key from Info.plist (← git-ignored Secrets.xcconfig). There is NO
+    // hardcoded fallback: a halal verdict must never quietly depend on a shared
+    // public demo key. When the key is absent the USDA tier disables itself
+    // (fetchProduct throws `.configurationMissing`) and the lookup chain skips to
+    // Open Food Facts — see ProductLookupService.
+    static let apiKey: String? = {
         let k = Bundle.main.object(forInfoDictionaryKey: "USDA_API_KEY") as? String
-        return (k?.isEmpty == false && k != "PASTE_YOUR_USDA_KEY_HERE") ? k! : "DEMO_KEY"
+        guard let k, !k.isEmpty, k != "PASTE_YOUR_USDA_KEY_HERE" else { return nil }
+        return k
     }()
+
+    /// Whether the USDA tier is usable (a real key is present).
+    static var isConfigured: Bool { apiKey != nil }
+
     private let session: URLSession
 
     init(session: URLSession = .shared) {
@@ -40,6 +48,13 @@ final class USDAFoodDataService {
     // Same async throws shape as OpenFoodFactsService, so callers
     // treat both services identically.
     func fetchProduct(barcode: String) async throws -> Product {
+        // No key → this tier is unavailable. We throw a typed error instead of
+        // quietly using a shared demo key; the lookup chain skips to OFF.
+        guard let apiKey = Self.apiKey else {
+            throw OFFError.configurationMissing(
+                "USDA lookups need a USDA_API_KEY in Secrets.xcconfig — get a free key at https://fdc.nal.usda.gov/api-key-signup.html")
+        }
+
         // Build the search URL. We query by the barcode and restrict
         // to the Branded dataset (the one with real grocery products).
         var components = URLComponents(string: "https://api.nal.usda.gov/fdc/v1/foods/search")!
@@ -54,16 +69,13 @@ final class USDAFoodDataService {
             throw OFFError.networkFailure(underlying: URLError(.badURL))
         }
 
-        // Do the network call.
-        let data: Data
-        let response: URLResponse
-        do {
-            (data, response) = try await session.data(from: url)
-        } catch {
-            throw OFFError.networkFailure(underlying: error)
-        }
+        // Network call with timeout + retry/backoff (429/5xx/transient) handled
+        // centrally; terminal failures arrive as typed OFFErrors.
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 15
+        let (data, http) = try await HTTPRetry.data(for: request, session: session)
 
-        if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+        if http.statusCode != 200 {
             throw OFFError.badStatus(http.statusCode)
         }
 

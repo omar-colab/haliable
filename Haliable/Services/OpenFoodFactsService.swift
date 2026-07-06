@@ -15,6 +15,9 @@ enum OFFError: Error, LocalizedError {
     case networkFailure(underlying: Error)
     case decoding(Error)
     case badStatus(Int)
+    case configurationMissing(String)
+    case offline
+    case rateLimited(retryAfter: TimeInterval?)
 
     // A human-readable message for each error, used by SwiftUI views later.
     var errorDescription: String? {
@@ -27,6 +30,12 @@ enum OFFError: Error, LocalizedError {
             return "Couldn't read the product data."
         case .badStatus(let code):
             return "Server returned status \(code)."
+        case .configurationMissing(let what):
+            return what
+        case .offline:
+            return "You're offline. We'll show the last saved result if there is one."
+        case .rateLimited:
+            return "The lookup service is busy right now. Please try again in a moment."
         }
     }
 }
@@ -48,20 +57,21 @@ struct OFFProduct: Codable {
     let brands: String?
     let ingredientsText: String?
     let additivesTags: [String]?  // e.g. ["en:e120", "en:e441"]
+    let labelsTags: [String]?     // e.g. ["en:halal", "en:jakim"]
 
     enum CodingKeys: String, CodingKey {
         case brands
         case productName = "product_name"
         case ingredientsText = "ingredients_text"
         case additivesTags = "additives_tags"
+        case labelsTags = "labels_tags"
     }
 }
 
 // OpenFoodFactsService: handed a barcode, returns a Product (or throws).
-final class OpenFoodFactsService {
+final class OpenFoodFactsService: ProductLookupSource {
 
-    // CHANGE THIS to a real contact email before TestFlight.
-    private let userAgent = "Haliable/0.1 (contact@haliable.app)"
+    private let userAgent = "Haliable/0.1 (omarmontasir876@gmail.com)"
     private let session: URLSession
 
     // Allows injecting a custom URLSession for testing later.
@@ -92,17 +102,13 @@ final class OpenFoodFactsService {
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         request.timeoutInterval = 15
 
-        // Actually do the network call. This is the line that pauses.
-        let data: Data
-        let response: URLResponse
-        do {
-            (data, response) = try await session.data(for: request)
-        } catch {
-            throw OFFError.networkFailure(underlying: error)
-        }
+        // Network call with timeout + retry/backoff (429/5xx/transient) handled
+        // centrally; terminal failures arrive as typed OFFErrors.
+        let (data, http) = try await HTTPRetry.data(for: request, session: session)
 
-        // Check the HTTP status code. 200 = OK; anything else = problem.
-        if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+        // OFF returns 200 even for an unknown barcode (status:0 in the body), so a
+        // non-200 here is a real server problem.
+        if http.statusCode != 200 {
             throw OFFError.badStatus(http.statusCode)
         }
 
@@ -135,7 +141,8 @@ final class OpenFoodFactsService {
             name: offProduct.productName ?? "Unknown product",
             brand: offProduct.brands,
             rawIngredientsText: offProduct.ingredientsText,
-            additivesENumbers: eNumbers
+            additivesENumbers: eNumbers,
+            labels: offProduct.labelsTags ?? []
         )
     }
 }
