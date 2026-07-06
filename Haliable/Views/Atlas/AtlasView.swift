@@ -43,10 +43,11 @@ struct AtlasView: View {
                 Button { showSubmit = true } label: {
                     Image(systemName: "plus").font(.title2.bold())
                         .frame(width: 56, height: 56)
-                        .background(.green, in: Circle())
-                        .foregroundStyle(.white).shadow(radius: 4)
+                        .background(DSColor.accent, in: Circle())
+                        .foregroundStyle(DSColor.background)
+                        .shadow(color: DSColor.accent.opacity(0.5), radius: 10, y: 2)
                 }
-                .padding()
+                .padding(DSSpacing.md)
             }
             .navigationTitle("Find Halal")
             .navigationBarTitleDisplayMode(.inline)
@@ -82,10 +83,10 @@ struct AtlasView: View {
 
     private func tint(for scope: HalalScope) -> Color {
         switch scope {
-        case .fullyHalal:    return .green
-        case .halalMeatOnly: return .teal
-        case .halalOptions:  return Color(red: 0.71, green: 0.52, blue: 0.16)
-        case .unverified:    return .gray
+        case .fullyHalal:    return DSColor.success
+        case .halalMeatOnly: return .teal               // distinct hue; no semantic token
+        case .halalOptions:  return DSColor.warning
+        case .unverified:    return DSColor.textSecondary
         }
     }
 }

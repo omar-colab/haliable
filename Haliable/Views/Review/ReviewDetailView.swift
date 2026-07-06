@@ -14,57 +14,54 @@ struct ReviewDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Text(request.productName ?? "Untitled product").font(.title2.bold())
+            VStack(alignment: .leading, spacing: DSSpacing.md) {
+                Text(request.productName ?? "Untitled product")
+                    .font(DSFont.title)
+                    .foregroundStyle(DSColor.textPrimary)
                 if let barcode = request.barcode {
-                    Text(barcode).font(.caption).foregroundStyle(.secondary)
+                    Text(barcode).font(DSFont.caption).foregroundStyle(DSColor.textSecondary)
                 }
 
                 if request.status == .completed, let verdict = request.verdict {
-                    VStack(alignment: .leading, spacing: 10) {
+                    VStack(alignment: .leading, spacing: DSSpacing.xs) {
                         VerdictBadge(verdict: verdict)
                         Text("Manually reviewed by Haliable")
-                            .font(.caption).foregroundStyle(.secondary)
+                            .font(DSFont.caption).foregroundStyle(DSColor.textSecondary)
                         if let reason = request.verdictReason {
-                            Text(reason).font(.body)
+                            Text(reason).font(DSFont.body).foregroundStyle(DSColor.textPrimary)
                         }
                     }
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(.secondarySystemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .cardStyle()
                 } else {
                     pendingCard
                 }
 
                 if let notes = request.notes, !notes.isEmpty {
                     Divider()
-                    Text("Your note").font(.headline)
-                    Text(notes).foregroundStyle(.secondary)
+                    Text("Your note").font(DSFont.headline).foregroundStyle(DSColor.textPrimary)
+                    Text(notes).font(DSFont.body).foregroundStyle(DSColor.textSecondary)
                 }
 
                 Divider()
                 Text("Submitted \(request.createdAt.formatted(date: .abbreviated, time: .shortened))")
-                    .font(.caption).foregroundStyle(.secondary)
+                    .font(DSFont.caption).foregroundStyle(DSColor.textSecondary)
             }
-            .padding()
+            .padding(DSSpacing.md)
         }
         .navigationTitle("Review")
         .navigationBarTitleDisplayMode(.inline)
     }
 
     private var pendingCard: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: DSSpacing.sm) {
             ProgressView()
-            VStack(alignment: .leading, spacing: 2) {
-                Text(request.status.displayName).font(.headline)
+            VStack(alignment: .leading, spacing: DSSpacing.xxs / 2) {
+                Text(request.status.displayName)
+                    .font(DSFont.headline).foregroundStyle(DSColor.textPrimary)
                 Text("We'll notify you here once a reviewer has looked at your photos.")
-                    .font(.caption).foregroundStyle(.secondary)
+                    .font(DSFont.caption).foregroundStyle(DSColor.textSecondary)
             }
         }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.orange.opacity(0.12))
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .surfaceStyle(fill: DSColor.warning.opacity(0.12))
     }
 }

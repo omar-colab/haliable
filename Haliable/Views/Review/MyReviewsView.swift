@@ -43,13 +43,17 @@ struct MyReviewsView: View {
     private var list: some View {
         List(store.requests) { request in
             NavigationLink(value: request) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(request.productName ?? "Untitled product").font(.headline)
+                VStack(alignment: .leading, spacing: DSSpacing.xs) {
+                    Text(request.productName ?? "Untitled product")
+                        .font(DSFont.headline)
+                        .foregroundStyle(DSColor.textPrimary)
                     HStack {
                         statusChip(request)
-                        if let v = request.verdict { VerdictBadge(verdict: v).font(.caption2) }
+                        if let v = request.verdict { VerdictBadge(verdict: v) }
                         Spacer()
-                        Text(request.createdAt, style: .date).font(.caption).foregroundStyle(.secondary)
+                        Text(request.createdAt, style: .date)
+                            .font(DSFont.caption)
+                            .foregroundStyle(DSColor.textSecondary)
                     }
                 }.padding(.vertical, 2)
             }
@@ -63,17 +67,15 @@ struct MyReviewsView: View {
                            title: "Sign in to request reviews",
                            message: "We return your verdict to your account.")
             AppleSignInButton { errorMessage = $0 }.padding(.horizontal, 40)
-            if let errorMessage { Text(errorMessage).font(.caption).foregroundStyle(.red) }
-        }.padding()
+            if let errorMessage {
+                Text(errorMessage).font(DSFont.caption).foregroundStyle(DSColor.danger)
+            }
+        }.padding(DSSpacing.md)
     }
 
     private func statusChip(_ r: ReviewRequest) -> some View {
-        Text(r.status.displayName)
-            .font(.caption2.bold())
-            .padding(.horizontal, 8).padding(.vertical, 3)
-            .background((r.status == .completed ? Color.green : Color.orange).opacity(0.15))
-            .foregroundStyle(r.status == .completed ? .green : .orange)
-            .clipShape(Capsule())
+        StatusBadge(text: r.status.displayName,
+                    tint: r.status == .completed ? DSColor.success : DSColor.warning)
     }
 
     private func reload() async {

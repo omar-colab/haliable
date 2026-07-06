@@ -10,16 +10,17 @@ import SwiftUI
 struct RootTabView: View {
     var body: some View {
         TabView {
-            ScannerView()
+            ScannerViewV2()
                 .tabItem { Label("Scan", systemImage: "barcode.viewfinder") }
-            AtlasView()
+            AtlasV2()
                 .tabItem { Label("Find", systemImage: "map.fill") }
-            MyReviewsView()
+            MyReviewsV2()
                 .tabItem { Label("Reviews", systemImage: "doc.text.magnifyingglass") }
-            HistoryView()
+            HistoryV2()
                 .tabItem { Label("History", systemImage: "clock") }
-            MethodologyView()
+            AboutV2()
                 .tabItem { Label("About", systemImage: "info.circle") }
         }
+        .tint(DSColor.accent)
     }
 }

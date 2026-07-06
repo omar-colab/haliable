@@ -7,32 +7,19 @@
 
 import SwiftUI
 
-// A small colored pill showing a verdict: green Halal, red Haram, orange Doubtful.
-// Reused everywhere a verdict appears, so it lives in Components.
+// A small colored pill showing a verdict: green Halal, red Haram, amber
+// Questionable. Reused everywhere a verdict appears, so it lives in Components.
+//
+// Now a thin wrapper over the generic `StatusBadge` chip — the verdict's color
+// and icon come from the design tokens (`Verdict.tint` / `Verdict.symbolName`),
+// so there's one source of truth instead of a color switch repeated per screen.
 struct VerdictBadge: View {
     let verdict: Verdict
 
     var body: some View {
-        // Pick color, icon, and label based on the verdict.
-        // This 'switch' is exactly the pattern you practiced on Day 5.
-        let (color, symbol): (Color, String) = {
-            switch verdict {
-            case .halal:
-                return (.green, "checkmark.seal.fill")
-            case .haram:
-                return (.red, "xmark.seal.fill")
-            case .doubtful:
-                return (Color(red: 0.71, green: 0.52, blue: 0.16), "questionmark.diamond.fill") // honest amber
-            }
-        }()
-
-        Label(verdict.displayName, systemImage: symbol)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(color.opacity(0.18))   // faint colored background
-            .foregroundStyle(color)            // bold text in the same color
-            .clipShape(Capsule())              // rounded pill shape
-            .bold()
+        StatusBadge(text: verdict.displayName,
+                    systemImage: verdict.symbolName,
+                    tint: verdict.tint)
     }
 }
 

@@ -15,17 +15,19 @@ struct EmptyStateView: View {
     let message: String
 
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: DSSpacing.sm) {
             Image(systemName: symbol)
                 .font(.system(size: 50))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(DSColor.textSecondary)
             Text(title)
-                .font(.headline)
+                .font(DSFont.headline)
+                .foregroundStyle(DSColor.textPrimary)
             Text(message)
-                .foregroundStyle(.secondary)
+                .font(DSFont.body)
+                .foregroundStyle(DSColor.textSecondary)
                 .multilineTextAlignment(.center)
         }
-        .padding()
+        .padding(DSSpacing.md)
     }
 }
 

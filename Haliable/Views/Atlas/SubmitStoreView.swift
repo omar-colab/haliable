@@ -30,7 +30,7 @@ struct SubmitStoreView: View {
                 if !auth.isSignedIn {
                     Section {
                         Text("Sign in with Apple to add a place.")
-                            .font(.callout).foregroundStyle(.secondary)
+                            .font(DSFont.body).foregroundStyle(DSColor.textSecondary)
                         AppleSignInButton { errorMessage = $0 }
                     }
                 } else {
@@ -56,10 +56,12 @@ struct SubmitStoreView: View {
                         Button("Submit place") { Task { await submit() } }
                             .disabled(draft.name.count < 2)
                         Text("New places are pending until the community confirms them.")
-                            .font(.caption).foregroundStyle(.secondary)
+                            .font(DSFont.caption).foregroundStyle(DSColor.textSecondary)
                     }
                 }
-                if let errorMessage { Section { Text(errorMessage).foregroundStyle(.red) } }
+                if let errorMessage {
+                    Section { Text(errorMessage).font(DSFont.body).foregroundStyle(DSColor.danger) }
+                }
             }
             .navigationTitle("Add a Place")
             .navigationBarTitleDisplayMode(.inline)

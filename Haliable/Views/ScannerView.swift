@@ -10,6 +10,7 @@ import SwiftData
 
 struct ScannerView: View {
     @Environment(RulesEngine.self) private var engine
+    @Environment(AppSettings.self) private var settings     // active halal standard
     @Environment(\.modelContext) private var modelContext   // SwiftData history
 
     @State private var isPresentingScanner = false
@@ -18,29 +19,43 @@ struct ScannerView: View {
     @State private var errorMessage: String?
     @State private var manualBarcode = ""
     @State private var showManualReview = false
+    @State private var showSettings = false
+    @State private var showStandardSheet = false
+    @State private var standardSheetIsFirstRun = false
 
     private let lookup = ProductLookupService()
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 20) {
+        @Bindable var settings = settings
+        return NavigationStack {
+            VStack(spacing: DSSpacing.lg) {
+                // In-context standard switcher — same source of truth as Settings.
+                StandardPill(standard: settings.halalStandard) {
+                    standardSheetIsFirstRun = false
+                    showStandardSheet = true
+                }
+                .padding(.top, DSSpacing.xs)
+
+                Spacer(minLength: 0)
+
                 Image(systemName: "barcode.viewfinder")
                     .font(.system(size: 72))
-                    .foregroundStyle(.green)
+                    .foregroundStyle(DSColor.accent)
+                    .shadow(color: DSColor.accent.opacity(0.4), radius: 16)
 
                 Text("Scan a grocery barcode")
-                    .font(.title2.bold())
+                    .font(DSFont.title)
+                    .foregroundStyle(DSColor.textPrimary)
 
                 Text("We check ingredients against IFANCA, ISNA, and AMJA guidance — and tell you honestly when something is Questionable.")
+                    .font(DSFont.body)
                     .multilineTextAlignment(.center)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(DSColor.textSecondary)
                     .padding(.horizontal)
 
-                Button { isPresentingScanner = true } label: {
-                    Label("Scan barcode", systemImage: "camera.fill")
-                        .font(.headline).frame(maxWidth: .infinity).padding()
+                PrimaryButton(title: "Scan barcode", systemImage: "camera.fill") {
+                    isPresentingScanner = true
                 }
-                .buttonStyle(.borderedProminent)
                 .padding(.horizontal)
 
                 // Manual entry — works in the Simulator (no camera) and as a fallback.
@@ -58,19 +73,30 @@ struct ScannerView: View {
                 if isLoading { ProgressView("Looking up product…") }
 
                 if let errorMessage {
-                    VStack(spacing: 8) {
+                    VStack(spacing: DSSpacing.xs) {
                         Text(errorMessage)
-                            .foregroundStyle(.red).multilineTextAlignment(.center)
+                            .font(DSFont.body)
+                            .foregroundStyle(DSColor.danger)
+                            .multilineTextAlignment(.center)
                         Button("Request a manual review instead") { showManualReview = true }
-                            .font(.callout)
+                            .font(DSFont.caption)
+                            .foregroundStyle(DSColor.accent)
                     }
-                    .padding()
+                    .padding(DSSpacing.md)
                 }
 
                 Spacer()
             }
             .padding(.top)
             .navigationTitle("Haliable")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showSettings = true } label: {
+                        Image(systemName: "gearshape.fill")
+                    }
+                    .accessibilityLabel("Settings")
+                }
+            }
             .fullScreenCover(isPresented: $isPresentingScanner) {
                 scannerSheet
             }
@@ -78,6 +104,19 @@ struct ScannerView: View {
             .sheet(isPresented: $showManualReview) {
                 RequestReviewView(prefillBarcode: manualBarcode.isEmpty ? nil : manualBarcode)
             }
+            .sheet(isPresented: $showSettings) { SettingsView() }
+            .sheet(isPresented: $showStandardSheet) {
+                StandardSelectorSheet(
+                    selected: $settings.halalStandard,
+                    isFirstRun: standardSheetIsFirstRun,
+                    onCommit: { _ in settings.hasChosenStandard = true },
+                    onDecideLater: { settings.hasChosenStandard = true }
+                )
+            }
+            // Note: we intentionally do NOT auto-present the standard chooser on
+            // first launch — the app opens straight to the scanner. The default
+            // standard is "General Halal", and the pill at the top of this screen
+            // (or Settings) opens the chooser whenever the user wants it.
         }
     }
 
@@ -111,8 +150,9 @@ struct ScannerView: View {
         defer { isLoading = false }
 
         do {
-            let product = try await lookup.fetchProduct(barcode: code)
-            let verdict = engine.evaluate(product: product)
+            let product = try await lookup.fetchProduct(
+                barcode: code, cache: SwiftDataProductCache(context: modelContext))
+            let verdict = engine.evaluate(product: product, standard: settings.halalStandard)
             currentVerdict = verdict
             modelContext.insert(ScanRecord(
                 barcode: code,

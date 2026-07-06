@@ -8,98 +8,246 @@
 import SwiftUI
 
 struct VerdictView: View {
-    let verdict: ProductVerdict
+    /// The verdict as first computed (carries the Product we re-evaluate from).
+    let initialVerdict: ProductVerdict
+
+    @Environment(RulesEngine.self) private var engine
+    @Environment(AppSettings.self) private var settings
+
+    /// The live verdict shown — recomputed when the active standard changes so
+    /// the user can see, in place, that their standard actually moves the needle.
+    @State private var live: ProductVerdict
     @State private var showReviewRequest = false
+    @State private var showStandardSheet = false
+
+    init(verdict: ProductVerdict) {
+        self.initialVerdict = verdict
+        _live = State(initialValue: verdict)
+    }
 
     var body: some View {
-        NavigationStack {
+        @Bindable var settings = settings
+        return NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    VerdictBadge(verdict: verdict.overall)
+                VStack(alignment: .leading, spacing: DSSpacing.md) {
+                    headerSection
                         .padding(.top)
 
-                    Text(verdict.product.name)
-                        .font(.title.bold())
-                    if let brand = verdict.product.brand {
-                        Text(brand).foregroundStyle(.secondary)
+                    // Standing disclosure (Spec §A3) — persistent on every verdict
+                    // surface so "report, don't rule" stays true to the user.
+                    standingDisclosure
+
+                    Text(live.product.name)
+                        .font(DSFont.title)
+                        .foregroundStyle(DSColor.textPrimary)
+                    if let brand = live.product.brand {
+                        Text(brand).font(DSFont.body).foregroundStyle(DSColor.textSecondary)
                     }
 
-                    Text(verdict.summary)
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
+                    Text(live.summary)
+                        .font(DSFont.body)
+                        .foregroundStyle(DSColor.textSecondary)
+                        .id(live.overall)                // crossfade the summary too
+                        .transition(.opacity)
+
+                    // How this product's certification compares to the active
+                    // standard (renders nothing when there's no cert signal).
+                    CertificationStatusView(product: live.product,
+                                            standard: settings.halalStandard)
+                        .animation(.easeInOut(duration: 0.25), value: settings.halalStandard)
 
                     Divider()
 
                     Text("What we flagged")
-                        .font(.headline)
+                        .font(DSFont.headline)
+                        .foregroundStyle(DSColor.textPrimary)
 
-                    if verdict.flagged.isEmpty {
+                    if live.flagged.isEmpty {
                         EmptyStateView(
                             symbol: "checkmark.circle",
                             title: "Nothing flagged",
                             message: "No prohibited or questionable ingredients matched our verified rules."
                         )
                     } else {
-                        ForEach(verdict.flagged) { item in
+                        ForEach(live.flagged) { item in
                             flaggedRow(item)
                         }
                     }
 
                     // The bridge to the new photo-review feature: when the
                     // verdict is anything but a clean halal, let the user ask a human.
-                    if verdict.overall != .halal {
+                    if live.overall != .halal {
                         reviewPrompt
                     }
                 }
                 .padding()
+                .animation(.easeInOut(duration: 0.3), value: live.overall)
             }
             .navigationTitle("Verdict")
+            .onChange(of: settings.halalStandard) { _, newStandard in
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    live = engine.evaluate(product: initialVerdict.product, standard: newStandard)
+                }
+            }
             .sheet(isPresented: $showReviewRequest) {
-                RequestReviewView(prefillName: verdict.product.name,
-                                  prefillBarcode: verdict.product.id)
+                RequestReviewView(prefillName: live.product.name,
+                                  prefillBarcode: live.product.id)
+            }
+            .sheet(isPresented: $showStandardSheet) {
+                StandardSelectorSheet(
+                    selected: $settings.halalStandard,
+                    onCommit: { _ in settings.hasChosenStandard = true }
+                )
             }
         }
     }
 
     private func flaggedRow(_ item: MatchedIngredient) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Text(item.displayName).font(.body.weight(.semibold))
+        VStack(alignment: .leading, spacing: DSSpacing.xs) {
+            HStack(spacing: DSSpacing.xs) {
+                Text(item.displayName)
+                    .font(DSFont.body.weight(.semibold))
+                    .foregroundStyle(DSColor.textPrimary)
+                if item.needsReview { DraftTag() }
                 Spacer()
-                VerdictBadge(verdict: item.verdict).font(.caption)
+                GradeBadge(grade: item.grade, pendingReview: item.needsReview)
             }
             Text(item.explanation)
-                .font(.callout)
-                .foregroundStyle(.secondary)
+                .font(DSFont.body)
+                .foregroundStyle(DSColor.textSecondary)
+
+            // Reported, cited positions (Spec §B). A contested cell carries more
+            // than one — we show BOTH rather than forcing a pick (Spec §A2).
+            if !item.citations.isEmpty {
+                citationsBlock(item)
+            }
+
             if let source = item.source {
-                Link(destination: URL(string: source.url) ?? URL(string: "https://haliable.app")!) {
+                Link(destination: URL(string: source.url) ?? URL(string: "https://haliable.netlify.app")!) {
                     Label("\(source.body) · \(source.title) (\(source.year))",
                           systemImage: "book.closed")
-                        .font(.caption)
+                        .font(DSFont.caption)
+                        .foregroundStyle(DSColor.accent)
                 }
             }
         }
-        .padding()
+        .cardStyle()
+    }
+
+    /// Renders each published, cited position for a cell. For a contested cell
+    /// this is two or more conflicting sources, shown side by side.
+    private func citationsBlock(_ item: MatchedIngredient) -> some View {
+        VStack(alignment: .leading, spacing: DSSpacing.xs) {
+            HStack(spacing: DSSpacing.xxs) {
+                Image(systemName: "text.book.closed")
+                    .font(DSFont.caption)
+                    .foregroundStyle(DSColor.accent)
+                    .accessibilityHidden(true)
+                Text(item.isContested ? "Sources disagree — both positions reported"
+                                      : "Reported from published sources")
+                    .font(DSFont.caption.weight(.semibold))
+                    .foregroundStyle(DSColor.textSecondary)
+            }
+            ForEach(item.citations.indices, id: \.self) { i in
+                let c = item.citations[i]
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: DSSpacing.xxs) {
+                        StatusBadge(text: c.tier.shortLabel, tint: DSColor.accent)
+                        Text(c.sourceName)
+                            .font(DSFont.caption.weight(.semibold))
+                            .foregroundStyle(DSColor.textPrimary)
+                    }
+                    if !c.paraphrase.isEmpty {
+                        Text(c.paraphrase)
+                            .font(DSFont.caption)
+                            .foregroundStyle(DSColor.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    citationReference(c)
+                }
+            }
+        }
+        .padding(DSSpacing.sm)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(DSColor.accent.opacity(0.06),
+                    in: RoundedRectangle(cornerRadius: DSRadius.md, style: .continuous))
+    }
+
+    /// The reference is a tappable link when it's a web URL, else plain text
+    /// (a document + clause/page reference the user can look up).
+    @ViewBuilder private func citationReference(_ c: Citation) -> some View {
+        if let url = URL(string: c.reference), url.scheme == "http" || url.scheme == "https" {
+            Link(destination: url) {
+                Label("\(c.reference) · \(c.date)", systemImage: "link")
+                    .font(DSFont.caption)
+                    .foregroundStyle(DSColor.accent)
+                    .lineLimit(1)
+            }
+        } else {
+            Label("\(c.reference) · \(c.date)", systemImage: "doc.text")
+                .font(DSFont.caption)
+                .foregroundStyle(DSColor.textSecondary)
+        }
+    }
+
+    /// The persistent standing disclosure line (Spec §A3).
+    private var standingDisclosure: some View {
+        HStack(alignment: .top, spacing: DSSpacing.xxs) {
+            Image(systemName: "info.circle")
+                .font(DSFont.caption)
+                .foregroundStyle(DSColor.textSecondary)
+                .accessibilityHidden(true)
+            Text(HaliableDisclosure.standing)
+                .font(DSFont.caption)
+                .foregroundStyle(DSColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+    }
+
+    /// The headline verdict. When the driving cell is still a DRAFT
+    /// (`overallNeedsReview`), the confident `GradeBadge` is REPLACED by the
+    /// unmistakable `PendingReviewBanner` — never shown as an authoritative
+    /// ruling. Otherwise the confident badge sits beside the standard pill.
+    @ViewBuilder private var headerSection: some View {
+        if live.overallNeedsReview {
+            HStack(alignment: .center) {
+                Spacer()
+                StandardPill(standard: settings.halalStandard) {
+                    showStandardSheet = true
+                }
+            }
+            PendingReviewBanner(draftGrade: live.overallGrade)
+                .id(live.overallGrade)                  // re-id ⇒ crossfade on change
+                .transition(.opacity)
+        } else {
+            HStack(alignment: .center) {
+                GradeBadge(grade: live.overallGrade, pendingReview: false)
+                    .id(live.overallGrade)              // re-id ⇒ crossfade on change
+                    .transition(.opacity)
+                Spacer()
+                StandardPill(standard: settings.halalStandard) {
+                    showStandardSheet = true
+                }
+            }
+        }
     }
 
     private var reviewPrompt: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: DSSpacing.xs) {
             Text("Not sure? Ask a human.")
-                .font(.headline)
+                .font(DSFont.headline)
+                .foregroundStyle(DSColor.textPrimary)
             Text("Send us photos of the product and ingredient list for a manual halal review.")
-                .font(.callout).foregroundStyle(.secondary)
-            Button {
+                .font(DSFont.body)
+                .foregroundStyle(DSColor.textSecondary)
+            PrimaryButton(title: "Request manual review", systemImage: "camera.viewfinder") {
                 showReviewRequest = true
-            } label: {
-                Label("Request manual review", systemImage: "camera.viewfinder")
-                    .frame(maxWidth: .infinity).padding(.vertical, 6)
             }
-            .buttonStyle(.borderedProminent)
+            .padding(.top, DSSpacing.xxs)
         }
-        .padding(.top, 8)
+        .padding(.top, DSSpacing.xs)
     }
 }
 
@@ -115,5 +263,7 @@ struct VerdictView: View {
         MatchedIngredient(originalText: "natural flavors", matchedRule: nil),
         MatchedIngredient(originalText: "E150D (caramel color)", matchedRule: nil)
     ]
-    return VerdictView(verdict: ProductVerdict(product: fakeProduct, matched: fakeMatched, overall: .doubtful))
+    return VerdictView(verdict: ProductVerdict(product: fakeProduct, matched: fakeMatched, overallGrade: .mashboohContested))
+        .environment(RulesEngine())
+        .environment(AppSettings())
 }

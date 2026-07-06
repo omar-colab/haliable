@@ -33,7 +33,7 @@ struct RequestReviewView: View {
                 if !auth.isSignedIn {
                     Section {
                         Text("Sign in with Apple so we can return your verdict to you. We only use it to track your requests.")
-                            .font(.callout).foregroundStyle(.secondary)
+                            .font(DSFont.body).foregroundStyle(DSColor.textSecondary)
                         AppleSignInButton { errorMessage = $0 }
                     }
                 } else {
@@ -43,7 +43,7 @@ struct RequestReviewView: View {
                 }
 
                 if let errorMessage {
-                    Section { Text(errorMessage).foregroundStyle(.red) }
+                    Section { Text(errorMessage).font(DSFont.body).foregroundStyle(DSColor.danger) }
                 }
             }
             .navigationTitle("Request a Review")
@@ -89,7 +89,7 @@ struct RequestReviewView: View {
                 Label("Choose from library", systemImage: "photo.on.rectangle")
             }
             Text("Tip: include a clear shot of the full ingredients list.")
-                .font(.caption).foregroundStyle(.secondary)
+                .font(DSFont.caption).foregroundStyle(DSColor.textSecondary)
         }
     }
 
@@ -111,7 +111,7 @@ struct RequestReviewView: View {
             .disabled(images.isEmpty || store.isWorking)
             if !store.isLive {
                 Text("Demo mode: no backend configured, so this is stored locally only.")
-                    .font(.caption).foregroundStyle(.secondary)
+                    .font(DSFont.caption).foregroundStyle(DSColor.textSecondary)
             }
         }
     }

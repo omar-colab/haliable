@@ -18,12 +18,16 @@ struct HistoryView: View {
             List {
                 ForEach(records) { record in
                     HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(record.productName).font(.headline)
-                            Text(record.barcode).font(.caption).foregroundStyle(.secondary)
+                        VStack(alignment: .leading, spacing: DSSpacing.xxs) {
+                            Text(record.productName)
+                                .font(DSFont.headline)
+                                .foregroundStyle(DSColor.textPrimary)
+                            Text(record.barcode)
+                                .font(DSFont.caption)
+                                .foregroundStyle(DSColor.textSecondary)
                         }
                         Spacer()
-                        VerdictBadge(verdict: record.overallVerdict).font(.caption)
+                        VerdictBadge(verdict: record.overallVerdict)
                     }
                 }
                 .onDelete(perform: delete)
