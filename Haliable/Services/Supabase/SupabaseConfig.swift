@@ -31,4 +31,19 @@ enum SupabaseConfig {
     static let reviewPhotoBucket = "review-photos"
     /// Table holding manual-review requests.
     static let reviewTable = "review_requests"
+
+    /// Table holding Store Atlas places.
+    static let storesTable = "stores"
+    /// Spatial read RPC: approved stores within a radius, nearest first.
+    static let nearbyStoresRPC = "stores_nearby"
+    /// Validated write RPC: insert a pending community store (server-side dedupe).
+    static let submitStoreRPC = "submit_store"
+    /// Vote RPC: confirm/dispute a store, returns fresh counts.
+    static let voteStoreRPC = "vote_store"
+    /// Account deletion RPC (erases the caller's own rows).
+    static let deleteAccountRPC = "delete_my_account"
+
+    /// Base URL for the Netlify serverless functions (Sign in with Apple token
+    /// store + revoke). Same domain as the privacy policy / landing site.
+    static let functionsBase = URL(string: "https://haliable.netlify.app/.netlify/functions")!
 }

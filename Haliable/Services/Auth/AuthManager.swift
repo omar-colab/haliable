@@ -51,8 +51,11 @@ final class AuthManager {
                   let idToken = String(data: tokenData, encoding: .utf8) else {
                 throw AuthError.missingToken
             }
+            // The one-time authorization code lets the backend obtain (and later
+            // revoke) the Apple refresh token, as required on account deletion.
+            let authCode = credential.authorizationCode.flatMap { String(data: $0, encoding: .utf8) }
             if let appleEmail = credential.email { self.email = appleEmail }
-            try await exchange(idToken: idToken, nonce: currentNonce)
+            try await exchange(idToken: idToken, nonce: currentNonce, authCode: authCode)
         }
     }
 
@@ -75,7 +78,7 @@ final class AuthManager {
 
     // MARK: Token exchange
 
-    private func exchange(idToken: String, nonce: String?) async throws {
+    private func exchange(idToken: String, nonce: String?, authCode: String?) async throws {
         #if canImport(Supabase)
         guard let client = SupabaseManager.shared else {
             // Package present but Secrets missing → behave like the mock.
@@ -87,10 +90,26 @@ final class AuthManager {
         )
         self.userID = session.user.id.uuidString
         if let supaEmail = session.user.email { self.email = supaEmail }
+        // Best-effort: hand the authorization code to the backend so it can store
+        // the Apple refresh token for revocation on deletion.
+        if let authCode { await storeAppleToken(code: authCode, accessToken: session.accessToken) }
         #else
         // No Supabase package: store a stable local id so reviews can be listed.
         self.userID = "local-\(idToken.suffix(8))"
         #endif
+    }
+
+    /// POST the Apple authorization code to the Netlify `apple-store-token`
+    /// function (authenticated with the Supabase access token). Best-effort — a
+    /// failure here never blocks sign-in.
+    private func storeAppleToken(code: String, accessToken: String) async {
+        var request = URLRequest(url: SupabaseConfig.functionsBase.appendingPathComponent("apple-store-token"))
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONSerialization.data(withJSONObject: ["code": code])
+        request.timeoutInterval = 12
+        _ = try? await URLSession.shared.data(for: request)
     }
 
     #if canImport(Supabase)
