@@ -45,7 +45,7 @@ final class RulesEngineTests: XCTestCase {
                 MatchedIngredient(originalText: "unknown", matchedRule: nil),  // questionable
                 MatchedIngredient(originalText: "lard", matchedRule: haramRule)
             ],
-            overall: .haram
+            overallGrade: .haram
         )
         XCTAssertEqual(pv.flagged.count, 2)                  // halal lecithin excluded
         XCTAssertEqual(pv.flagged.first?.verdict, .haram)    // worst first

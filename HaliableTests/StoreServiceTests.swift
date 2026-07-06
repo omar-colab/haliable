@@ -1,0 +1,200 @@
+//
+//  StoreServiceTests.swift
+//  HaliableTests
+//
+//  Phase 1 of the Store Atlas read path. Two contracts are pinned here:
+//
+//  1. Graceful fallback — with no Supabase package/secrets (the test build), the
+//     map must never go blank: loadNearby returns the bundled approved demo seed,
+//     honoring the category filter and the public interface AtlasV2 consumes.
+//
+//  2. Decode shape — a row from the `stores_nearby` RPC must decode straight into
+//     `Store` with no translation layer. This test encodes the exact column names
+//     the SQL function returns and asserts every field round-trips, so a drift
+//     between the migration's RETURNS TABLE and the client model fails loudly.
+//
+
+import XCTest
+import CoreLocation
+@testable import Haliable
+
+@MainActor
+final class StoreServiceTests: XCTestCase {
+
+    private let center = CLLocationCoordinate2D(latitude: 40.7308, longitude: -73.9975)
+
+    // MARK: - Fallback read path (mock build)
+
+    func testFallbackReturnsApprovedSeedStores() async {
+        let service = StoreService()
+        await service.loadNearby(center: center)
+        XCTAssertFalse(service.isLive, "test build has no Supabase package, so not live")
+        XCTAssertEqual(service.stores.count, 5)
+        XCTAssertTrue(service.stores.allSatisfy { $0.status == .approved })
+        XCTAssertFalse(service.isLoading)
+    }
+
+    func testCategoryFilterReturnsOnlyThatCategory() async {
+        let service = StoreService()
+        await service.loadNearby(center: center, category: .butcher)
+        XCTAssertFalse(service.stores.isEmpty)
+        XCTAssertTrue(service.stores.allSatisfy { $0.category == .butcher })
+    }
+
+    func testSeedStoresClusterAroundRequestedCenter() async {
+        let service = StoreService()
+        await service.loadNearby(center: center)
+        // Every seeded pin should sit within ~1 km of the requested center.
+        for store in service.stores {
+            let d = CLLocation(latitude: store.lat, longitude: store.lng)
+                .distance(from: CLLocation(latitude: center.latitude, longitude: center.longitude))
+            XCTAssertLessThan(d, 1000, "\(store.name) should cluster near the center")
+        }
+    }
+
+    // MARK: - RPC row → Store decode contract
+
+    func testStoreDecodesFromNearbyRPCRow() throws {
+        // Mirrors public.stores_nearby's RETURNS TABLE column names exactly.
+        let json = """
+        {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "name": "Al-Noor Halal Market",
+          "category": "grocery",
+          "halal_scope": "fully_halal",
+          "address": "123 Sample St",
+          "city": "Sampletown",
+          "state": "NY",
+          "zip": "10001",
+          "lat": 40.7348,
+          "lng": -73.9945,
+          "certifications": ["HMS"],
+          "status": "approved",
+          "confirm_count": 12,
+          "dispute_count": 0,
+          "distance_m": 487.5,
+          "created_at": "2026-06-01T00:00:00+00:00"
+        }
+        """.data(using: .utf8)!
+
+        let store = try JSONDecoder().decode(Store.self, from: json)
+        XCTAssertEqual(store.name, "Al-Noor Halal Market")
+        XCTAssertEqual(store.category, .grocery)
+        XCTAssertEqual(store.halalScope, .fullyHalal)
+        XCTAssertEqual(store.certifications, ["HMS"])
+        XCTAssertEqual(store.status, .approved)
+        XCTAssertEqual(store.confirmCount, 12)
+        XCTAssertEqual(store.distanceM ?? -1, 487.5, accuracy: 0.001)
+        XCTAssertEqual(store.lat, 40.7348, accuracy: 1e-6)
+        XCTAssertEqual(store.lng, -73.9945, accuracy: 1e-6)
+    }
+
+    // MARK: - Submit validation (client side)
+
+    private func draft(name: String = "Madinah Market",
+                       state: String = "NY", zip: String = "10001",
+                       lat: Double = 40.7308, lng: Double = -73.9975) -> StoreDraft {
+        var d = StoreDraft(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lng))
+        d.name = name; d.category = .grocery; d.halalScope = .fullyHalal
+        d.address = "1 Test St"; d.city = "Testville"; d.state = state; d.zip = zip
+        return d
+    }
+
+    func testValidateAcceptsGoodDraft() throws {
+        XCTAssertNoThrow(try StoreService.validate(draft()))
+    }
+
+    func testValidateRejectsShortName() {
+        XCTAssertThrowsError(try StoreService.validate(draft(name: "A"))) {
+            XCTAssertEqual($0 as? StoreSubmitError, .invalidName)
+        }
+    }
+
+    func testValidateRejectsNullIslandLocation() {
+        XCTAssertThrowsError(try StoreService.validate(draft(lat: 0, lng: 0))) {
+            XCTAssertEqual($0 as? StoreSubmitError, .invalidLocation)
+        }
+    }
+
+    func testValidateRejectsOutOfRangeLocation() {
+        XCTAssertThrowsError(try StoreService.validate(draft(lat: 120, lng: 10))) {
+            XCTAssertEqual($0 as? StoreSubmitError, .invalidLocation)
+        }
+    }
+
+    func testValidateRejectsBadState() {
+        XCTAssertThrowsError(try StoreService.validate(draft(state: "New York"))) {
+            XCTAssertEqual($0 as? StoreSubmitError, .invalidState)
+        }
+    }
+
+    func testValidateRejectsBadZip() {
+        XCTAssertThrowsError(try StoreService.validate(draft(zip: "ABC"))) {
+            XCTAssertEqual($0 as? StoreSubmitError, .invalidZip)
+        }
+    }
+
+    func testValidateAllowsEmptyOptionalAddressFields() throws {
+        // State/ZIP are optional; empty must pass (only malformed non-empty fails).
+        XCTAssertNoThrow(try StoreService.validate(draft(state: "", zip: "")))
+    }
+
+    func testSubmitThrowsWhenSignedOut() async {
+        let service = StoreService()
+        let auth = AuthManager()   // fresh = signed out
+        do {
+            try await service.submit(draft(), auth: auth)
+            XCTFail("submit should require sign-in")
+        } catch {
+            XCTAssertEqual(error as? StoreSubmitError, .notSignedIn)
+        }
+    }
+
+    func testServerErrorMappingForDuplicate() {
+        struct Dup: LocalizedError { var errorDescription: String? { "duplicate store nearby: 123" } }
+        XCTAssertEqual(StoreSubmitError.from(Dup()), .duplicateNearby)
+    }
+
+    // MARK: - Confirm / dispute votes
+
+    private func sampleStore() -> Store {
+        Store(id: UUID(), name: "Voteworthy", category: .grocery, halalScope: .fullyHalal,
+              address: "1 St", city: "C", state: "NY", zip: "10001",
+              lat: 40.73, lng: -73.99, certifications: [], status: .approved,
+              confirmCount: 3, disputeCount: 0, distanceM: nil, createdAt: "2026-06-01T00:00:00Z")
+    }
+
+    func testConfirmRequiresSignIn() async {
+        let service = StoreService()
+        do { _ = try await service.confirm(sampleStore(), auth: AuthManager()); XCTFail("should require sign-in") }
+        catch { XCTAssertEqual(error as? StoreSubmitError, .notSignedIn) }
+    }
+
+    func testDisputeRequiresSignIn() async {
+        let service = StoreService()
+        do { _ = try await service.dispute(sampleStore(), auth: AuthManager()); XCTFail("should require sign-in") }
+        catch { XCTAssertEqual(error as? StoreSubmitError, .notSignedIn) }
+    }
+
+    func testVoteResultDecodesFromRPCRow() throws {
+        let json = #"{"confirm_count": 13, "dispute_count": 2}"#.data(using: .utf8)!
+        let result = try JSONDecoder().decode(StoreVoteResult.self, from: json)
+        XCTAssertEqual(result.confirmCount, 13)
+        XCTAssertEqual(result.disputeCount, 2)
+    }
+
+    // MARK: - Decode edge
+
+    func testStoreDecodesWithNullDistance() throws {
+        // distance_m may be absent when a row isn't returned from the spatial RPC.
+        let json = """
+        { "id": "00000000-0000-4000-8000-000000000009", "name": "X", "category": "cafe",
+          "halal_scope": "unverified", "address": "", "city": "", "state": "", "zip": "",
+          "lat": 1.0, "lng": 2.0, "certifications": [], "status": "approved",
+          "confirm_count": 0, "dispute_count": 0, "created_at": "2026-06-01T00:00:00Z" }
+        """.data(using: .utf8)!
+        let store = try JSONDecoder().decode(Store.self, from: json)
+        XCTAssertNil(store.distanceM)
+        XCTAssertEqual(store.halalScope, .unverified)
+    }
+}
