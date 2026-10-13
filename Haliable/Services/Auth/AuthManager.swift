@@ -147,3 +147,20 @@ final class AuthManager {
         SHA256.hash(data: Data(input.utf8)).map { String(format: "%02x", $0) }.joined()
     }
 }
+
+#if DEBUG
+extension AuthManager {
+    /// A signed-in manager for previews and UI tests, bypassing Apple sign-in.
+    ///
+    /// Lives in this file because `userID`/`email` are `private(set)`. `init()`
+    /// may kick off `restoreSession()`, but that only assigns when a real session
+    /// exists, so it will not clear the values set here.
+    static func previewSignedIn(userID: String = "preview-user",
+                                email: String? = "preview@haliable.app") -> AuthManager {
+        let manager = AuthManager()
+        manager.userID = userID
+        manager.email = email
+        return manager
+    }
+}
+#endif

@@ -173,7 +173,21 @@ struct MyReviewsV2: View {
     }
 }
 
-#Preview {
+#Preview("Reviews - with requests") {
+    MyReviewsV2()
+        .environment(AuthManager.previewSignedIn())
+        .environment(ReviewStore.previewSeeded())
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Reviews - empty") {
+    MyReviewsV2()
+        .environment(AuthManager.previewSignedIn())
+        .environment(ReviewStore.previewSeeded([]))
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Reviews - signed out") {
     MyReviewsV2()
         .environment(AuthManager())
         .environment(ReviewStore())

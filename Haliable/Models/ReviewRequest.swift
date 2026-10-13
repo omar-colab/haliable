@@ -50,3 +50,64 @@ struct ReviewRequest: Identifiable, Codable, Hashable {
         case reviewedAt = "reviewed_at"
     }
 }
+
+#if DEBUG
+extension ReviewRequest {
+    /// Preview/test fixtures covering all three `ReviewStatus` cases, so the
+    /// Reviews list, status chips and verdict badges can be seen without a
+    /// backend or a signed-in account.
+    ///
+    /// Product names and barcodes here are deliberately INVENTED. A fixture that
+    /// attached a halal verdict to a real brand could end up in a screenshot or
+    /// a demo and read as an actual ruling on that product — these must never
+    /// name a real one.
+    static var samples: [ReviewRequest] {
+        [
+            ReviewRequest(
+                id: UUID(uuidString: "A1B2C3D4-0000-4000-8000-000000000001")!,
+                userID: "preview-user",
+                productName: "Cedar Lane Gummy Bears",
+                barcode: "9990000000017",
+                notes: "The ingredients just say \"gelatin\" with no source listed.",
+                photoPaths: [],
+                status: .completed,
+                verdict: .doubtful,
+                verdictReason: """
+                The label lists gelatin without naming its source. We contacted the \
+                manufacturer and they would not confirm whether it is bovine or \
+                porcine, so we can't clear it. Questionable until the source is \
+                stated on the pack.
+                """,
+                createdAt: Date(timeIntervalSinceNow: -86_400 * 6),
+                reviewedAt: Date(timeIntervalSinceNow: -86_400 * 4)
+            ),
+            ReviewRequest(
+                id: UUID(uuidString: "A1B2C3D4-0000-4000-8000-000000000002")!,
+                userID: "preview-user",
+                productName: "Northwind Chicken Nuggets",
+                barcode: "9990000000024",
+                notes: "Front of pack says halal but I can't find a certifier mark.",
+                photoPaths: [],
+                status: .inReview,
+                verdict: nil,
+                verdictReason: nil,
+                createdAt: Date(timeIntervalSinceNow: -86_400 * 2),
+                reviewedAt: nil
+            ),
+            ReviewRequest(
+                id: UUID(uuidString: "A1B2C3D4-0000-4000-8000-000000000003")!,
+                userID: "preview-user",
+                productName: "Amber Valley Marshmallows",
+                barcode: nil,
+                notes: "Imported, ingredients are not in English.",
+                photoPaths: [],
+                status: .pending,
+                verdict: nil,
+                verdictReason: nil,
+                createdAt: Date(timeIntervalSinceNow: -60 * 60 * 6),
+                reviewedAt: nil
+            ),
+        ]
+    }
+}
+#endif

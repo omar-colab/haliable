@@ -416,6 +416,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Haliable uses the camera to scan product barcodes and to photograph products for manual halal review.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Haliable uses your location to show halal stores and restaurants near you.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Haliable lets you attach product photos from your library for a manual halal review.";
@@ -461,6 +462,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Haliable uses the camera to scan product barcodes and to photograph products for manual halal review.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Haliable uses your location to show halal stores and restaurants near you.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Haliable lets you attach product photos from your library for a manual halal review.";

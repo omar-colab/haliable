@@ -22,6 +22,13 @@ final class ReviewStore {
     private(set) var requests: [ReviewRequest] = []
     private(set) var isWorking = false
 
+    #if DEBUG
+    /// Set by `previewSeeded`. Makes `refresh` a no-op so a configured Supabase
+    /// client can't replace the fixtures with a real (empty) result set the
+    /// moment a preview appears.
+    fileprivate var isPreviewSeeded = false
+    #endif
+
     var isLive: Bool {
         #if canImport(Supabase)
         return SupabaseConfig.isConfigured
@@ -83,6 +90,9 @@ final class ReviewStore {
     // MARK: Refresh
 
     func refresh(auth: AuthManager) async throws {
+        #if DEBUG
+        if isPreviewSeeded { return }
+        #endif
         guard let userID = auth.userID else { requests = []; return }
         #if canImport(Supabase)
         if let client = SupabaseManager.shared {
@@ -128,6 +138,22 @@ private struct InsertPayload: Encodable {
                       notes: notes, photoPaths: photo_paths,
                       status: ReviewStatus(rawValue: status) ?? .pending,
                       verdict: nil, verdictReason: nil, createdAt: .now, reviewedAt: nil)
+    }
+}
+#endif
+
+#if DEBUG
+extension ReviewStore {
+    /// A store pre-loaded with sample requests, for SwiftUI previews and UI tests.
+    ///
+    /// Lives in this file because `requests` is `private(set)` — only same-file
+    /// extensions may write it. DEBUG-only, so no seeded row can reach a release
+    /// build or be mistaken for a real verdict from a reviewer.
+    static func previewSeeded(_ requests: [ReviewRequest] = ReviewRequest.samples) -> ReviewStore {
+        let store = ReviewStore()
+        store.requests = requests
+        store.isPreviewSeeded = true
+        return store
     }
 }
 #endif

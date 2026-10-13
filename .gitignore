@@ -20,3 +20,6 @@ Haliable/Config/Secrets.xcconfig
 .env
 .env.*
 !.env.example
+
+# graphify knowledge-graph output (regenerable)
+graphify-out/
