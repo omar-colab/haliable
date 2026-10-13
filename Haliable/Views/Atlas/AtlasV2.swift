@@ -107,6 +107,15 @@ struct AtlasV2: View {
                     .background(DSColor.surface, in: Capsule())
                     .overlay(Capsule().strokeBorder(DSColor.outline.opacity(0.5), lineWidth: 1))
                     .padding(.bottom, DSSpacing.lg)
+            } else if let message = stores.lastError {
+                Label(message, systemImage: "wifi.exclamationmark")
+                    .font(DSFont.caption)
+                    .foregroundStyle(DSColor.textSecondary)
+                    .padding(.horizontal, DSSpacing.md)
+                    .padding(.vertical, DSSpacing.sm)
+                    .background(DSColor.surface, in: Capsule())
+                    .overlay(Capsule().strokeBorder(DSColor.outline.opacity(0.5), lineWidth: 1))
+                    .padding(.bottom, DSSpacing.lg)
             }
         }
     }

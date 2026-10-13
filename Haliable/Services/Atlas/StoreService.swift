@@ -5,8 +5,8 @@
 //  The Store Atlas data source. The READ path is now live: `loadNearby` calls the
 //  Supabase `stores_nearby` spatial RPC (PostGIS radius query, approved-only) when
 //  Supabase is configured, and decodes rows straight into `Store`. If Supabase is
-//  unconfigured or the call fails, it degrades gracefully to the bundled demo seed
-//  so the map is never blank.
+//  unconfigured or the call fails, the map is EMPTY with a notice (`lastError`) —
+//  never invented stores. A halal app must not pin fake halal places near a user.
 //
 //  The whole live path is gated behind `canImport(Supabase)` so the project builds
 //  before the supabase-swift package is added. The WRITE path (`submit`, confirm,
@@ -53,18 +53,16 @@ final class StoreService {
                 stores = rows
                 return
             } catch {
-                // Surface a soft notice but still show something useful.
-                lastError = "Couldn't reach the live map. Showing sample places."
-                stores = Self.seed(around: center)
-                    .filter { category == nil || $0.category == category }
+                lastError = "Couldn't reach the store map. Check your connection and try again."
+                stores = []
                 return
             }
         }
         #endif
 
-        // Not live (no package / no secrets): bundled demo seed so pins always appear.
-        stores = Self.seed(around: center)
-            .filter { category == nil || $0.category == category }
+        // Not live (no package / no secrets): nothing real to show.
+        lastError = "The store map isn't connected yet."
+        stores = []
     }
 
     /// Submit a community store. Validates client-side, then (when live) calls the
@@ -173,25 +171,6 @@ final class StoreService {
         let zip = draft.zip.trimmingCharacters(in: .whitespaces)
         if !zip.isEmpty, !(zip.count == 5 && zip.allSatisfy { $0.isNumber }) {
             throw StoreSubmitError.invalidZip
-        }
-    }
-
-    // MARK: Seed data (clearly fictional placeholders)
-
-    private static func seed(around c: CLLocationCoordinate2D) -> [Store] {
-        let samples: [(String, StoreCategory, HalalScope, Double, Double, [String])] = [
-            ("Al-Noor Halal Market", .grocery, .fullyHalal, 0.004, 0.003, ["HMS"]),
-            ("Zabiha Meats & Deli", .butcher, .halalMeatOnly, -0.005, 0.002, ["HFSAA"]),
-            ("Crescent Kitchen", .restaurant, .halalOptions, 0.002, -0.004, []),
-            ("Barakah Bakery", .bakery, .fullyHalal, -0.003, -0.003, []),
-            ("Salam Cafe", .cafe, .halalOptions, 0.006, 0.001, [])
-        ]
-        return samples.map { name, cat, scope, dLat, dLng, certs in
-            Store(id: UUID(), name: name, category: cat, halalScope: scope,
-                  address: "123 Sample St", city: "Sampletown", state: "NY", zip: "10001",
-                  lat: c.latitude + dLat, lng: c.longitude + dLng,
-                  certifications: certs, status: .approved, confirmCount: Int.random(in: 2...20),
-                  disputeCount: 0, distanceM: nil, createdAt: "2026-06-01T00:00:00Z")
         }
     }
 }

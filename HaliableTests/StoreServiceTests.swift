@@ -4,9 +4,8 @@
 //
 //  Phase 1 of the Store Atlas read path. Two contracts are pinned here:
 //
-//  1. Graceful fallback — with no Supabase package/secrets (the test build), the
-//     map must never go blank: loadNearby returns the bundled approved demo seed,
-//     honoring the category filter and the public interface AtlasV2 consumes.
+//  1. Honest fallback — with no Supabase package/secrets (the test build), the
+//     map shows NO stores and a notice. It must never invent halal places.
 //
 //  2. Decode shape — a row from the `stores_nearby` RPC must decode straight into
 //     `Store` with no translation layer. This test encodes the exact column names
@@ -25,31 +24,15 @@ final class StoreServiceTests: XCTestCase {
 
     // MARK: - Fallback read path (mock build)
 
-    func testFallbackReturnsApprovedSeedStores() async {
+    // Regression: the fallback used to pin five invented stores (fake certifier
+    // badges, random confirm counts) around the user's real location.
+    func testFallbackShowsNoInventedStores() async {
         let service = StoreService()
         await service.loadNearby(center: center)
         XCTAssertFalse(service.isLive, "test build has no Supabase package, so not live")
-        XCTAssertEqual(service.stores.count, 5)
-        XCTAssertTrue(service.stores.allSatisfy { $0.status == .approved })
+        XCTAssertTrue(service.stores.isEmpty)
+        XCTAssertNotNil(service.lastError, "an empty map needs a reason on screen")
         XCTAssertFalse(service.isLoading)
-    }
-
-    func testCategoryFilterReturnsOnlyThatCategory() async {
-        let service = StoreService()
-        await service.loadNearby(center: center, category: .butcher)
-        XCTAssertFalse(service.stores.isEmpty)
-        XCTAssertTrue(service.stores.allSatisfy { $0.category == .butcher })
-    }
-
-    func testSeedStoresClusterAroundRequestedCenter() async {
-        let service = StoreService()
-        await service.loadNearby(center: center)
-        // Every seeded pin should sit within ~1 km of the requested center.
-        for store in service.stores {
-            let d = CLLocation(latitude: store.lat, longitude: store.lng)
-                .distance(from: CLLocation(latitude: center.latitude, longitude: center.longitude))
-            XCTAssertLessThan(d, 1000, "\(store.name) should cluster near the center")
-        }
     }
 
     // MARK: - RPC row → Store decode contract
