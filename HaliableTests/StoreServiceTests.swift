@@ -4,9 +4,10 @@
 //
 //  Phase 1 of the Store Atlas read path. Two contracts are pinned here:
 //
-//  1. Graceful fallback — with no Supabase package/secrets (the test build), the
-//     map must never go blank: loadNearby returns the bundled approved demo seed,
-//     honoring the category filter and the public interface AtlasV2 consumes.
+//  1. Graceful fallback — when the live backend is unavailable, the map must never
+//     go blank: loadNearby returns the bundled approved demo seed, honoring the
+//     category filter and the public interface AtlasV2 consumes. Pinned with
+//     StoreService(forceOffline:) so it tests the contract, not the build config.
 //
 //  2. Decode shape — a row from the `stores_nearby` RPC must decode straight into
 //     `Store` with no translation layer. This test encodes the exact column names
@@ -26,23 +27,26 @@ final class StoreServiceTests: XCTestCase {
     // MARK: - Fallback read path (mock build)
 
     func testFallbackReturnsApprovedSeedStores() async {
-        let service = StoreService()
+        // forceOffline, not "the package isn't linked". The suite used to rely on the
+        // latter, which quietly stopped being true the moment Supabase was linked
+        // properly — and would also have made this test hit the real network.
+        let service = StoreService(forceOffline: true)
         await service.loadNearby(center: center)
-        XCTAssertFalse(service.isLive, "test build has no Supabase package, so not live")
+        XCTAssertFalse(service.isLive, "forceOffline must pin the bundled-seed path")
         XCTAssertEqual(service.stores.count, 5)
         XCTAssertTrue(service.stores.allSatisfy { $0.status == .approved })
         XCTAssertFalse(service.isLoading)
     }
 
     func testCategoryFilterReturnsOnlyThatCategory() async {
-        let service = StoreService()
+        let service = StoreService(forceOffline: true)
         await service.loadNearby(center: center, category: .butcher)
         XCTAssertFalse(service.stores.isEmpty)
         XCTAssertTrue(service.stores.allSatisfy { $0.category == .butcher })
     }
 
     func testSeedStoresClusterAroundRequestedCenter() async {
-        let service = StoreService()
+        let service = StoreService(forceOffline: true)
         await service.loadNearby(center: center)
         // Every seeded pin should sit within ~1 km of the requested center.
         for store in service.stores {
@@ -140,7 +144,7 @@ final class StoreServiceTests: XCTestCase {
     }
 
     func testSubmitThrowsWhenSignedOut() async {
-        let service = StoreService()
+        let service = StoreService(forceOffline: true)
         let auth = AuthManager()   // fresh = signed out
         do {
             try await service.submit(draft(), auth: auth)
@@ -165,13 +169,13 @@ final class StoreServiceTests: XCTestCase {
     }
 
     func testConfirmRequiresSignIn() async {
-        let service = StoreService()
+        let service = StoreService(forceOffline: true)
         do { _ = try await service.confirm(sampleStore(), auth: AuthManager()); XCTFail("should require sign-in") }
         catch { XCTAssertEqual(error as? StoreSubmitError, .notSignedIn) }
     }
 
     func testDisputeRequiresSignIn() async {
-        let service = StoreService()
+        let service = StoreService(forceOffline: true)
         do { _ = try await service.dispute(sampleStore(), auth: AuthManager()); XCTFail("should require sign-in") }
         catch { XCTAssertEqual(error as? StoreSubmitError, .notSignedIn) }
     }

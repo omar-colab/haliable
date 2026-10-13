@@ -1,84 +1,63 @@
-# Store Atlas — candidate stores for migration 0007
+# Store Atlas — what's in migration 0007, and why
 
-Generated 2026-10-13 from OpenStreetMap via the Overpass API.
-Source data © OpenStreetMap contributors, available under the [Open Database License](https://www.openstreetmap.org/copyright) (ODbL).
+Applied to the live project (`abumevloleevhoqxfnoe`) on 2026-10-13.
 
-## How to review
+The Atlas seeds the **UConn Storrs campus**, not Connecticut at large. A student opens
+the app where they actually are and sees where they can eat today. The five invented demo
+stores from migration 0002 are deleted.
 
-Strike or delete any row you don't want, then tell me and I'll turn the survivors into
-`supabase/migrations/0007_real_stores.up.sql`. **Nothing here was invented** — every row
-traces to the OSM object in the last column. Where I inferred something, the evidence is
-in the *Scope evidence* column so you can disagree with it.
+## The rule every row had to pass
 
-Scope mapping is deliberately conservative, per "report, don't rule":
+No row is in 0007 without **both** of:
 
-| OSM tag | → `halal_scope` |
-|---|---|
-| `diet:halal=only` | `fully_halal` |
-| `diet:halal=yes` | `halal_options` |
-| no tag, "Halal" in the name | `unverified` — the name is a claim, not a source |
+1. **A real coordinate from OpenStreetMap.** Data © OpenStreetMap contributors, under the
+   [ODbL](https://www.openstreetmap.org/copyright); credited in-app on the
+   Acknowledgements screen, as ODbL requires.
+2. **A halal claim published by UConn Dining Services itself**, quoted in the migration
+   above each row.
 
-Users can confirm/dispute each pin in-app (the `vote_store` RPC from migration 0005),
-so `unverified` is a starting point, not a dead end.
+Nothing was invented, and nothing was inferred from a name.
 
-## Candidates
+## The five
 
-| # | Rec | Name | mi from Storrs | Category | Scope | Scope evidence | Address | OSM |
-|---|---|---|---|---|---|---|---|---|
-| 1 | **include** | Halal Meat & Seafoods | 16 | `supermarket` | `unverified` | no `diet:halal` tag; only the name implies it | Tolland Turnpike, Manchester 06042 | [node/5337895492](https://www.openstreetmap.org/node/5337895492) |
-| 2 | _your call_ | Whole Foods Market | 16 | `supermarket` | `halal_options` | `diet:halal=yes` — halal available, not exclusive | Holly Drive, South Windsor 06074 | [node/11088351797](https://www.openstreetmap.org/node/11088351797) |
-| 3 | _your call_ | ShopRite | 26 | `supermarket` | `halal_options` | `diet:halal=yes` — halal available, not exclusive | 45 Shunpike Road, Cromwell 06416 | [node/6503446086](https://www.openstreetmap.org/node/6503446086) |
-| 4 | **include** | Middletown Halal Grill and Pizza | 27 | `restaurant` | `unverified` | no `diet:halal` tag; only the name implies it | 570 Main Street, Middletown 06457 | [node/2954479168](https://www.openstreetmap.org/node/2954479168) |
-| 5 | _your call_ | Shawarma Zone | 27 | `restaurant` | `halal_options` | `diet:halal=yes` — halal available, not exclusive | 560 Main Street, Middletown 06457 | [node/13356076209](https://www.openstreetmap.org/node/13356076209) |
-| 6 | **include** | Shah's Halal Food | 27 | `restaurant` | `fully_halal` | `diet:halal=only` — exclusively halal | 344 Main Street, Middletown 06457 | [way/661906623](https://www.openstreetmap.org/way/661906623) |
-| 7 | _your call_ | Parsley | 27 | `restaurant` | `halal_options` | `diet:halal=yes` — halal available, not exclusive | 324 Main Street, Middletown 06457 | [node/6196878552](https://www.openstreetmap.org/node/6196878552) |
-| 8 | **include** | Halal Munchies | 28 | `restaurant` | `halal_options` | `diet:halal=yes` — halal available, not exclusive | 690 Washington Street, Middletown 06457 | [node/9446184897](https://www.openstreetmap.org/node/9446184897) |
-| 9 | _your call_ | Asia Supermarket | 31 | `supermarket` | `halal_options` | `diet:halal=yes` — halal available, not exclusive | North Broad Street, Meriden 06450 | [node/9724238859](https://www.openstreetmap.org/node/9724238859) |
-| 10 | _your call_ | Sliders | 37 | `restaurant` | `halal_options` | `diet:halal=yes` — halal available, not exclusive | Mulberry Street, Southington 06479 | [node/14152751758](https://www.openstreetmap.org/node/14152751758) |
-| 11 | **include** | Shah's Halal Food | 49 | `restaurant` | `fully_halal` | `diet:halal=only` — exclusively halal | York Street, New Haven 06520 | [node/13570457048](https://www.openstreetmap.org/node/13570457048) |
-| 12 | _your call_ | COOK 2GO | 49 | `grocery` | `halal_options` | `diet:halal=yes` — halal available, not exclusive | 1064 Chapel Street, New Haven 06510 | [node/2760039195](https://www.openstreetmap.org/node/2760039195) |
-| 13 | **drop** | Harvest Wine Bar & Restaurant | 49 | `restaurant` | `halal_options` | `diet:halal=yes` — halal available, not exclusive | 1104 Chapel Street, New Haven 06510 | [node/13888879075](https://www.openstreetmap.org/node/13888879075) |
-| 14 | **include** | Halal Meat and Grocery | 65 | `grocery` | `unverified` | no `diet:halal` tag; only the name implies it | 3853 Main Street, Bridgeport 06606 | [way/369786327](https://www.openstreetmap.org/way/369786327) |
-| 15 | _your call_ | Tabouli and More | 65 | `restaurant` | `halal_options` | `diet:halal=yes` — halal available, not exclusive | 270 Federal Road, Brookfield 06804 | [node/11938398999](https://www.openstreetmap.org/node/11938398999) |
-| 16 | **include** | Shah's Halal Food | 67 | `restaurant` | `fully_halal` | `diet:halal=only` — exclusively halal | Plumtrees Road, Danbury 06801 | [node/12600853705](https://www.openstreetmap.org/node/12600853705) |
-| 17 | _your call_ | Ridgefield Organics And Specialty Market | 74 | `grocery` | `halal_options` | `diet:halal=yes` — halal available, not exclusive | 109 Danbury road, Ridgefield,ct, Ridgefield 06877 | [node/12133881061](https://www.openstreetmap.org/node/12133881061) |
-| 18 | **include** | Shah's Halal Food | 79 | `restaurant` | `unverified` | no `diet:halal` tag; only the name implies it | West Cedar Street, Norwalk 06854 | [node/14099295294](https://www.openstreetmap.org/node/14099295294) |
+| Place | Type | Scope | UConn's own words |
+|---|---|---|---|
+| Gelfenbien Commons (Towers) Dining Hall | restaurant | `halal_options` | "Halal (Muslim) menu offerings will be available Monday through Friday" |
+| South Dining Hall (Rome Commons) | restaurant | `halal_options` | "Halal, gluten-friendly, vegetarian, and vegan options at every meal" |
+| The Beanery Cafe | cafe | `halal_options` | "Vegan, kosher, and halal menu items are offered daily (while supplies last)" |
+| Bookworms Cafe | cafe | `halal_options` | same cafes policy |
+| nanoByte Cafe | cafe | `halal_options` | same cafes policy |
 
-## Rows I'd think twice about
+Sources: [dining.uconn.edu/locations](https://dining.uconn.edu/locations/) ·
+[uc-cafes](https://dining.uconn.edu/uc-cafes/) · [ramadan](https://dining.uconn.edu/ramadan)
 
-**Mainstream retailers that merely stock halal** — real stores, correctly tagged, but a
-shopper opening a *halal* map and finding Whole Foods may feel the app is padding itself.
-They are legitimately `halal_options` if you want the coverage:
+The Ramadan page confirms the two stations directly: *"meals will be at the Halal station
+at Gelfenbien and South."*
 
-- Whole Foods Market (South Windsor) — closest pin to Storrs at ~16 mi
-- ShopRite (Cromwell)
-- Asia Supermarket (Meriden)
-- COOK 2GO (New Haven)
-- Ridgefield Organics And Specialty Market (Ridgefield)
+## Why every row is `halal_options` and none is `fully_halal`
 
-**Restaurants tagged `diet:halal=yes`, scope unclear from OSM alone** — these look like
-Middle Eastern / halal-leaning places, but the tag only says halal food is available, not
-that the kitchen is exclusively halal. Including them as `halal_options` is honest:
+These are halal **stations** and halal **menu items** inside facilities that also serve
+non-halal food. UConn never claims any of these kitchens is exclusively halal, so neither
+do we — that's the "report, don't rule" rule. Students refine each pin in-app by
+confirming or disputing it (`vote_store()`, migration 0005).
 
-- Shawarma Zone (Middletown) — next door to Shah's on Main St
-- Parsley (Middletown)
-- Sliders (Southington)
-- Tabouli and More (Brookfield)
+## Known gaps
 
-**Recommend dropping:**
+- **UConn lists five cafes; only three are in OpenStreetMap.** CrossRoads Cafe and Market
+  Cafe have no OSM object, so they're omitted rather than given an approximate pin.
+  If you want them, get me a street address and I'll geocode them properly.
+- **South Dining Hall isn't in OSM under that name.** It's Lewis B. Rome Commons
+  (626 Gilbert Road Ext), which *is* mapped — `way/233918996` — so the coordinate is real,
+  not estimated.
+- The map fallback (used when location is denied or unset, e.g. in a simulator demo) is
+  the campus centre, 41.8077 / −72.2540.
 
-- Harvest Wine Bar & Restaurant (New Haven) — tagged halal-friendly, but it is a wine bar.
-  Listing it on a halal map cuts against the app's own stance, whatever the tag says.
+## The statewide list this replaced
 
-## What I still owe this list
-
-- Nothing within 15 miles of Storrs exists in OSM. The nearest is **Halal Meat & Seafoods**
-  in Manchester at ~16 mi. That is a genuine gap in OSM's coverage, not a query bug — I
-  confirmed it with exact-match, regex and radius queries. If you know halal spots closer
-  to campus, name them and I'll add them from their own websites instead (also allowed by
-  the plan) rather than inventing coordinates.
-- Two hits (Shaw's Halal Food, Spacegrill) were just over the NY line in Mamaroneck /
-  White Plains and are excluded.
-- OpenStreetMap needs an ODbL credit on the Acknowledgements screen before this ships.
-  I'll add it with the migration.
-
+An earlier pass collected 18 real halal businesses across Connecticut — Manchester,
+Middletown, New Haven, Bridgeport, Danbury, Norwalk. That was the wrong shape for the
+demo and was dropped in favour of the campus set. It's preserved in git history
+(commit `6079c6e`) if off-campus coverage is ever wanted; the nearest to Storrs was
+Halal Meat & Seafoods in Manchester, ~16 miles out. **Nothing within 15 miles of Storrs
+exists in OpenStreetMap** — confirmed with exact-match, regex and radius queries. That's a
+genuine gap in OSM's coverage, not a bad query.

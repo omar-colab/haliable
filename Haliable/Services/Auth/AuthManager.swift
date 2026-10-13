@@ -16,6 +16,13 @@ import Observation
 import AuthenticationServices
 import CryptoKit
 
+#if canImport(Supabase)
+import Supabase
+// Swift 6's MemberImportVisibility means Auth's members (session, user, signOut,
+// signInWithIdToken…) are no longer visible just because Supabase is imported.
+import Auth
+#endif
+
 @Observable
 final class AuthManager {
     private(set) var userID: String?

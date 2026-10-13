@@ -27,7 +27,6 @@ final class ScreenshotUITests: XCTestCase {
         app.launch()
 
         capture(app, name: "01-Scan")
-        captureVerdict(app)
 
         let tabs = app.tabBars.buttons
         guard tabs.count >= 4 else { return }
@@ -39,6 +38,13 @@ final class ScreenshotUITests: XCTestCase {
         if tabs.count >= 5 {
             tabs.element(boundBy: 4).tap(); capture(app, name: "05-About")
         }
+
+        // Verdict LAST, deliberately. It opens a sheet that has no close button and is
+        // dismissed by dragging, which is flaky — when the drag misses, every capture
+        // after it is the same stuck sheet. Doing it last means a miss costs this one
+        // shot instead of silently corrupting the whole set.
+        tabs.element(boundBy: 0).tap()
+        captureVerdict(app)
     }
 
     /// A verdict is the app's whole point, so it belongs in the shot list. The camera

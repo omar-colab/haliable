@@ -11,6 +11,7 @@
 #if canImport(Supabase)
 import Foundation
 import Supabase
+import Auth   // Swift 6 MemberImportVisibility: Auth types are no longer re-exported by Supabase
 
 enum SupabaseManager {
     /// nil until both the package is present AND Secrets are configured.

@@ -18,6 +18,7 @@ import CoreLocation
 import Observation
 #if canImport(Supabase)
 import Supabase
+import Auth   // Swift 6 MemberImportVisibility: Auth types are no longer re-exported by Supabase
 #endif
 
 @Observable
@@ -26,8 +27,19 @@ final class StoreService {
     private(set) var isLoading = false
     var lastError: String?
 
+    /// Forces the bundled-seed path even when the live backend is available. Tests use
+    /// it to pin the offline contract deterministically instead of relying on whether
+    /// the Supabase package happens to be linked — an assumption that silently held for
+    /// months while the package was declared but never actually linked to the app target.
+    private let forceOffline: Bool
+
+    init(forceOffline: Bool = false) {
+        self.forceOffline = forceOffline
+    }
+
     /// True when the live Supabase backend is available (package + secrets present).
     var isLive: Bool {
+        if forceOffline { return false }
         #if canImport(Supabase)
         return SupabaseManager.shared != nil
         #else
@@ -42,7 +54,7 @@ final class StoreService {
         defer { isLoading = false }
 
         #if canImport(Supabase)
-        if let client = SupabaseManager.shared {
+        if isLive, let client = SupabaseManager.shared {
             do {
                 let params = NearbyParams(in_lat: center.latitude, in_lng: center.longitude,
                                           in_radius_km: radiusKm, in_category: category?.rawValue)
@@ -78,7 +90,7 @@ final class StoreService {
         try Self.validate(draft)
 
         #if canImport(Supabase)
-        if let client = SupabaseManager.shared {
+        if isLive, let client = SupabaseManager.shared {
             do {
                 let _: UUID = try await client
                     .rpc(SupabaseConfig.submitStoreRPC, params: SubmitParams(draft))
@@ -113,7 +125,7 @@ final class StoreService {
         guard auth.isSignedIn else { throw StoreSubmitError.notSignedIn }
 
         #if canImport(Supabase)
-        if let client = SupabaseManager.shared {
+        if isLive, let client = SupabaseManager.shared {
             do {
                 let rows: [StoreVoteResult] = try await client
                     .rpc(SupabaseConfig.voteStoreRPC,

@@ -13,12 +13,12 @@ import Observation
 extension CLLocationCoordinate2D {
     /// Where the Atlas opens when there's no location yet — permission denied, the user
     /// hasn't answered the prompt, or a simulator with no location set (which is what a
-    /// demo looks like). Central Connecticut, so the map frames the seeded stores rather
-    /// than an empty ocean of map tiles.
+    /// demo looks like). The UConn Storrs campus, because that's where the seeded halal
+    /// locations are; anywhere else and a demo opens on empty map tiles.
     ///
     /// Lived in both AtlasView and AtlasV2 as the same hardcoded NYC pair; one constant
     /// now, so moving it is a one-line change.
-    static let atlasFallback = CLLocationCoordinate2D(latitude: 41.7637, longitude: -72.6851)
+    static let atlasFallback = CLLocationCoordinate2D(latitude: 41.8077, longitude: -72.2540)
 }
 
 @Observable

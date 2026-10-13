@@ -15,6 +15,7 @@ import Observation
 import UIKit
 #if canImport(Supabase)
 import Supabase
+import Auth   // Swift 6 MemberImportVisibility: Auth types are no longer re-exported by Supabase
 #endif
 
 @Observable

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E7D05A1A2FFF00A100000002 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = E7D05A1A2FFF00A100000001 /* Supabase */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7D05A1A2FFF00A100000002 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +127,7 @@
 			);
 			name = Haliable;
 			packageProductDependencies = (
+				E7D05A1A2FFF00A100000001 /* Supabase */,
 			);
 			productName = Haliable;
 			productReference = E7135D102FBDFE4400C53C1A /* Haliable.app */;
@@ -652,6 +655,14 @@
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E7D05A1A2FFF00A100000001 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E7E7F0E32FEF62C2004F7A89 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 	};
 	rootObject = E7135D082FBDFE4400C53C1A /* Project object */;
