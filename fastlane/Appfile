@@ -1,4 +1,4 @@
 # Apple identifiers. Values come from env so nothing is committed.
-app_identifier(ENV["APP_IDENTIFIER"] || "omar.Haliable")
+app_identifier(ENV["APP_IDENTIFIER"] || "app.haliable.ios")
 apple_id(ENV["APPLE_ID"])           # your Apple Developer account email
 # team_id(ENV["APPLE_TEAM_ID"])     # uncomment if you belong to multiple teams

@@ -173,6 +173,9 @@ struct MyReviewsV2: View {
     }
 }
 
+// The seeded fixtures below are `#if DEBUG` (they must not ship), so the previews
+// that use them have to be too — otherwise a Release build fails to compile.
+#if DEBUG
 #Preview("Reviews - with requests") {
     MyReviewsV2()
         .environment(AuthManager.previewSignedIn())
@@ -193,3 +196,4 @@ struct MyReviewsV2: View {
         .environment(ReviewStore())
         .preferredColorScheme(.dark)
 }
+#endif

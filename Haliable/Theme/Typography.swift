@@ -2,21 +2,20 @@
 //  Typography.swift
 //  Haliable
 //
-//  The type scale for the "Editorial Refined" (v4) language. Three voices, exactly
-//  matching the Claude Design mock:
+//  The type scale for the "Editorial Refined" (v4) language. Three voices:
 //
-//    • SERIF (display) — "Romie Trial" (Margot Lévêque). Screen titles, card/row
+//    • SERIF (display) — Spectral (Production Type). Screen titles, card/row
 //      headers, the wordmark "Ha", numerals, the verdict reveal. Weights bundled:
-//      Light / Regular / Medium (the mock leans on Medium ≈ 500).
-//    • EDITORIAL ITALIC — "Ernest Trial" (Margot Lévêque). The flowing accent on
-//      "liable", the green "Halal" tail, taglines, the safety stance, the streak
-//      line. Rendered italic to match the mock's slanted accent.
+//      Light / Regular / Medium (the design leans on Medium ≈ 500).
+//    • EDITORIAL ITALIC — Instrument Serif Italic (Instrument). The flowing accent
+//      on "liable", the green "Halal" tail, taglines, the safety stance, the streak
+//      line.
 //    • SANS (UI) — San Francisco (SF Pro Display). Body, eyebrows, section labels,
 //      buttons, metadata.
 //
-//  ⚠️ Romie & Ernest are *trial* fonts — licensed for evaluation only. Buy the
-//  retail licenses (margotleveque.com) before shipping, or swap the family names
-//  below for a licensed serif. Everything funnels through this one file.
+//  Both serifs are SIL Open Font License 1.1 and therefore shippable. They replaced
+//  Romie Trial and Ernest Trial, which were evaluation-only licences (Oct 2026).
+//  Everything funnels through this one file.
 //
 //  Font files live in Resources/Fonts and are registered via Info.plist
 //  (UIAppFonts). Role tokens use `relativeTo:` so they scale with Dynamic Type.
@@ -27,12 +26,12 @@ import SwiftUI
 enum DSFont {
 
     // MARK: Font family PostScript names
-    private static let serifLight   = "RomieTrial-Light"
-    private static let serifRegular = "RomieTrial-Regular"
-    private static let serifMedium  = "RomieTrial-Medium"
-    private static let ed           = "ErnestTrial-Regular"
+    private static let serifLight   = "Spectral-Light"
+    private static let serifRegular = "Spectral-Regular"
+    private static let serifMedium  = "Spectral-Medium"
+    private static let ed           = "InstrumentSerif-Italic"
 
-    // MARK: Serif — the editorial display voice (Romie)
+    // MARK: Serif — the editorial display voice (Spectral)
 
     /// Screen-defining headers ("Find", "History"). Large editorial serif.
     static let display  = Font.custom(serifMedium, size: 36, relativeTo: .largeTitle)
@@ -52,16 +51,16 @@ enum DSFont {
     /// Button / primary-action text.
     static let button   = Font.system(.callout, design: .default, weight: .semibold)
 
-    // MARK: Editorial italic accent (Ernest)
+    // MARK: Editorial italic accent (Instrument Serif)
 
     /// The italic serif accent — taglines, the verdict subtitle, the streak line,
     /// the green "em" phrases. Pair with `DSColor.accentDeep`.
     static func editorial(_ style: Font.TextStyle = .title3) -> Font {
-        Font.custom(ed, size: editorialSize(style), relativeTo: style).italic()
+        Font.custom(ed, size: editorialSize(style), relativeTo: style)
     }
     /// Editorial italic at the display size — the green accent tail on a screen
     /// title ("Find · Halal") and the "liable" of the wordmark.
-    static let displayAccent = Font.custom(ed, size: 36, relativeTo: .largeTitle).italic()
+    static let displayAccent = Font.custom(ed, size: 36, relativeTo: .largeTitle)
 
     private static func editorialSize(_ style: Font.TextStyle) -> CGFloat {
         switch style {
@@ -79,7 +78,7 @@ enum DSFont {
 
     // MARK: Serif at an explicit size (numerals, the streak "12", verdict title)
 
-    /// Fixed-size serif for bespoke figures. Weight picks the bundled Romie cut.
+    /// Fixed-size serif for bespoke figures. Weight picks the bundled Spectral cut.
     static func serif(_ size: CGFloat, weight: Font.Weight = .medium) -> Font {
         let name: String
         switch weight {
@@ -90,15 +89,15 @@ enum DSFont {
         return Font.custom(name, fixedSize: size)
     }
 
-    // MARK: Brand wordmark — "Ha" Romie + "liable" Ernest italic
+    // MARK: Brand wordmark — "Ha" Spectral + "liable" Instrument Serif italic
 
-    /// The "Ha" half of the wordmark: Romie serif medium.
+    /// The "Ha" half of the wordmark: Spectral serif medium.
     static func wordmark(_ size: CGFloat = 27) -> Font {
         Font.custom(serifMedium, fixedSize: size)
     }
-    /// The "liable" half: Ernest italic — rendered in `DSColor.accentDeep`.
+    /// The "liable" half: Instrument Serif italic — rendered in `DSColor.accentDeep`.
     static func wordmarkAccent(_ size: CGFloat = 27) -> Font {
-        Font.custom(ed, fixedSize: size).italic()
+        Font.custom(ed, fixedSize: size)
     }
 }
 
@@ -107,15 +106,16 @@ extension View {
     func dsFont(_ font: Font) -> some View { self.font(font) }
 }
 
-// MARK: - Editorial runs (true synthetic italic via Core Text obliqueness)
+// MARK: - Editorial runs (mixed serif + italic on one baseline)
 
-// SwiftUI's `.italic()` is a no-op on custom fonts that ship no italic face
-// (Ernest/Romie are upright-only "Trial" cuts), and SwiftUI's `Text` drops Core
-// Text's `.obliqueness` attribute. So the editorial italic is rendered through a
-// `UILabel` (which DOES honor `.obliqueness`, shearing per-glyph — correct across
-// wrapped lines). Build a line/block as `[EditorialRun]` and hand it to
-// `ObliqueText`. Mixed runs (serif + italic) live in one label so they share a
-// baseline — e.g. "Ha" + "liable", "Find " + "Halal".
+// A line that mixes the display serif with the editorial italic — "Ha" + "liable",
+// "Find " + "Halal" — has to share one baseline and wrap as one block, which two
+// adjacent SwiftUI `Text`s won't do. Build the line as `[EditorialRun]` and hand it
+// to `ObliqueText`, which lays it out in a single `UILabel`.
+//
+// `obliqueness` now defaults to 0: Instrument Serif ships a real italic face, so no
+// synthetic shear is needed. (It was 0.2 when the accent was Ernest Trial, an
+// upright-only cut. The knob stays for any future upright-only accent face.)
 
 #if canImport(UIKit)
 import UIKit
@@ -127,11 +127,11 @@ struct EditorialRun {
     var size: CGFloat = 17
     /// Asset-catalog color token name (e.g. "AccentDeep").
     var color: String = "TextPrimary"
-    /// Romie weight PostScript name for the upright (non-italic) runs.
-    var serif: String = "RomieTrial-Medium"
+    /// Spectral weight PostScript name for the upright (non-italic) runs.
+    var serif: String = "Spectral-Medium"
 
     static func serif(_ t: String, size: CGFloat, color: String = "TextPrimary",
-                      ps: String = "RomieTrial-Medium") -> EditorialRun {
+                      ps: String = "Spectral-Medium") -> EditorialRun {
         EditorialRun(text: t, italic: false, size: size, color: color, serif: ps)
     }
     static func italic(_ t: String, size: CGFloat, color: String = "TextPrimary") -> EditorialRun {
@@ -139,14 +139,15 @@ struct EditorialRun {
     }
 }
 
-/// Renders editorial runs through a `UILabel`, so Ernest gets a true synthetic
-/// italic (Core Text `.obliqueness`) that wraps correctly across lines.
+/// Renders editorial runs through a single `UILabel` so mixed serif/italic spans
+/// share a baseline and wrap correctly across lines.
 struct ObliqueText: View {
     let runs: [EditorialRun]
     var alignment: NSTextAlignment = .natural
     var lineSpacing: CGFloat = 2
-    /// Forward shear applied to italic runs (≈ tan of the slant angle).
-    var obliqueness: CGFloat = 0.2
+    /// Synthetic forward shear for italic runs (≈ tan of the slant angle). 0 for a
+    /// face that already has a real italic, as Instrument Serif does.
+    var obliqueness: CGFloat = 0
 
     var body: some View {
         _ObliqueLabel(string: attributed, alignment: alignment)
@@ -161,7 +162,7 @@ struct ObliqueText: View {
         para.lineSpacing = lineSpacing
         for run in runs {
             let font: UIFont = run.italic
-                ? (UIFont(name: "ErnestTrial-Regular", size: run.size) ?? .systemFont(ofSize: run.size))
+                ? (UIFont(name: "InstrumentSerif-Italic", size: run.size) ?? .systemFont(ofSize: run.size))
                 : (UIFont(name: run.serif, size: run.size) ?? .systemFont(ofSize: run.size))
             var attrs: [NSAttributedString.Key: Any] = [
                 .font: font,

@@ -14,10 +14,10 @@
 		<string>Yellowtail-Regular.ttf</string>
 		<string>PlayfairDisplay-Italic.ttf</string>
 		<string>PlayfairDisplay.ttf</string>
-		<string>RomieTrial-Light.otf</string>
-		<string>RomieTrial-Regular.otf</string>
-		<string>RomieTrial-Medium.otf</string>
-		<string>ErnestTrial-Regular.otf</string>
+		<string>Spectral-Light.ttf</string>
+		<string>Spectral-Regular.ttf</string>
+		<string>Spectral-Medium.ttf</string>
+		<string>InstrumentSerif-Italic.ttf</string>
 	</array>
 	<key>UILaunchScreen</key>
 	<dict>

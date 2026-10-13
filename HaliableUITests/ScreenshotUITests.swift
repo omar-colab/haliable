@@ -27,6 +27,7 @@ final class ScreenshotUITests: XCTestCase {
         app.launch()
 
         capture(app, name: "01-Scan")
+        captureVerdict(app)
 
         let tabs = app.tabBars.buttons
         guard tabs.count >= 4 else { return }
@@ -38,6 +39,35 @@ final class ScreenshotUITests: XCTestCase {
         if tabs.count >= 5 {
             tabs.element(boundBy: 4).tap(); capture(app, name: "05-About")
         }
+    }
+
+    /// A verdict is the app's whole point, so it belongs in the shot list. The camera
+    /// can't scan in a simulator, so drive the manual-barcode path instead. The lookup is
+    /// live (OpenFoodFacts/USDA), so this is best-effort: with no network the scan screen
+    /// shows an error card and we capture that rather than failing the suite.
+    private func captureVerdict(_ app: XCUIApplication) {
+        let reveal = app.buttons["Enter barcode manually"]
+        guard reveal.waitForExistence(timeout: 5) else { return }
+        reveal.tap()
+
+        let field = app.textFields["Barcode number"]
+        guard field.waitForExistence(timeout: 3) else { return }
+        field.tap()
+        field.typeText("3017620422003")          // Nutella — long-standing OFF entry
+        app.buttons["Look up barcode"].tap()
+
+        // The verdict arrives as a sheet; wait for it, then let the reveal animate.
+        _ = app.scrollViews.firstMatch.waitForExistence(timeout: 20)
+        Thread.sleep(forTimeInterval: 2)
+        capture(app, name: "01b-Verdict")
+
+        // The verdict sheet has no close button by design — it's dismissed by dragging it
+        // down. Without this the sheet stays up and every later capture is the same frame.
+        let window = app.windows.firstMatch
+        window.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.12))
+            .press(forDuration: 0.1,
+                   thenDragTo: window.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.95)))
+        Thread.sleep(forTimeInterval: 1.5)
     }
 
     /// The Find tab triggers the system location prompt on first launch; it would
