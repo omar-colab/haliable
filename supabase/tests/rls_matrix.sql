@@ -14,6 +14,7 @@
 --      user's pending submission.
 --   3. a user CANNOT self-approve (UPDATE status is denied → 0 rows).
 --   4. a user CANNOT write stores directly (no INSERT policy → RLS blocks).
+--   5. a user CAN delete their own review photos (account deletion depends on it).
 -- ============================================================================
 
 begin;
@@ -111,6 +112,20 @@ begin
   end;
 end $$;
 reset role;
+
+-- ── TEST 6: users can delete their OWN review photos ─────────────────────────
+-- Account deletion removes {uid}/… through the Storage API; with no DELETE policy
+-- that call deletes nothing and reports no error. Checked in the catalog because
+-- Storage blocks direct SQL deletes on storage.objects.
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+     where schemaname = 'storage' and tablename = 'objects'
+       and cmd = 'DELETE' and 'authenticated' = any(roles)
+       and qual like '%review-photos%' and qual like '%auth.uid()%') then
+    raise exception 'FAIL 6: no DELETE policy for own review-photos (account deletion leaves photos)';
+  end if;
+end $$;
 
 do $$ begin raise notice '✅ ALL RLS TESTS PASSED'; end $$;
 

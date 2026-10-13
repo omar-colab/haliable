@@ -27,9 +27,11 @@ create index if not exists review_requests_user_idx on public.review_requests(us
 -- 2) Row-Level Security: users only see / create their OWN requests ----------
 alter table public.review_requests enable row level security;
 
+drop policy if exists "insert own review" on public.review_requests;
 create policy "insert own review" on public.review_requests
   for insert to authenticated with check (auth.uid() = user_id);
 
+drop policy if exists "read own reviews" on public.review_requests;
 create policy "read own reviews" on public.review_requests
   for select to authenticated using (auth.uid() = user_id);
 
@@ -42,14 +44,25 @@ insert into storage.buckets (id, name, public)
 values ('review-photos', 'review-photos', false)
 on conflict (id) do nothing;
 
--- Users may upload/read only inside their own folder: {uid}/{requestId}/{n}.jpg
+-- Users may upload/read/delete only inside their own folder: {uid}/{requestId}/{n}.jpg
+drop policy if exists "upload own review photos" on storage.objects;
 create policy "upload own review photos" on storage.objects
   for insert to authenticated
   with check (bucket_id = 'review-photos'
               and (storage.foldername(name))[1] = auth.uid()::text);
 
+drop policy if exists "read own review photos" on storage.objects;
 create policy "read own review photos" on storage.objects
   for select to authenticated
+  using (bucket_id = 'review-photos'
+         and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- Delete is needed by account deletion: the app removes {uid}/… itself
+-- (AccountService), and without this policy Storage silently deletes NOTHING —
+-- no error — so a "deleted" account's photos would survive on the server.
+drop policy if exists "delete own review photos" on storage.objects;
+create policy "delete own review photos" on storage.objects
+  for delete to authenticated
   using (bucket_id = 'review-photos'
          and (storage.foldername(name))[1] = auth.uid()::text);
 

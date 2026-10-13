@@ -14,12 +14,14 @@ OUT=supabase/bootstrap.sql
 FILES=(
   supabase-setup.sql
   supabase/migrations/0001_stores_atlas.up.sql
-  supabase/migrations/0002_seed_stores.up.sql
   supabase/migrations/0003_stores_submit.up.sql
   supabase/migrations/0004_rls_hardening.up.sql
   supabase/migrations/0005_store_votes.up.sql
   supabase/migrations/0006_account_lifecycle.up.sql
 )
+# 0002_seed_stores is deliberately NOT included: it inserts five INVENTED stores
+# ("Sampletown", fake confirm counts) as approved. A fresh project must never show
+# them. A restored project that already has them: run 0002_seed_stores.down.sql.
 # 0007 only exists once the real store list is approved.
 [ -f supabase/migrations/0007_real_stores.up.sql ] && \
   FILES+=(supabase/migrations/0007_real_stores.up.sql)
