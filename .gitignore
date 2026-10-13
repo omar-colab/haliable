@@ -23,3 +23,6 @@ Haliable/Config/Secrets.xcconfig
 
 # graphify knowledge-graph output (regenerable)
 graphify-out/
+
+# Supabase CLI scratch
+supabase/.temp/

@@ -1,0 +1,71 @@
+# Supabase keep-alive.
+#
+# Free-plan Supabase projects pause after 7 consecutive idle days, and a paused
+# project means the Store Atlas, sign-in and photo reviews all fail — including
+# mid-demo. This reads a single row once a day so the project never goes idle.
+#
+# Setup (one time): Repo → Settings → Secrets and variables → Actions → New repository secret
+#   SUPABASE_URL              https://<your-ref>.supabase.co
+#   SUPABASE_PUBLISHABLE_KEY  sb_publishable_...   (Project Settings → API Keys)
+#
+# The publishable key is deliberate: this only needs to read `stores`, which RLS
+# already exposes to anon ("read approved stores"), and the same key ships inside
+# the iOS app. A secret key here would hand CI an RLS-bypassing credential for a
+# job that needs no privilege at all.
+#
+# ⚠️ GitHub disables scheduled workflows on a repo with no activity for 60 days.
+# If you stop pushing for two months, this stops and the project pauses. The
+# "Keep-alive is failing" check below turns that into a visible red run, and you
+# can always hit Run workflow manually.
+
+name: Supabase keep-alive
+
+on:
+  schedule:
+    - cron: "0 11 * * *"   # 11:00 UTC daily (~7am ET)
+  workflow_dispatch:        # so you can test it immediately
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-keepalive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read one row from stores
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${URL:-}" ] || [ -z "${KEY:-}" ]; then
+            echo "::error::SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY is not set. See the header of this file."
+            exit 1
+          fi
+
+          # `apikey` ONLY. The sb_publishable_/sb_secret_ keys are not JWTs, so
+          # also sending Authorization: Bearer makes Supabase try to parse one and
+          # reject the request with "Invalid JWT".
+          # -sS keeps curl quiet but still prints real errors; the key is never echoed.
+          code=$(curl -sS -o /tmp/body.json -w '%{http_code}' \
+                   --retry 3 --retry-delay 10 --retry-all-errors --max-time 30 \
+                   -H "apikey: ${KEY}" \
+                   -H "Accept: application/json" \
+                   "${URL}/rest/v1/stores?select=id&limit=1")
+
+          echo "HTTP ${code}"
+          if [ "${code}" != "200" ]; then
+            echo "::error::Keep-alive failed with HTTP ${code}. The project may be paused, or the key/URL is wrong."
+            cat /tmp/body.json
+            exit 1
+          fi
+
+          # A 200 with an empty array still proves the project is awake and RLS let us in,
+          # so an empty `stores` table is not a failure.
+          echo "Project is awake. Response: $(cat /tmp/body.json)"

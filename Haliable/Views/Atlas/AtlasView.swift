@@ -18,7 +18,7 @@ struct AtlasView: View {
     @State private var showSubmit = false
 
     // Fallback center until we have a fix (so the map is never blank).
-    private let fallback = CLLocationCoordinate2D(latitude: 40.7308, longitude: -73.9975)
+    private let fallback = CLLocationCoordinate2D.atlasFallback
 
     var body: some View {
         NavigationStack {
