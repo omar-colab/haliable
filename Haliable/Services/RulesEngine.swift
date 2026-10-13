@@ -76,7 +76,7 @@ final class RulesEngine {
         // whole list-segment is captured, so an origin qualifier ANYWHERE in it
         // ("soy lecithin", "lecithin (soya)", "lecithin from soybeans") resolves —
         // not just a single adjacent word.
-        for (alias, rule) in aliasIndex where ingredientsText.contains(alias) {
+        for (alias, rule) in aliasIndex where Self.mentions(alias, in: ingredientsText) {
             let alreadyMatched = matched.contains { $0.matchedRule?.id == rule.id }
             if !alreadyMatched {
                 let seg = segment(containing: alias, in: ingredientsText) ?? alias
@@ -123,13 +123,22 @@ final class RulesEngine {
         return ProductVerdict(product: product, matched: matched, overallGrade: overallGrade)
     }
 
+    /// True when `term` appears in `text` starting at a word boundary. A bare
+    /// substring check let the alias "rum" fire inside French "lactoserum" (whey),
+    /// grading Nutella haram for wine. Only the START is anchored, so prefix forms
+    /// like "lardons" or "porkfat" still match — this can't open a false-halal path.
+    static func mentions(_ term: String, in text: String) -> Bool {
+        let pattern = "(?<![\\p{L}\\p{N}])" + NSRegularExpression.escapedPattern(for: term)
+        return text.range(of: pattern, options: .regularExpression) != nil
+    }
+
     /// The comma/semicolon/newline-delimited list-segment that mentions `term`.
     /// Parentheses are intentionally NOT split on, so "lecithin (soya)" stays one
     /// segment. Trimmed of surrounding whitespace.
     private func segment(containing term: String, in text: String) -> String? {
         let separators = CharacterSet(charactersIn: ",;\n•")
         return text.components(separatedBy: separators)
-            .first { $0.contains(term) }?
+            .first { Self.mentions(term, in: $0) }?
             .trimmingCharacters(in: .whitespaces)
     }
 
