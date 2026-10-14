@@ -57,6 +57,9 @@ xcodebuild test -scheme Haliable \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' \
   CODE_SIGNING_ALLOWED=NO
 
+# live demo-barcode probe (network; skipped in the suite by design)
+./scripts/run-demo-probe.sh
+
 # release build check (no signing, no device)
 xcodebuild -scheme Haliable -configuration Release \
   -destination 'generic/platform=iOS' build CODE_SIGNING_ALLOWED=NO

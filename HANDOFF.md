@@ -1,6 +1,6 @@
 # HANDOFF — Haliable → TestFlight
 
-Last updated: **Oct 14, 2026** (Phases 0, 1, 2 complete; Phase 6 started)
+Last updated: **Oct 14, 2026** (Phases 0, 1, 2 complete; Phase 6 code half done)
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 
 ## Where we are
@@ -142,9 +142,8 @@ backend ever looks suspiciously like sample data again, check
 1. **🔑 Rotate the `sb_secret_` key.** It was pasted into a chat transcript. It bypasses
    RLS entirely. Supabase → Project Settings → API Keys → revoke and regenerate.
    Nothing uses it yet (no Netlify site), so rotating costs nothing.
-2. **Two GitHub repo secrets**, or the keep-alive workflow fails on its first run:
-   `gh secret set SUPABASE_URL` and `gh secret set SUPABASE_PUBLISHABLE_KEY`
-   (both prompt with hidden input). Then run it once manually from the Actions tab.
+2. ~~Two GitHub repo secrets.~~ ✅ Done Oct 14 — both set from the local
+   `Secrets.xcconfig` (never printed), and the workflow run manually: green.
 3. **CrossRoads Cafe and Market Cafe** — UConn lists five cafes, only three are in
    OpenStreetMap. Street addresses would let me geocode and add the other two.
 
@@ -159,34 +158,107 @@ backend ever looks suspiciously like sample data again, check
   exist. Only Sign in with Apple (Phase 3) uses it.
 - Xcode 27 removed Simulator.app; the simulator UI is now **DeviceHub.app**.
 
-## Phase 6 (demo-proof) — STARTED, not finished
+## Phase 6 (demo-proof) — the code half is DONE
 
-Phase 6 needs no Apple approval, which is why it was started while waiting.
+**The probe works and has been seen to print.** That was the open ⚠️ from last
+session. Run it with one command:
 
-**Done:** `HaliableTests/DemoBarcodeProbeTests.swift` — runs candidate demo barcodes
-through the real lookup chain (USDA → Open Food Facts) and reports per barcode: name,
-whether it resolved, whether it has ingredient text at all, the verdict under all four
-standards, the ingredient driving the worst grade, whether that grade is a draft, and
-whether the verdict **diverges across standards** (those are the ones worth demoing).
-Skipped by default — it hits the network, and leaving it live would make the 135-test
-suite flaky and offline-hostile.
+```bash
+./scripts/run-demo-probe.sh        # ~1 minute, needs network
+```
 
-**⚠️ Unverified.** The probe has never actually produced output. The env gate cannot be
-set from the `xcodebuild` command line for a unit-test target — plain and
-`TEST_RUNNER_`-prefixed forms were both tried and the test skipped silently
-(`TEST_RUNNER_` only forwards into UI-test runner processes). To run it, set
-`HALIABLE_DEMO_PROBE=1` in the scheme's Test action (Product → Scheme → Edit Scheme →
-Test → Arguments → Environment Variables), or use a test plan. **Treat the probe as
-untested until someone sees it print.**
+It boots the simulator, arms the flag, runs `DemoBarcodeProbeTests` and prints the
+report. Re-run it **the morning of the demo** — these are third-party databases.
 
-**Not started:**
-- Running the probe against Omar's real 6 barcodes (the ones in the file are placeholders).
-- `docs/demo/QA_CHECKLIST.md` — ~20 tap-by-tap device checks with expected results.
-- `docs/demo/DEMO_SCRIPT.md` — 3-minute / 60s / 30s scripts.
-- The 3×-on-cellular dry run, the out-loud reps, and the backup video (all Omar's).
+### How the probe is armed, and why it looks odd
 
-Note: the Phase 6 Notion page's demo script says "real halal stores near campus" —
-which is now literally true, since the Atlas seeds the UConn campus.
+`xcodebuild` cannot set an environment variable on a unit-test host. Verified
+dead ends, so nobody retries them: plain `HALIABLE_DEMO_PROBE=1` on the command
+line, the `TEST_RUNNER_` prefix (UI-test runners only), and
+`simctl spawn launchctl setenv` (the test runs on a *clone* of the simulator, and
+even with `-parallel-testing-enabled NO` the host does not inherit it).
+
+What works is `simctl spawn <dev> defaults write app.haliable.ios …`, because the
+test target is hosted by `Haliable.app`, so `UserDefaults.standard` in the test
+*is* the app's domain.
+
+The flag is a **unix timestamp honoured for ten minutes**, not a boolean. First
+attempt was a boolean consumed on read; it did not work — a value written by
+`simctl` lands in a store `removeObject` cannot clear, and the probe re-ran
+unasked on the next plain `xcodebuild test`. A cleanup step in the script is no
+better: the runner leaves the simulator shut down and the delete fails silently.
+A deadline needs no cleanup to be safe. Both directions are verified: a stale flag
+skips, a fresh one runs.
+
+### The demo kit — 6 barcodes, swept from 14 on Oct 14
+
+Full table, verdicts and the three demo scripts are in `docs/demo/DEMO_SCRIPT.md`.
+
+| # | Product | Barcode | Role |
+|---|---|---|---|
+| 1 | Oreo | `044000032029` | halal under all four |
+| 2 | Jif Creamy PB | `0051500255162` | diverges, **citation is live, not a draft** |
+| 3 | Yoplait red raspberry | `070470003016` | **haram under Zabiha only** — the money shot |
+| 4 | Welch's Fruit Snacks | `0034856008187` | haram under all four |
+| 5 | Cheetos XXtra Flamin' Hot | `028400433303` | diverges on enzymes / whey |
+| 6 | Diet Coke | `0049000028911` | shows a **draft** — the honest uncited state |
+
+Five of the fourteen 404'd (Sour Patch Kids, Dannon Light & Fit, Skittles,
+McCormick vanilla, Nature's Own bread) and one resolves with zero ingredient text.
+They are listed in `DEMO_SCRIPT.md` so they are not retried live. **All six of the
+original placeholders were bad** — four unusable, which is exactly what the probe
+existed to find.
+
+### Three things the sweep turned up — reported, not fixed
+
+1. **The same barcode can give a different verdict run to run**, because USDA and
+   Open Food Facts both answer and their ingredient text differs. Goya
+   `041331092609` graded `mashboohContested` (driver E330) on one run and `halal`
+   on the next, with a different product name and brand each time. It is kept out
+   of the kit for this reason. Worth a look after the interview: the chain should
+   probably prefer one source deterministically, or show which one answered.
+2. **The named driver can shift when two ingredients tie at the same grade.**
+   Cheetos reported `enzymes` once and `whey` the next run. The *grade* was stable
+   both times. Only the label moves, but the demo shouldn't promise a word.
+3. **Two cosmetic/data notes.** The driver string sometimes carries a stray
+   bracket (`enzymes]`) from the ingredient tokenizer, and on Welch's the `pork`
+   driver is marked a **draft** under three of the four standards while the
+   `gelatin` driver under Zabiha is not — a pork ruling showing as uncited looks
+   wrong in a demo even if the data state is technically correct. Both left alone:
+   rule 7 (no new work before the interview) and rule 3 (don't touch a grade
+   without a citation). Your call after.
+
+### One flake to know about
+
+`ScreenshotUITests.testCaptureMainScreens()` failed once in the full suite on a
+simulator that had been poked at by hand all session (app installed and launched
+manually, location granted, a location set). The symptom is the UI-test **runner
+failing to launch** — `RequestDenied by SBMainWorkspace`, twice, then a 600-second
+diagnostics timeout. It passed immediately after `xcrun simctl erase`, and nothing
+in the app or the UI tests had changed. If you ever see that failure, erase the
+simulator before you start debugging the test.
+
+### Suite state
+
+`xcodebuild test` on a freshly-erased simulator: **133 passed, 0 failed, 4 skipped**
+(three pre-existing opt-in writers plus the demo probe). The probe skipping there is
+the point — it proves the timestamp flag does not leak into the normal suite.
+
+### Done this session
+
+- `docs/demo/QA_CHECKLIST.md` — 24 tap-by-tap checks with expected results and a
+  "if something fails" section.
+- `docs/demo/DEMO_SCRIPT.md` — the kit, the verified output, and 3-minute /
+  60-second / 30-second scripts.
+- `scripts/run-demo-probe.sh` — one command, prints the report.
+
+### Still yours
+
+- Buy or find the six products.
+- Three dry runs **on cellular**, two out-loud reps of the 60-second version.
+- A backup screen recording, offline, on your phone.
+- Run `docs/demo/QA_CHECKLIST.md` end to end on the demo device.
+- Waitlist end-to-end check — **blocked on the Netlify site**, see below.
 
 ## Things that could block TestFlight
 
@@ -194,7 +266,7 @@ which is now literally true, since the Atlas seeds the UConn campus.
 |---|---|
 | **Apple Developer Program approval** | Paid Oct 13, 2026. Phases 3–5 can't start until it lands. Phase 6 doesn't need it. |
 | **🔴 No Netlify site** | `haliable.netlify.app` does not exist and no `.netlify` link is in the repo. Blocks **Phase 3** (the Sign in with Apple functions have nowhere to deploy; `SupabaseConfig.functionsBase` is hardcoded to that URL) and **Phase 5** (the public TestFlight link needs a live privacy page). **This is the #1 non-Apple blocker.** |
-| **Keep-alive not armed** | The workflow is pushed but needs two repo secrets: `gh secret set SUPABASE_URL` and `gh secret set SUPABASE_PUBLISHABLE_KEY`, then run it once from the Actions tab. Until then the free project can still pause after 7 idle days. |
+| ~~Keep-alive not armed~~ | ✅ **Armed Oct 14.** Both repo secrets set and the workflow run manually — green. The free project will not pause. |
 | ~~Trial font licenses~~ | ✅ Resolved in Phase 1. |
 | ~~Supabase project frozen~~ | ✅ Restored Oct 13; `ACTIVE_HEALTHY`, schema intact. |
 | ~~Seeded fake stores~~ | ✅ Deleted by 0007; replaced with 5 real UConn campus locations. |
@@ -215,6 +287,26 @@ which is now literally true, since the Atlas seeds the UConn campus.
    cheap to rotate if you'd rather be certain.
 
 ## Decisions made while Omar was away
+
+### Oct 14, 2026 — Phase 6
+- **Made the probe's flag a deadline, not a boolean.** The obvious design (consume
+  the flag on read) was tried first and demonstrably failed — see the Phase 6
+  section. A ten-minute window is the version that cannot leave a network test
+  armed inside the normal suite.
+- **Trimmed the probe to the six that will actually be demoed** rather than keeping
+  all fourteen candidates. The probe's job the morning of the demo is "is my kit
+  still good?", not "search for products" — the sweep was a one-off and its
+  rejects are recorded in `DEMO_SCRIPT.md` so nobody retries them.
+- **Set the two GitHub secrets directly** from the local `Secrets.xcconfig` instead
+  of leaving them for you. Values were piped into `gh secret set`, never printed,
+  and the live key was checked against the REST API first (200, real UConn stores).
+  The xcconfig `/$()/ ` escape is stripped on the way out.
+- **Reported the three data findings instead of fixing them.** Source-dependent
+  verdicts, the shifting driver label and the `pork`-marked-draft case all touch
+  grading, and rule 3 says a grade doesn't move without a citation. They are
+  written up where you'll see them rather than quietly patched before a demo.
+- **Did not build a Netlify site.** It is the #1 blocker and it needs your account;
+  guessing at a site name would just create something to undo.
 
 ### Oct 13–14, 2026 — Phase 2 + security
 - **Did not use the secret key Omar pasted in chat.** It was rotated instead: deleted

@@ -13,17 +13,29 @@
 //  explicitly asked for — otherwise it would make the normal suite flaky and
 //  offline-hostile. Run it on purpose:
 //
-//  To run it, set HALIABLE_DEMO_PROBE=1 in the scheme's Test action:
-//    Xcode → Product → Scheme → Edit Scheme → Test → Arguments →
-//    Environment Variables → add HALIABLE_DEMO_PROBE = 1, then run
-//      xcodebuild test -scheme Haliable \
-//        -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' \
-//        -only-testing:HaliableTests/DemoBarcodeProbeTests CODE_SIGNING_ALLOWED=NO
+//  Run it from the command line (the only path that is actually verified):
 //
-//  NOTE: passing the variable on the xcodebuild command line does NOT work for a
-//  unit-test target, with or without the TEST_RUNNER_ prefix — that prefix only
-//  forwards into UI-test runner processes. Verified: the test skips silently.
-//  The alternative is a test plan with the variable set.
+//    D=$(xcrun simctl list devices | awk '/iPhone 17 Pro \(/{print $NF}' | tr -d '()' | head -1)
+//    xcrun simctl bootstatus "$D" -b
+//    xcrun simctl spawn "$D" defaults write app.haliable.ios HALIABLE_DEMO_PROBE -int $(date +%s)
+//    xcodebuild test -scheme Haliable -derivedDataPath build/dd \
+//      -destination "platform=iOS Simulator,id=$D" \
+//      -only-testing:HaliableTests/DemoBarcodeProbeTests CODE_SIGNING_ALLOWED=NO
+//
+//  Or just: ./scripts/run-demo-probe.sh  (does all of the above and prints the report).
+//
+//  The flag is a timestamp, honoured for ten minutes, so it never leaks into a later
+//  run of the normal suite — which is the whole point, that suite must stay
+//  offline-safe.
+//
+//  The defaults flag is read instead of an environment variable because xcodebuild
+//  CANNOT set an env var on a unit-test host — verified, twice: plain and
+//  TEST_RUNNER_-prefixed both skip silently (TEST_RUNNER_ only forwards into
+//  UI-test runners), and `simctl spawn launchctl setenv` does not reach the test
+//  host either, with or without -parallel-testing-enabled NO. The test target is
+//  hosted by Haliable.app, so UserDefaults.standard here IS the app's domain,
+//  which simctl can write from outside. In Xcode, the scheme's Test → Arguments →
+//  Environment Variables route still works and is also accepted.
 //
 //  A barcode that prints NOT FOUND or "no ingredients" is one to swap before the
 //  interview — that is the whole point of running this.
@@ -37,20 +49,38 @@ final class DemoBarcodeProbeTests: XCTestCase {
 
     /// Candidate demo products, one per slot in the Phase 6 kit. Swap freely —
     /// the probe tells you whether a barcode actually resolves.
+    /// The demo kit, chosen from a 14-barcode sweep on Oct 14, 2026 — see
+    /// `docs/demo/DEMO_SCRIPT.md` for what each one is for and what it printed.
+    /// Re-run the probe the morning of the demo: these are third-party databases
+    /// and a product can change or disappear without warning.
     private static let candidates: [(slot: String, barcode: String, note: String)] = [
-        ("1 certified",      "0049000028911", "reviewer barcode from the plan (Coca-Cola)"),
-        ("2 gelatin",        "0041420006104", "Haribo Goldbears — gelatin, the standard-switch moment"),
-        ("3 mono/digly",     "0072250007214", "bread/pastry with mono- and diglycerides"),
-        ("4 natural flavor", "0028400090000", "chips with natural flavors"),
-        ("5 carmine",        "0041420104060", "red candy / yogurt with carmine"),
-        ("6 clean staple",   "0041331092609", "plain staple — a clean halal result"),
+        ("1 clean",      "044000032029",  "Oreo — halal under all four standards"),
+        ("2 cited split","0051500255162", "Jif Creamy Peanut Butter — mono- & diglycerides, diverges, citation is live"),
+        ("3 hard split", "070470003016",  "Yoplait red raspberry — haram under Zabiha only. The money shot"),
+        ("4 clear haram","0034856008187", "Welch's Fruit Snacks — gelatin/pork, haram under all four"),
+        ("5 enzymes",    "028400433303",  "Cheetos XXtra Flamin' Hot — enzymes, diverges"),
+        ("6 honest draft","0049000028911", "Diet Coke — E150C has no citation yet, so it shows as a draft"),
     ]
 
     func testProbeDemoBarcodes() async throws {
-        try XCTSkipUnless(
-            ProcessInfo.processInfo.environment["HALIABLE_DEMO_PROBE"] == "1",
-            "Live network probe. Set HALIABLE_DEMO_PROBE=1 to run."
-        )
+        // Two ways in, because xcodebuild cannot set an environment variable on a
+        // unit-test host: the defaults flag is the command-line path, the env var
+        // is the Xcode-scheme path. See the header.
+        //
+        // The defaults flag is a DEADLINE, not a boolean — `run-demo-probe.sh`
+        // writes the current unix time and this accepts it for ten minutes. That
+        // is deliberate: a leftover flag would quietly put a network-dependent test
+        // back into the normal suite, and clearing it afterwards is NOT reliable.
+        // `simctl spawn defaults write` lands in a store that `removeObject` here
+        // cannot clear (verified: the probe re-ran unasked), and the runner leaves
+        // the simulator shut down, so a cleanup step in the script cannot always
+        // reach it either. A deadline needs no cleanup to be safe.
+        let key = "HALIABLE_DEMO_PROBE"
+        let requestedAt = UserDefaults.standard.double(forKey: key)
+        let withinWindow = requestedAt > 0
+            && Date().timeIntervalSince1970 - requestedAt < 600
+        let asked = withinWindow || ProcessInfo.processInfo.environment[key] == "1"
+        try XCTSkipUnless(asked, "Live network probe. See the header for how to run it.")
 
         let engine = RulesEngine()
         var report: [String] = []
