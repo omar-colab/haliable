@@ -1,6 +1,6 @@
 # HANDOFF — Haliable → TestFlight
 
-Last updated: **Oct 13, 2026** (Phases 0, 1 and 2 complete)
+Last updated: **Oct 14, 2026** (Phases 0, 1, 2 complete; Phase 6 started)
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 
 ## Where we are
@@ -159,30 +159,78 @@ backend ever looks suspiciously like sample data again, check
   exist. Only Sign in with Apple (Phase 3) uses it.
 - Xcode 27 removed Simulator.app; the simulator UI is now **DeviceHub.app**.
 
-## After Phase 2
-## After Phase 2
+## Phase 6 (demo-proof) — STARTED, not finished
+
+Phase 6 needs no Apple approval, which is why it was started while waiting.
+
+**Done:** `HaliableTests/DemoBarcodeProbeTests.swift` — runs candidate demo barcodes
+through the real lookup chain (USDA → Open Food Facts) and reports per barcode: name,
+whether it resolved, whether it has ingredient text at all, the verdict under all four
+standards, the ingredient driving the worst grade, whether that grade is a draft, and
+whether the verdict **diverges across standards** (those are the ones worth demoing).
+Skipped by default — it hits the network, and leaving it live would make the 135-test
+suite flaky and offline-hostile.
+
+**⚠️ Unverified.** The probe has never actually produced output. The env gate cannot be
+set from the `xcodebuild` command line for a unit-test target — plain and
+`TEST_RUNNER_`-prefixed forms were both tried and the test skipped silently
+(`TEST_RUNNER_` only forwards into UI-test runner processes). To run it, set
+`HALIABLE_DEMO_PROBE=1` in the scheme's Test action (Product → Scheme → Edit Scheme →
+Test → Arguments → Environment Variables), or use a test plan. **Treat the probe as
+untested until someone sees it print.**
+
+**Not started:**
+- Running the probe against Omar's real 6 barcodes (the ones in the file are placeholders).
+- `docs/demo/QA_CHECKLIST.md` — ~20 tap-by-tap device checks with expected results.
+- `docs/demo/DEMO_SCRIPT.md` — 3-minute / 60s / 30s scripts.
+- The 3×-on-cellular dry run, the out-loud reps, and the backup video (all Omar's).
+
+Note: the Phase 6 Notion page's demo script says "real halal stores near campus" —
+which is now literally true, since the Atlas seeds the UConn campus.
 
 ## Things that could block TestFlight
 
 | Blocker | Status |
 |---|---|
-| **Apple Developer Program approval** | Paid Oct 13, 2026. Phases 3–5 can't start until it lands. Phases 2 and 6 don't need it. |
+| **Apple Developer Program approval** | Paid Oct 13, 2026. Phases 3–5 can't start until it lands. Phase 6 doesn't need it. |
+| **🔴 No Netlify site** | `haliable.netlify.app` does not exist and no `.netlify` link is in the repo. Blocks **Phase 3** (the Sign in with Apple functions have nowhere to deploy; `SupabaseConfig.functionsBase` is hardcoded to that URL) and **Phase 5** (the public TestFlight link needs a live privacy page). **This is the #1 non-Apple blocker.** |
+| **Keep-alive not armed** | The workflow is pushed but needs two repo secrets: `gh secret set SUPABASE_URL` and `gh secret set SUPABASE_PUBLISHABLE_KEY`, then run it once from the Actions tab. Until then the free project can still pause after 7 idle days. |
 | ~~Trial font licenses~~ | ✅ Resolved in Phase 1. |
-| **Supabase project frozen** | Old project `abumevloleevhoqxfnoe` is paused (free plan, 7 idle days). Phase 2 restores or recreates it. |
-| **Seeded fake stores** | Migration 0002 seeds 5 invented CT stores. Must be replaced with real OSM-sourced ones before anyone sees the map. |
+| ~~Supabase project frozen~~ | ✅ Restored Oct 13; `ACTIVE_HEALTHY`, schema intact. |
+| ~~Seeded fake stores~~ | ✅ Deleted by 0007; replaced with 5 real UConn campus locations. |
 | **90-day build expiry** | A TestFlight build dies 90 days after upload. Don't upload the demo build too early. |
+| **spatial_ref_sys writable by anon** | Documented in migration 0008. Denial of service on the map, not a data leak. Real fix (moving postgis to its own schema) is not a pre-demo change. |
 
 ## Open questions for Omar
 
-1. **Do you like the new fonts?** Compare `docs/screenshots/font-swap/before/` with
-   `after/`. If not, two alternates per font are listed above and the swap is a
-   four-line change in `Haliable/Theme/Typography.swift` plus the `UIAppFonts` list.
-2. **Rotate the USDA key?** It shipped into local Release builds only — nothing was
-   uploaded anywhere and nothing was committed, so the exposure is almost certainly
-   zero. Rotating is cheap (it's a free key) if you'd rather be certain.
-3. Nothing else is blocking. Phase 2 can start without you.
+1. **The 6 demo barcodes.** Phase 6 can't finish without them. Placeholders are in
+   `DemoBarcodeProbeTests.swift`; the probe will say which ones to swap.
+2. **CrossRoads Cafe and Market Cafe** — UConn lists five cafes, only three are in
+   OpenStreetMap. Street addresses would let them be geocoded properly rather than
+   given approximate pins.
+3. **Do you like the new fonts?** `docs/screenshots/font-swap/` before vs after. Two
+   alternates per font are listed above; swapping is a four-line change.
+4. **USDA key** — still the original. It only ever went into local Release builds and
+   was never committed or uploaded, so exposure is near zero, but it's a free key and
+   cheap to rotate if you'd rather be certain.
 
 ## Decisions made while Omar was away
+
+### Oct 13–14, 2026 — Phase 2 + security
+- **Did not use the secret key Omar pasted in chat.** It was rotated instead: deleted
+  via the Management API (the dashboard wouldn't offer the control for the original
+  project-created key), with `was_compromised=true` recorded. Verified dead — the
+  leaked value returns 401 against the live REST API.
+- **Disabled the legacy anon/service_role JWTs entirely**, after first confirming
+  nothing used them (app and keep-alive both on the publishable key, no `eyJ` key
+  anywhere in the repo). Verified the app still works afterwards: 200 on both the
+  stores table and the `stores_nearby` RPC.
+- **Removed the no-op REVOKE statements from migration 0008** rather than leave them
+  looking effective. They silently do nothing — the grantor is `supabase_admin` and
+  both the SQL editor and Management API run as `postgres`.
+- **Made the demo probe skip by default** rather than add a network-dependent test to
+  the suite.
+
 
 ### Oct 13, 2026 — Phase 0
 - **Two commits, not one.** The leftover app work + plan + `.gitignore` in one;
