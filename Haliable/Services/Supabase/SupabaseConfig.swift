@@ -18,9 +18,23 @@ enum SupabaseConfig {
         return u
     }
 
+    /// The client key. Prefers the new `sb_publishable_…` key and falls back to the
+    /// legacy `anon` JWT, so a half-migrated Secrets.xcconfig still builds and runs.
+    ///
+    /// Either is safe to ship — Row-Level Security, not the key, is what protects the
+    /// data. The `sb_secret_…` key must NEVER appear here.
+    ///
+    /// Supabase retires the legacy anon/service_role keys at the end of 2026, and a
+    /// TestFlight build can stay installed for 90 days, so the fallback is a migration
+    /// aid rather than a long-term option.
     static var anonKey: String? {
-        let k = Bundle.main.object(forInfoDictionaryKey: "SUPABASE_ANON_KEY") as? String
-        return (k?.isEmpty == false) ? k : nil
+        for key in ["SUPABASE_PUBLISHABLE_KEY", "SUPABASE_ANON_KEY"] {
+            if let k = Bundle.main.object(forInfoDictionaryKey: key) as? String,
+               !k.isEmpty, !k.hasPrefix("$(") {
+                return k
+            }
+        }
+        return nil
     }
 
     /// True only when both values are present — used to decide whether to use

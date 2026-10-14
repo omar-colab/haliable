@@ -29,10 +29,10 @@ enum ConfigAudit {
         }
 
         if SupabaseConfig.isConfigured {
-            lines.append("✅ SUPABASE_URL + SUPABASE_ANON_KEY set — backend enabled.")
+            lines.append("✅ SUPABASE_URL + publishable key set — backend enabled.")
         } else {
             lines.append("⚠️ SUPABASE not configured — sign-in / reviews / store submit run in local mock mode.")
-            lines.append("   Set SUPABASE_URL and SUPABASE_ANON_KEY in Secrets.xcconfig.")
+            lines.append("   Set SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY in Secrets.xcconfig.")
         }
 
         lines.append("──────────────────────────────────────────────────────")

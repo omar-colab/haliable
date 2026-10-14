@@ -20,12 +20,12 @@ fi
 FILES=(
   supabase-setup.sql
   supabase/migrations/0001_stores_atlas.up.sql
-  supabase/migrations/0002_seed_stores.up.sql
   supabase/migrations/0003_stores_submit.up.sql
   supabase/migrations/0004_rls_hardening.up.sql
   supabase/migrations/0005_store_votes.up.sql
   supabase/migrations/0006_account_lifecycle.up.sql
   supabase/migrations/0007_real_stores.up.sql
+  supabase/migrations/0008_security_hardening.up.sql
 )
 
 for f in "${FILES[@]}"; do

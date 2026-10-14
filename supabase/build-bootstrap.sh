@@ -14,7 +14,8 @@ OUT=supabase/bootstrap.sql
 FILES=(
   supabase-setup.sql
   supabase/migrations/0001_stores_atlas.up.sql
-  supabase/migrations/0002_seed_stores.up.sql
+  # 0002 is deliberately skipped: it seeds five INVENTED demo stores that 0007
+  # immediately deletes. A fresh bootstrap should never create them at all.
   supabase/migrations/0003_stores_submit.up.sql
   supabase/migrations/0004_rls_hardening.up.sql
   supabase/migrations/0005_store_votes.up.sql
@@ -23,6 +24,8 @@ FILES=(
 # 0007 only exists once the real store list is approved.
 [ -f supabase/migrations/0007_real_stores.up.sql ] && \
   FILES+=(supabase/migrations/0007_real_stores.up.sql)
+[ -f supabase/migrations/0008_security_hardening.up.sql ] && \
+  FILES+=(supabase/migrations/0008_security_hardening.up.sql)
 
 {
   echo "-- ============================================================================"
