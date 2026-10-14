@@ -54,4 +54,26 @@ final class RulesEngineTests: XCTestCase {
     func testQuestionableDisplayName() {
         XCTAssertEqual(Verdict.doubtful.displayName, "Questionable")
     }
+
+    // Regression: aliases matched as bare substrings, so "rum" (wine rule) fired
+    // inside French "lactoserum" and Nutella (3017620422003, its real OFF text)
+    // came out haram for wine.
+    func testAliasDoesNotMatchInsideAnotherWord() {
+        let nutella = Product(id: "3017620422003", name: "Nutella", brand: "Ferrero",
+            rawIngredientsText: "Sucre, huile de palme, NOISETTES 13%, cacao maigre 7,4%, LAIT écrémé en poudre 6,6%, LACTOSERUM en poudre, émulsifiants: lécithines [SOJA), vanilline. Sans gluten.",
+            additivesENumbers: [])
+        let ids = RulesEngine().evaluate(product: nutella).matched.compactMap(\.matchedRule?.id)
+        XCTAssertFalse(ids.contains("wine"))
+        XCTAssertFalse(RulesEngine.mentions("ham", in: "graham flour, champignons"))
+    }
+
+    // Safety: anchoring only the word START keeps prefix forms matching, and the
+    // flagged segment is the real one, not an earlier substring hit.
+    func testAliasStillMatchesAtWordStart() {
+        let p = Product(id: "2", name: "P", brand: nil,
+            rawIngredientsText: "graham flour, lardons fumés, smoked ham", additivesENumbers: [])
+        let matched = RulesEngine().evaluate(product: p).matched
+        XCTAssertTrue(matched.contains { $0.matchedRule?.id == "lard" })
+        XCTAssertEqual(matched.first { $0.matchedRule?.id == "pork" }?.originalText, "smoked ham")
+    }
 }
