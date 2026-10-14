@@ -4,10 +4,10 @@
 //
 //  Phase 1 of the Store Atlas read path. Two contracts are pinned here:
 //
-//  1. Graceful fallback — when the live backend is unavailable, the map must never
-//     go blank: loadNearby returns the bundled approved demo seed, honoring the
-//     category filter and the public interface AtlasV2 consumes. Pinned with
-//     StoreService(forceOffline:) so it tests the contract, not the build config.
+//  1. Honest fallback — when the live backend is unavailable, the map shows NO
+//     stores and a notice. It must never invent halal places. Pinned with
+//     StoreService(forceOffline:) so it tests the contract rather than whether
+//     the Supabase package happens to be linked in this build.
 //
 //  2. Decode shape — a row from the `stores_nearby` RPC must decode straight into
 //     `Store` with no translation layer. This test encodes the exact column names
@@ -26,34 +26,27 @@ final class StoreServiceTests: XCTestCase {
 
     // MARK: - Fallback read path (mock build)
 
-    func testFallbackReturnsApprovedSeedStores() async {
-        // forceOffline, not "the package isn't linked". The suite used to rely on the
-        // latter, which quietly stopped being true the moment Supabase was linked
-        // properly — and would also have made this test hit the real network.
+    // Regression: the fallback used to pin five invented stores (fake certifier
+    // badges, random confirm counts) around the user's real location. One network
+    // blip in a demo would have shown made-up halal places.
+    func testFallbackShowsNoInventedStores() async {
+        // forceOffline, not "the package isn't linked" — the suite used to rely on
+        // the latter, which quietly stopped being true the moment Supabase was
+        // linked properly, and would also have made this test hit the real network.
         let service = StoreService(forceOffline: true)
         await service.loadNearby(center: center)
-        XCTAssertFalse(service.isLive, "forceOffline must pin the bundled-seed path")
-        XCTAssertEqual(service.stores.count, 5)
-        XCTAssertTrue(service.stores.allSatisfy { $0.status == .approved })
+        XCTAssertFalse(service.isLive, "forceOffline must pin the offline path")
+        XCTAssertTrue(service.stores.isEmpty, "an unreachable backend must never invent stores")
+        XCTAssertNotNil(service.lastError, "an empty map needs a reason on screen")
         XCTAssertFalse(service.isLoading)
     }
 
-    func testCategoryFilterReturnsOnlyThatCategory() async {
+    // The category filter is a live-path concern now that there is no bundled seed.
+    func testCategoryFilterOnOfflinePathStillReturnsNothing() async {
         let service = StoreService(forceOffline: true)
         await service.loadNearby(center: center, category: .butcher)
-        XCTAssertFalse(service.stores.isEmpty)
-        XCTAssertTrue(service.stores.allSatisfy { $0.category == .butcher })
-    }
-
-    func testSeedStoresClusterAroundRequestedCenter() async {
-        let service = StoreService(forceOffline: true)
-        await service.loadNearby(center: center)
-        // Every seeded pin should sit within ~1 km of the requested center.
-        for store in service.stores {
-            let d = CLLocation(latitude: store.lat, longitude: store.lng)
-                .distance(from: CLLocation(latitude: center.latitude, longitude: center.longitude))
-            XCTAssertLessThan(d, 1000, "\(store.name) should cluster near the center")
-        }
+        XCTAssertTrue(service.stores.isEmpty)
+        XCTAssertNotNil(service.lastError)
     }
 
     // MARK: - RPC row → Store decode contract
