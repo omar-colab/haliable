@@ -57,6 +57,9 @@ struct ScannerViewV2: View {
         return NavigationStack {
             ZStack {
                 DSColor.background.ignoresSafeArea()
+                GeometryBackdrop(intensity: 0.8)
+                FloatingLatticeMark(size: 300, opacity: 0.05)
+                    .offset(x: 128, y: -300)
                 ambientGlow
 
                 ScrollView {
