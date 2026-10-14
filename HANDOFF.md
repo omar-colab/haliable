@@ -288,6 +288,40 @@ the point — it proves the timestamp flag does not leak into the normal suite.
 
 ## Decisions made while Omar was away
 
+### Oct 14, 2026 — the landing page
+
+- **Restored the old landing page.** You asked for it back. It had been deleted on
+  Jul 4 (`a716d3b`) and replaced by a 4 KB placeholder; I recovered the last good
+  copy from `298ac9c` and it is now `site/index.html`, which is what Netlify
+  publishes. `site/` had otherwise never changed — there was no newer version to
+  lose.
+- **Cut three things before it can go on a public URL.** Say the word and any of
+  them come back, but not as they were:
+  1. **Two testimonials from named "Beta Testers"** with five-star quotes. The app
+     has never had a beta tester. One of them also disparages a named competitor.
+     Invented reviews on a live site are the kind of thing that costs you the
+     interview if anyone checks, so they're out until you have real quotes.
+  2. **A payment modal collecting card number, expiry and CVC**, which in demo
+     mode told the visitor *"Payment received! Your subscription is confirmed"*
+     without taking any payment. Both pricing buttons now point at the waitlist.
+  3. **An account modal collecting a password**, plus Google Sign-In, neither of
+     which had a backend. Nav now has a "Join the waitlist" button. The Google and
+     Stripe script tags and the setup block went with them.
+- **Also:** dropped the Cloudflare Analytics beacon, because `site/privacy/` states
+  "there are no third-party advertising or analytics SDKs" and shipping both would
+  have made the privacy policy false. Added Privacy and Terms links to the footer
+  (App Store Connect needs a live privacy URL). Pointed Contact at your Gmail
+  instead of `hello@haliable.com`, which doesn't exist. Changed "Join thousands of
+  Muslims" since there are no users yet.
+- **One factual fix:** the hero claimed Haliable "is the largest database of halal
+  products across America". It isn't a database at all — it queries Open Food Facts
+  and USDA live. Reworded to what the app actually does. The three market stats
+  ($170B, 83%, 2040) are untouched but **unsourced** — put a source under them or
+  expect to be asked.
+- **Did not deploy it.** Creating the Netlify site needs your account; steps are in
+  `docs/NETLIFY.md`. It is a plain static publish — no build command, no build
+  minutes, no AI add-on.
+
 ### Oct 14, 2026 — Phase 6
 - **Made the probe's flag a deadline, not a boolean.** The obvious design (consume
   the flag on read) was tried first and demonstrably failed — see the Phase 6
