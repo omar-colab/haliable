@@ -386,6 +386,75 @@ real EC private key. **The only missing value is the Issuer ID**, the team-level
 on App Store Connect → Users and Access → Integrations. Without it no JWT can be
 signed, so nothing can archive or upload.
 
+## The review agent (Oct 15) — answering a user's request for a human ruling
+
+A user photographs a label the scanner can't resolve. That request already lands
+in `review_requests`; until now nothing answered it. `scripts/review-agent/` is
+the pipeline that does, and **the agent researches while Omar decides** — it has
+no path to a user that does not pass through an explicit approval.
+
+That split is rule 3, not ceremony. An agent replying directly would be the app
+issuing rulings in its own voice, which is the one thing Haliable must not do.
+
+```
+pull → research → stage → review → push
+```
+
+- **`pull`** fetches pending requests and writes one brief each, pre-loaded with
+  what `Citations.json` already covers so research isn't repeated.
+- **research** is the model's step: a source block per unresolved ingredient.
+- **`stage`** validates. Mechanically, not on trust.
+- **`review` / `approve` / `reject`** is Omar's gate, mirroring the
+  `CandidateDecision` states the citation pipeline already uses.
+- **`push`** writes back `status`, `verdict`, `verdict_reason` and `evidence`.
+  It **re-validates first** — approval is not a bypass.
+
+### What the validator refuses
+
+Source tiers come from `SourceTier` in `Haliable/Models/Citation.swift`, so the
+agent and the app grade evidence identically. Seven rules, each with a test in
+`scripts/review-agent/test_validator.py` (run: `python3 -I …/test_validator.py`):
+
+| Rule | Why |
+|---|---|
+| Tier 3 alone cannot clear | Explainers orient; only the body's own document or peer review clears |
+| Every reference must fetch 200 | An unreachable source is rejected, not downgraded. Stops invented citations |
+| Worst-case rollup enforced | A verdict that isn't the worst ingredient grade is refused outright |
+| Unresolved is never halal | Silence is not permission |
+| Origin-sensitive ingredients need an origin | Gelatin, whey, enzymes, diglycerides, L-cysteine and friends |
+| Paraphrase must be substantive | A reader has to be able to audit the verdict without following the link |
+| The reply must name what went unresolved | The user is told what could not be confirmed |
+
+### It also improves the matrix
+
+A review request is the only moment a real person is waiting on a gap in
+`Citations.json`. When research clears an ingredient, `stage` also emits a
+`CitationCandidate` in the format `Haliable/Services/Citations/` already reads, so
+one approval can fix that ingredient for every future scan. Citations.json is
+still never hand-edited — rule 2 holds; the committer does it.
+
+### Schema
+
+Migration **0009** adds `review_requests.evidence jsonb` — additive, nullable,
+no RLS change — and is **applied live** (verified against
+`information_schema.columns`). `verdict_reason` is prose for the user; it can't
+record which body was cited, at what tier, on what date. A ruling that can't be
+traced to its sources is indistinguishable from one the app invented.
+
+Registered in `build-bootstrap.sh` (an explicit list, not a glob — new migrations
+must be added there or they silently miss the bootstrap).
+
+### Needs Omar
+
+- **A Supabase secret key in the environment** — `SUPABASE_URL` and
+  `SUPABASE_SECRET_KEY`. The old one was rotated and nothing has replaced it, so
+  the agent cannot reach the database until a new `sb_secret_` is generated.
+  Never in the repo, never in a chat.
+- **Rule 7 says no new features before the interview.** This is a new feature,
+  built because Omar asked for it directly. It touches **no app code** — the
+  iOS target is untouched, so it cannot affect the TestFlight build. It runs
+  entirely on Omar's machine against Supabase.
+
 ## Things that could block TestFlight
 
 | Blocker | Status |
