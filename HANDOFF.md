@@ -25,6 +25,36 @@ amount of work in the repo changes that:
 4. Re-run `security find-identity -v -p codesigning` — it should list an
    **Apple Development** identity. Paste the Team ID back here.
 
+**Checked Oct 15 and none of this had happened yet:** `security find-identity -v`
+returns 0 identities (not just for codesigning — none at all), the provisioning
+profile folder is empty, `defaults read com.apple.dt.Xcode IDEProvisioningTeams`
+says the key does not exist, and there is no Xcode token in the keychain. The
+membership is approved; Xcode on *this Mac* has simply never been signed in.
+
+**Better route, and the one being taken:** an **App Store Connect API key** with
+the **Admin** role removes the need for any of the above. `CODE_SIGN_STYLE` is
+already `Automatic` on all six configs, so `xcodebuild -allowProvisioningUpdates`
+with the key creates the certificate *and* the provisioning profile itself,
+archives, and uploads — no Xcode GUI, and no fastlane, which isn't installed here.
+
+- The key belongs in `~/.appstoreconnect/private_keys/AuthKey_<KEYID>.p8`
+  (created, mode 700) — where `xcodebuild` and `altool` look by default.
+- The **Key ID** is read off the filename; only the **Issuer ID** needs passing on.
+  The `.p8` itself never goes in a chat.
+- The role must be **Admin**. App Manager and Developer can upload builds but
+  **cannot create signing certificates**, which is the entire point here.
+- The app record still has to be made in the App Store Connect web UI — Apple has
+  no API for creating apps.
+
+**Demo device (this answers an open question on the Notion page): iPhone 14,
+iOS 26.6.** Clears the 18.0 deployment target comfortably. Note the App Store
+screenshots in `fastlane/screenshots` were captured at 6.9" (17 Pro Max) and the
+14 is 6.1" — irrelevant for TestFlight, relevant for an App Store listing later.
+
+**Phase 4 does not depend on Phase 3.** Sign in with Apple is a feature inside the
+app, not an upload requirement, and internal TestFlight needs no Apple review. A
+build can be on the phone before SIWA exists, with photo review in demo mode.
+
 Everything that does *not* need signing has been done. See below.
 
 ## Where we are
