@@ -1,7 +1,31 @@
 # HANDOFF — Haliable → TestFlight
 
-Last updated: **Oct 14, 2026** (Phases 0, 1, 2 complete; Phase 6 code half done)
+Last updated: **Oct 15, 2026** · Phases 0, 1, 2 done · Phase 6 code half done ·
+all three reviewer 🔴 bugs merged · site live · **136 tests green**
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
+
+## 🔴 READ THIS FIRST — the one thing blocking TestFlight
+
+**There is no Apple code-signing identity on this Mac.**
+
+```
+security find-identity -v -p codesigning   →  0 valid identities found
+~/Library/Developer/Xcode/UserData/Provisioning Profiles/  →  empty
+```
+
+The membership is approved — that part is done — but an approved membership and a
+signed-in Xcode are two different things, and only the second one lets anything be
+archived or uploaded. Until Omar does this, Phases 3, 4 and 5 cannot start, and no
+amount of work in the repo changes that:
+
+1. **Xcode → Settings → Accounts → ＋ → Apple ID**, sign in.
+2. Open `Haliable.xcodeproj` → target **Haliable** → **Signing & Capabilities** →
+   tick **Automatically manage signing** → pick the team.
+3. Repeat the team pick for the **HaliableTests** and **HaliableUITests** targets.
+4. Re-run `security find-identity -v -p codesigning` — it should list an
+   **Apple Development** identity. Paste the Team ID back here.
+
+Everything that does *not* need signing has been done. See below.
 
 ## Where we are
 
@@ -260,12 +284,65 @@ the point — it proves the timestamp flag does not leak into the normal suite.
 - Run `docs/demo/QA_CHECKLIST.md` end to end on the demo device.
 - Waitlist end-to-end check — **blocked on the Netlify site**, see below.
 
+## Oct 14–15 session — the three reviewer bugs, merged
+
+A second Claude session had reviewed Phases 0–2 and left **three 🔴 bugs on
+unmerged branches**. They were found in Notion, not in the repo, which is why they
+sat untouched. All three are now on `main`, tests green, pushed.
+
+| Was | Branch | What it did |
+|---|---|---|
+| 🔴 **Nutella graded "Haram — Wine"** | `fix/ingredient-word-matching` | The matcher looked for aliases anywhere in the text, so `rum` matched inside French **lactoserum** (whey). A false haram on a real brand — the exact error the app's safety stance says is unforgivable. Now a match must start at a word boundary. Regression test uses Nutella's real OFF text (`3017620422003`). |
+| 🔴 **Deleted accounts kept their photos** | `fix/bootstrap-sql` | No Storage policy let users delete their own review photos, so `AccountService` deleted *nothing*, silently. Breaks the privacy policy and **Apple 5.1.1(v)** — this could have failed beta review. |
+| 🔴 **Invented stores when offline** | `fix/no-invented-map-stores` | An unreachable backend pinned five made-up halal places, with fake certifier badges and confirm counts, around the user's real location. One network blip mid-demo would have shown fabricated halal stores. Now: empty map plus a reason. |
+
+**The two merge conflicts and how they were settled** (as `TESTFLIGHT.md`/Notion
+specified: keep the builder's `build-bootstrap.sh`, keep the reviewer's
+`supabase-setup.sql` + `rls_matrix.sql`):
+
+- `HaliableTests/StoreServiceTests.swift` — kept the reviewer's **behaviour** (no
+  invented stores, `lastError` set) on the builder's **mechanism**
+  (`StoreService(forceOffline: true)`). The reviewer's version asserted via "the
+  Supabase package isn't linked", which stopped being true the moment the package
+  was linked properly and would have made the test hit the real network. The two
+  bundled-seed tests were dropped — there is no seed any more. A stale
+  "bundled-seed path" comment in `StoreService` was corrected.
+- `supabase/build-bootstrap.sh` — took the builder's, then re-ran it:
+  `wrote supabase/bootstrap.sql (669 lines from 8 files)`.
+
+**Applied to the LIVE database, not just the repo.** The Storage policy was run
+through `supabase db query --linked` and verified by reading `pg_policies`:
+
+| policy | cmd |
+|---|---|
+| `delete own review photos` | DELETE |
+| `read own review photos` | SELECT |
+| `upload own review photos` | INSERT |
+
+Tests after all three merges: **136 passed, 0 failed** (up from 133 — the fixes
+brought their own regression tests).
+
+## The site, and the app's matching backdrop
+
+- **`haliable.netlify.app` is live.** `/`, `/privacy/`, `/terms/` → 200. The
+  waitlist function answered a real POST with `{"ok":true}`, so MailerLite is wired
+  and Phase 6's waitlist check is **done**.
+- The landing page was **restored** from `298ac9c` (it had been deleted Jul 4 and
+  replaced by a 4 KB placeholder). Three things were cut before it went public —
+  fabricated beta-tester testimonials, a card/CVC form that falsely confirmed
+  payment, and a password form with no backend. Details under "Decisions".
+- `Haliable/Theme/GeometryBackdrop.swift` ports the page's two background layers
+  1:1 into the app — the 64 pt grid and the 110 pt Islamic lattice — so the site
+  and the app read as one product. Wired into `AppScreen` (History, About, Reviews,
+  Settings) and `ScannerViewV2`. The map is deliberately left alone.
+
 ## Things that could block TestFlight
 
 | Blocker | Status |
 |---|---|
-| **Apple Developer Program approval** | Paid Oct 13, 2026. Phases 3–5 can't start until it lands. Phase 6 doesn't need it. |
-| **🔴 No Netlify site** | `haliable.netlify.app` does not exist and no `.netlify` link is in the repo. Blocks **Phase 3** (the Sign in with Apple functions have nowhere to deploy; `SupabaseConfig.functionsBase` is hardcoded to that URL) and **Phase 5** (the public TestFlight link needs a live privacy page). **This is the #1 non-Apple blocker.** |
+| **🔴 No code-signing identity on this Mac** | **The only thing now blocking Phases 3–5.** Membership approved, but Xcode isn't signed in: 0 identities, 0 profiles. See the top of this file. |
+| ~~Apple Developer Program approval~~ | ✅ **Approved.** Paid Oct 13, confirmed by Omar Oct 14. |
+| ~~🔴 No Netlify site~~ | ✅ **LIVE Oct 14.** `haliable.netlify.app`, `/privacy/` and `/terms/` all 200. `SupabaseConfig.functionsBase` now resolves. The waitlist function answered a real POST with `{"ok":true}`. |
 | ~~Keep-alive not armed~~ | ✅ **Armed Oct 14.** Both repo secrets set and the workflow run manually — green. The free project will not pause. |
 | ~~Trial font licenses~~ | ✅ Resolved in Phase 1. |
 | ~~Supabase project frozen~~ | ✅ Restored Oct 13; `ACTIVE_HEALTHY`, schema intact. |
@@ -275,8 +352,9 @@ the point — it proves the timestamp flag does not leak into the normal suite.
 
 ## Open questions for Omar
 
-1. **The 6 demo barcodes.** Phase 6 can't finish without them. Placeholders are in
-   `DemoBarcodeProbeTests.swift`; the probe will say which ones to swap.
+1. ~~The 6 demo barcodes.~~ ✅ Chosen from a 14-barcode sweep — see
+   `docs/demo/DEMO_SCRIPT.md`. Re-run `./scripts/run-demo-probe.sh` the morning of
+   the demo. **Confirm you're happy with the six and can get hold of them.**
 2. **CrossRoads Cafe and Market Cafe** — UConn lists five cafes, only three are in
    OpenStreetMap. Street addresses would let them be geocoded properly rather than
    given approximate pins.
@@ -287,6 +365,26 @@ the point — it proves the timestamp flag does not leak into the normal suite.
    cheap to rotate if you'd rather be certain.
 
 ## Decisions made while Omar was away
+
+### Oct 14–15, 2026 — merges and the live database
+- **Merged the three fix branches one at a time, not as an octopus.** The octopus
+  merge aborted on the `StoreServiceTests` conflict and left nothing staged; three
+  sequential merges made each conflict legible and each resolution reviewable.
+- **Resolved the test conflict toward the reviewer's behaviour, not their test.**
+  Their assertion keyed off the Supabase package being unlinked, which was itself
+  the bug fixed in Phase 2 — keeping it would have re-pinned the suite to a bug and
+  let the test reach the network. Behaviour kept, mechanism replaced.
+- **Applied the Storage policy to the live database myself** rather than leaving it
+  as a "run this SQL" instruction. It is an Apple review requirement and it had
+  already been missed once; `supabase db query --linked` goes through the
+  Management API on the CLI login, so no password was needed and none was asked for.
+- **Did not touch the 🟡 items** the reviewer also raised (OpenStreetMap credit on
+  the map itself, bot protection on the waitlist form, ignored failures in the
+  Apple token save). None blocks TestFlight and rule 7 says no new work before the
+  interview. They're still open and still worth doing after.
+- **Did not try to set up signing.** It needs Omar's Apple ID in Xcode; there is no
+  way to do it from here, and guessing at a Team ID would create a wrong profile to
+  unpick later.
 
 ### Oct 14, 2026 — the landing page
 
