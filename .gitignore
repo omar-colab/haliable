@@ -26,3 +26,6 @@ graphify-out/
 
 # Supabase CLI scratch
 supabase/.temp/
+
+# App Store Connect API credentials (Issuer ID is not secret, but keep it local)
+.env.asc
