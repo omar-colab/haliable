@@ -366,6 +366,26 @@ brought their own regression tests).
   and the app read as one product. Wired into `AppScreen` (History, About, Reviews,
   Settings) and `ScannerViewV2`. The map is deliberately left alone.
 
+## Verified on Oct 15, after everything merged
+
+Not "tests pass" — observed.
+
+| Check | Result |
+|---|---|
+| Release build, `generic/platform=iOS` | **BUILD SUCCEEDED** after all three merges + the backdrop |
+| Full suite | **136 passed, 0 failed, 4 skipped** |
+| `haliable.netlify.app` `/`, `/privacy/`, `/terms/` | 200 |
+| Waitlist function, real POST | `{"ok":true}` |
+| Storage policies on the live DB | `delete`/`read`/`upload own review photos` all present |
+| **Store Atlas against the live backend** | **5 real UConn campus pins**, clustered correctly, "South Dining Hall (Rome Commons)" labelled. The full chain works: app → supabase-swift → live PostGIS → `stores_nearby` → pins |
+| Demo kit, re-probed after the matcher fix | 5 of 6 unchanged; Welch's moved to `haram (draft)` driven by pork — written up in `DEMO_SCRIPT.md` |
+
+**The upload path is built and committed:** `scripts/testflight-upload.sh`. The `.p8`
+(key `XVG63HZV2S`) is in `~/.appstoreconnect/private_keys`, mode 600, validated as a
+real EC private key. **The only missing value is the Issuer ID**, the team-level UUID
+on App Store Connect → Users and Access → Integrations. Without it no JWT can be
+signed, so nothing can archive or upload.
+
 ## Things that could block TestFlight
 
 | Blocker | Status |
