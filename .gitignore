@@ -29,3 +29,9 @@ supabase/.temp/
 
 # App Store Connect API credentials (Issuer ID is not secret, but keep it local)
 .env.asc
+
+# Review-agent credentials — secret key, never commit
+scripts/review-agent/.env
+scripts/review-agent/briefs/
+scripts/review-agent/drafts/
+scripts/review-agent/candidates/

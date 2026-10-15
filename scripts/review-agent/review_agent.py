@@ -42,10 +42,30 @@ ORIGIN_SENSITIVE = {
 
 # ---------------------------------------------------------------- supabase io
 
+def _load_env_file():
+    """Read scripts/review-agent/.env if present, so the key lives in one
+    git-ignored file instead of a shell profile. Real environment variables
+    always win, which keeps CI and one-off overrides working."""
+    f = HERE / ".env"
+    if not f.exists():
+        return
+    for line in f.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        k, v = line.split("=", 1)
+        os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+
+
 def _env(name):
+    _load_env_file()
     v = os.environ.get(name)
     if not v:
-        sys.exit(f"{name} is not set. See PROTOCOL.md — never put it in the repo.")
+        sys.exit(
+            f"{name} is not set.\n"
+            f"Put it in {HERE / '.env'} (git-ignored) — see .env.example.\n"
+            "Never commit it and never paste it into a chat."
+        )
     return v
 
 
