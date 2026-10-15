@@ -16,7 +16,7 @@ about a minute and tells you exactly which barcode to drop.
 | 1 | Oreo | `044000032029` | Clean pass. **Halal under all four standards** |
 | 2 | Jif Creamy Peanut Butter | `0051500255162` | **Diverges**, and the citation is live — not a draft |
 | 3 | Yoplait Original red raspberry | `070470003016` | The money shot: **haram under Zabiha-only, doubtful under the other three** |
-| 4 | Welch's Fruit Snacks | `0034856008187` | **Haram under all four.** The app doesn't hedge when it shouldn't |
+| 4 | Welch's Fruit Snacks | `0034856008187` | **Haram under all four.** The app doesn't hedge when it shouldn't. **Don't tap into the citation on this one** — see below |
 | 5 | Cheetos XXtra Flamin' Hot | `028400433303` | **Diverges** on enzymes / whey |
 | 6 | Diet Coke | `0049000028911` | Shows a **draft** grade — the honest "no citation yet" state |
 
@@ -28,7 +28,8 @@ What each one actually printed:
                             driver: "Mono- and diglycerides"           ← cited, not a draft
 3  Yoplait red raspberry    zabiha: haram          driver: "kosher gelatin"
                             other three: mashboohDisapproved (draft)   driver: E428
-4  Welch's Fruit Snacks     haram / haram / haram / haram              driver: gelatin, pork
+4  Welch's Fruit Snacks     haram / haram / haram / haram  (all four marked draft)
+                            driver: "pork"   ← haram everywhere, but NOT a citation
 5  Cheetos XXtra Flamin'Hot zabiha: haram          driver: enzymes
                             other three: mashboohDisapproved / Contested ×2, driver: whey
 6  Diet Coke                mashboohDisapproved ×2, mashboohContested ×2 (draft)
@@ -90,6 +91,13 @@ behind it. Nothing else. That one interaction is the whole product.
 
 ## Don't be surprised by
 
+- **Slot 4 is your "clear haram" moment, not your citation moment.** Re-probed Oct 15
+  after the ingredient-matcher fix: Welch's now reports `haram (draft)` under all four
+  standards, driven by **pork**. The verdict is right and that's what you're showing.
+  But pork reading as *uncited* looks wrong to anyone who taps it, so do the citation
+  moment on **#2 Jif** or **#3 Yoplait under Zabiha** — both are cited and neither is a
+  draft. (Worth closing the pork citation gap after the interview; it's a gap in
+  `Citations.json`, not a bug in the engine.)
 - **Draft / "needs review" labels are correct.** 123 citation cells are filled;
   additives without a published ruling stay marked. Say it out loud — it's the
   strongest thing about the app, not a gap to hide.
