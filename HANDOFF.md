@@ -131,13 +131,13 @@ seafood axis after interview · after the interview → FinGuard.
 **Also done Oct 16:** site overclaims removed + honeypot (live on `main`, `6bfd451`);
 DEMO_SCRIPT Welch's line reworded + "use what you already have" section (Omar isn't buying
 the kit); `docs/demo/STORY.md` (3-minute story); migration **0010_campus_cafes** (CrossRoads
-+ Market Cafe at their buildings' OSM coordinates) — **written, NOT applied live**.
++ Market Cafe at their buildings' OSM coordinates) — **applied live by Omar Oct 16, verified: 7 approved places**.
 
 ⚠️ **Mistake, fixed:** the staged V1 deletions rode along in the site commit and were
 cherry-picked to `main` (`6bfd451`), which would have broken main's build. Restored on
 main in `ba0f21a`; main's app code is identical to `0f285c1`.
 
-**Still open:** apply 0010 live (Omar, SQL Editor) · E627/E542 softening + AHF/HFA promotion
+**Still open:** E627/E542 softening + AHF/HFA promotion
 — decided, NOT implemented: it changes verdicts, so it goes through the citation pipeline
 after the UI ships, not in a rush before a demo · U7 (QA on device, upload build 6).
 
