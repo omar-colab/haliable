@@ -66,7 +66,10 @@ cat > "$OUT/ExportOptions.plist" <<PLIST
   <key>method</key><string>app-store-connect</string>
   <key>destination</key><string>export</string>
   <key>uploadSymbols</key><true/>
-  <key>signingStyle</key><string>automatic</string>
+  <key>signingStyle</key><string>manual</string>
+  <key>teamID</key><string>UX6CT4G932</string>
+  <key>provisioningProfiles</key>
+  <dict><key>app.haliable.ios</key><string>Haliable App Store</string></dict>
 </dict>
 </plist>
 PLIST
