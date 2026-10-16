@@ -106,12 +106,14 @@ struct VerdictView: View {
                         tint: live.overall.tint,
                         diameter: 66)
             VStack(alignment: .leading, spacing: 2) {
-                Text(live.overall.displayName)
+                // A draft driving cell never gets a confident headline (§A3);
+                // the PendingReviewBanner below carries the draft grade.
+                Text(live.overallNeedsReview ? "Pending review" : live.overall.displayName)
                     .font(.custom("Spectral-Medium", size: 27, relativeTo: .title))
                     .tracking(-0.6)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
-                    .foregroundStyle(live.overall.tint)
+                    .foregroundStyle(live.overallNeedsReview ? DSColor.warning : live.overall.tint)
                     .id(live.overall)
                     .transition(.opacity)
                 Text([live.product.name, live.product.brand].compactMap { $0 }.joined(separator: " · "))
