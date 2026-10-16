@@ -1,61 +1,77 @@
 # HANDOFF — Haliable → TestFlight
 
-Last updated: **Oct 15, 2026** · Phases 0, 1, 2 done · Phase 6 code half done ·
-all three reviewer 🔴 bugs merged · site live · **136 tests green**
+Last updated: **Oct 16, 2026** · **Builds 4 and 5 are on TestFlight** ·
+site live · review agent built · **136 tests green**
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 
-## 🔴 READ THIS FIRST — the one thing blocking TestFlight
+## ✅ The app is on TestFlight
 
-**There is no Apple code-signing identity on this Mac.**
+Build **1.0 (5)** uploaded Oct 15, 20:45. `UPLOAD SUCCEEDED with no errors`,
+delivery UUID `9fc30b3b-24ab-4c78-b25b-7b84811984b4`. Build 4 is up too, as a
+fallback. One command re-uploads: `./scripts/testflight-upload.sh`.
 
-```
-security find-identity -v -p codesigning   →  0 valid identities found
-~/Library/Developer/Xcode/UserData/Provisioning Profiles/  →  empty
-```
+### Signing — solved, and not the way the plan assumed
 
-The membership is approved — that part is done — but an approved membership and a
-signed-in Xcode are two different things, and only the second one lets anything be
-archived or uploaded. Until Omar does this, Phases 3, 4 and 5 cannot start, and no
-amount of work in the repo changes that:
+The plan said sign Xcode in and use automatic signing. That could never have
+worked here. The account had **two DEVELOPMENT certificates, zero DISTRIBUTION,
+zero profiles and zero registered devices**, so `-allowProvisioningUpdates` kept
+trying to mint a *development* profile and dying on "your team has no devices".
+Forcing the distribution identity then collided with automatic signing outright.
 
-1. **Xcode → Settings → Accounts → ＋ → Apple ID**, sign in.
-2. Open `Haliable.xcodeproj` → target **Haliable** → **Signing & Capabilities** →
-   tick **Automatically manage signing** → pick the team.
-3. Repeat the team pick for the **HaliableTests** and **HaliableUITests** targets.
-4. Re-run `security find-identity -v -p codesigning` — it should list an
-   **Apple Development** identity. Paste the Team ID back here.
+What was done instead, all through the App Store Connect API:
 
-**Checked Oct 15 and none of this had happened yet:** `security find-identity -v`
-returns 0 identities (not just for codesigning — none at all), the provisioning
-profile folder is empty, `defaults read com.apple.dt.Xcode IDEProvisioningTeams`
-says the key does not exist, and there is no Xcode token in the keychain. The
-membership is approved; Xcode on *this Mac* has simply never been signed in.
+| Thing | Value |
+|---|---|
+| Team ID | `UX6CT4G932` (read from `/v1/bundleIds` → `seedId`, not guessed) |
+| App ID | `6823193533`, bundle `app.haliable.ios` |
+| Distribution certificate | `OMAR MONTASIR OMAR`, id `C58GH3GW8G`, expires 2027-10-15 |
+| Provisioning profile | `Haliable App Store`, IOS_APP_STORE, ACTIVE |
+| ASC API key | `XVG63HZV2S`, Admin role, `~/.appstoreconnect/private_keys/` |
 
-**Better route, and the one being taken:** an **App Store Connect API key** with
-the **Admin** role removes the need for any of the above. `CODE_SIGN_STYLE` is
-already `Automatic` on all six configs, so `xcodebuild -allowProvisioningUpdates`
-with the key creates the certificate *and* the provisioning profile itself,
-archives, and uploads — no Xcode GUI, and no fastlane, which isn't installed here.
+**Release on the app target is manual signing** against that profile; Debug stays
+automatic so the simulator and the suite are untouched. Issuer ID and key id live
+in `.env.asc` (git-ignored).
 
-- The key belongs in `~/.appstoreconnect/private_keys/AuthKey_<KEYID>.p8`
-  (created, mode 700) — where `xcodebuild` and `altool` look by default.
-- The **Key ID** is read off the filename; only the **Issuer ID** needs passing on.
-  The `.p8` itself never goes in a chat.
-- The role must be **Admin**. App Manager and Developer can upload builds but
-  **cannot create signing certificates**, which is the entire point here.
-- The app record still has to be made in the App Store Connect web UI — Apple has
-  no API for creating apps.
+**Still Omar's, in App Store Connect:** export compliance (answer **No** — the
+Info.plist already declares `ITSAppUsesNonExemptEncryption=false`), add yourself
+to Internal Testing (no Apple review), then an External group for friends (one
+Beta App Review, ~1 day).
 
-**Demo device (this answers an open question on the Notion page): iPhone 14,
-iOS 26.6.** Clears the 18.0 deployment target comfortably. Note the App Store
-screenshots in `fastlane/screenshots` were captured at 6.9" (17 Pro Max) and the
-14 is 6.1" — irrelevant for TestFlight, relevant for an App Store listing later.
+## 🟡 The UI redesign is PARTIAL — read this before judging it
 
-**Phase 4 does not depend on Phase 3.** Sign in with Apple is a feature inside the
-app, not an upload requirement, and internal TestFlight needs no Apple review. A
-build can be on the phone before SIWA exists, with photo review in demo mode.
+Eight screens were designed and approved. **Roughly two are partially built.**
+Saying "the UI is built" would be wrong, and Omar noticed immediately.
 
-Everything that does *not* need signing has been done. See below.
+**In the app:**
+- `Haliable/Theme/GuardComponents.swift` — `GuardAction`, `GuardRow`,
+  `GuardSection`, `FlaggedRing`, `GuardOrbs`, `RingEmblem`, `DSMotion`,
+  `PressableStyle`
+- Scan: the gradient action card, and recents as `GuardRow`
+- Verdict: the ring and **all four standards as one-tap chips** (the demo moment —
+  previously buried in a sheet)
+
+**NOT in the app, despite being designed:** the welcome/avatar row, the ring
+emblem on Home, "Needs attention", the floating bubble dock (`RootTabView` is
+unchanged), the Atlas redesign, the redesigned standards picker, Reviews,
+History, Store detail, and the live ingredient tags over the camera feed.
+
+**Two things were reversed after seeing them on a device:**
+1. The emblem went on Home and came straight back off. On top of a 396pt
+   viewfinder it plus the headline ate ~260pt and pushed "Start a halal scan"
+   below the fold. The mockup gets away with it because its Home has a *small
+   preview*, not a full viewfinder. Shrinking the viewfinder was worse — its hint
+   text is positioned proportionally and collided with the reticle corners.
+2. The ring first read **"0 OF 2"** on Nutella. `ProductVerdict.matched` holds
+   only ingredients the engine has a *rule* for, so a dozen-ingredient product can
+   report 2. "0 of 2 cleared" asserts something the app does not know. It now
+   reports **flagged-of-checked** and is named `FlaggedRing`.
+
+Design boards (HTML, not in the repo): `~/Desktop/haliable-guard2.html` is the
+approved one — https://claude.ai/artifact/JbVaVBBdmWpkrc71H8wSxL
+
+Suggested order if the work continues: **standards picker** (small, and it is the
+control the demo turns on) → **Atlas list sheet** → **the dock** (biggest visual
+change, most risk, least functional gain).
 
 ## Where we are
 
@@ -459,7 +475,7 @@ must be added there or they silently miss the bootstrap).
 
 | Blocker | Status |
 |---|---|
-| **🔴 No code-signing identity on this Mac** | **The only thing now blocking Phases 3–5.** Membership approved, but Xcode isn't signed in: 0 identities, 0 profiles. See the top of this file. |
+| ~~🔴 No code-signing identity~~ | ✅ **Solved Oct 15.** Distribution certificate and `Haliable App Store` profile created through the ASC API; Release signs manually against them. Builds 4 and 5 uploaded. |
 | ~~Apple Developer Program approval~~ | ✅ **Approved.** Paid Oct 13, confirmed by Omar Oct 14. |
 | ~~🔴 No Netlify site~~ | ✅ **LIVE Oct 14.** `haliable.netlify.app`, `/privacy/` and `/terms/` all 200. `SupabaseConfig.functionsBase` now resolves. The waitlist function answered a real POST with `{"ok":true}`. |
 | ~~Keep-alive not armed~~ | ✅ **Armed Oct 14.** Both repo secrets set and the workflow run manually — green. The free project will not pause. |
