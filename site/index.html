@@ -603,9 +603,7 @@
     <ul class="nav-links">
         <li><a href="#how-it-works">How It Works</a></li>
         <li><a href="#features">Features</a></li>
-        <li><a href="#market">Market</a></li>
         <li><a href="#standards">Standards</a></li>
-        <li><a href="#pricing">Pricing</a></li>
     </ul>
     <div class="nav-right">
         <a class="btn-green" href="#waitlist">Join the waitlist</a>
@@ -623,13 +621,14 @@
             <p class="hero-sub"><span class="hg">Haliable</span> checks any grocery barcode against the halal standard <em>you</em> follow — ingredient by ingredient, in seconds, with the scholarly source behind every judgement.</p>
             <form class="email-row" onsubmit="joinWaitlist(event, this)">
                 <input class="email-input" type="email" placeholder="Enter your email" required>
+                <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
                 <button class="btn-primary" type="submit">Join Waitlist</button>
             </form>
-            <p class="hero-fine">Free for year one &mdash; no credit card needed. <a href="#pricing" style="color:var(--g400);text-decoration:none">See pricing &rarr;</a></p>
+            <p class="hero-fine">Free to scan. No account needed. Now in beta on TestFlight.</p>
             <div class="hero-stats">
-                <div><div class="hs-num">$170B</div><div class="hs-lbl">Muslim consumer<br>market in the U.S.</div></div>
-                <div><div class="hs-num">83%</div><div class="hs-lbl">of U.S. Muslims let<br>halal guide purchases</div></div>
-                <div><div class="hs-num">2040</div><div class="hs-lbl">Projected 2nd largest<br>U.S. religious group</div></div>
+                <div><div class="hs-num">4</div><div class="hs-lbl">halal standards,<br>one tap apart</div></div>
+                <div><div class="hs-num">257</div><div class="hs-lbl">published citations<br>behind the rulings</div></div>
+                <div><div class="hs-num">0</div><div class="hs-lbl">ingredients assumed<br>halal without proof</div></div>
             </div>
         </div>
         <div class="hero-visual">
@@ -683,34 +682,30 @@
 <!-- ── MARQUEE TICKER ── -->
 <div class="ticker">
     <div class="ticker-track" id="ticker">
-        <span class="ticker-item"><span>$170B+</span> U.S. Muslim Consumer Market</span>
+        <span class="ticker-item"><span>4</span> halal standards, side by side</span>
         <span class="ticker-sep">✦</span>
-        <span class="ticker-item"><span>83%</span> of U.S. Muslims check halal before buying</span>
-        <span class="ticker-sep">✦</span>
-        <span class="ticker-item"><span>48%</span> of halal sales happen in regular supermarkets</span>
-        <span class="ticker-sep">✦</span>
-        <span class="ticker-item"><span>60%</span> of Muslims worry about certification fraud</span>
-        <span class="ticker-sep">✦</span>
-        <span class="ticker-item"><span>2040</span> Muslims become U.S.&#39;s 2nd largest religious group</span>
-        <span class="ticker-sep">✦</span>
-        <span class="ticker-item"><span>Millions</span> of products in our database and growing</span>
+        <span class="ticker-item">Every flagged ingredient shows <span>its source</span></span>
         <span class="ticker-sep">✦</span>
         <span class="ticker-item">Open Food Facts <span>&amp;</span> USDA FoodData Central powered</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item">Unknown means <span>Questionable</span> &mdash; never assumed halal</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item">Ask a human: <span>photo review</span> for tricky labels</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item"><span>Free</span> to scan, no account needed</span>
         <span class="ticker-sep">✦</span>
         <!-- duplicate for seamless loop -->
-        <span class="ticker-item"><span>$170B+</span> U.S. Muslim Consumer Market</span>
+        <span class="ticker-item"><span>4</span> halal standards, side by side</span>
         <span class="ticker-sep">✦</span>
-        <span class="ticker-item"><span>83%</span> of U.S. Muslims check halal before buying</span>
-        <span class="ticker-sep">✦</span>
-        <span class="ticker-item"><span>48%</span> of halal sales happen in regular supermarkets</span>
-        <span class="ticker-sep">✦</span>
-        <span class="ticker-item"><span>60%</span> of Muslims worry about certification fraud</span>
-        <span class="ticker-sep">✦</span>
-        <span class="ticker-item"><span>2040</span> Muslims become U.S.&#39;s 2nd largest religious group</span>
-        <span class="ticker-sep">✦</span>
-        <span class="ticker-item"><span>Millions</span> of products in our database and growing</span>
+        <span class="ticker-item">Every flagged ingredient shows <span>its source</span></span>
         <span class="ticker-sep">✦</span>
         <span class="ticker-item">Open Food Facts <span>&amp;</span> USDA FoodData Central powered</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item">Unknown means <span>Questionable</span> &mdash; never assumed halal</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item">Ask a human: <span>photo review</span> for tricky labels</span>
+        <span class="ticker-sep">✦</span>
+        <span class="ticker-item"><span>Free</span> to scan, no account needed</span>
         <span class="ticker-sep">✦</span>
     </div>
 </div>
@@ -724,15 +719,15 @@
                 <h2 class="h2">Ingredient labels are <em>confusing</em> by design</h2>
                 <p class="lead">Processed food ingredient lists are opaque and deliberately complex. For Muslims navigating American grocery stores, every label is a research project.</p>
                 <br>
-                <p class="lead">Hidden animal derivatives, ambiguous emulsifiers, undisclosed processing aids &mdash; the current system fails halal-conscious shoppers entirely.</p>
+                <p class="lead">Hidden animal derivatives, ambiguous emulsifiers, undisclosed processing aids &mdash; and most labels never say where an ingredient came from.</p>
             </div>
             <div class="stat-cluster fade-up">
                 <div class="scard big">
-                    <div class="snum">83%</div>
-                    <div class="sdesc">of U.S. Muslims say halal guidelines influence their purchasing decisions &mdash; yet no reliable tool exists to verify ingredients at the shelf.</div>
+                    <div class="snum">E471</div>
+                    <div class="sdesc">Mono- and diglycerides can be made from plants or from animal fat &mdash; and the label almost never says which.</div>
                 </div>
-                <div class="scard"><div class="snum">82%</div><div class="sdesc">check certifications before buying any product</div></div>
-                <div class="scard"><div class="snum">60%</div><div class="sdesc">worry about halal certification fraud on labels</div></div>
+                <div class="scard"><div class="snum">E120</div><div class="sdesc">Carmine is a red dye made from insects</div></div>
+                <div class="scard"><div class="snum">&ldquo;Natural flavors&rdquo;</div><div class="sdesc">can be carried in alcohol</div></div>
             </div>
         </div>
     </div>
@@ -779,32 +774,12 @@
             <p class="lead">Built specifically for Muslims navigating everyday American grocery stores.</p>
         </div>
         <div class="feat-grid">
-            <div class="fcard fade-up"><div class="fcard-ico">📱</div><div class="fcard-title">Barcode Scanner</div><p class="fcard-desc">Instant ingredient analysis for millions of products across Walmart, Publix, Shoprite, and every major chain.</p></div>
-            <div class="fcard fade-up"><div class="fcard-ico">🗄️</div><div class="fcard-title">America's Largest Halal Database</div><p class="fcard-desc">The most comprehensive index of halal product data in the U.S., continuously updated from multiple authoritative sources.</p></div>
-            <div class="fcard fade-up"><div class="fcard-ico">📸</div><div class="fcard-title">Community Photo Submissions</div><p class="fcard-desc">Found a product we don't have? Snap a photo and submit it for halal review. Every submission improves the database for everyone.</p></div>
+            <div class="fcard fade-up"><div class="fcard-ico">📱</div><div class="fcard-title">Barcode Scanner</div><p class="fcard-desc">Point the camera at a barcode. Haliable looks the product up in Open Food Facts and USDA FoodData Central and checks every ingredient.</p></div>
+            <div class="fcard fade-up"><div class="fcard-ico">🗄️</div><div class="fcard-title">A Source for Every Flag</div><p class="fcard-desc">Each flagged ingredient shows the published halal standard or scholarly ruling behind it. Rulings still awaiting a citation are clearly marked as drafts.</p></div>
+            <div class="fcard fade-up"><div class="fcard-ico">📸</div><div class="fcard-title">Community Photo Submissions</div><p class="fcard-desc">Not sure about a label? Photograph it and a person reviews it. Approved answers can close gaps for everyone who scans that ingredient later.</p></div>
             <div class="fcard fade-up"><div class="fcard-ico">🕌</div><div class="fcard-title">Islamic Standards Guide</div><p class="fcard-desc">A full glossary of halal and haram designations — their origins, meanings, and how they apply to modern food production.</p></div>
-            <div class="fcard fade-up"><div class="fcard-ico">🏬</div><div class="fcard-title">Store Directory</div><p class="fcard-desc">A guide to major U.S. grocery chains — what halal products they carry, which sections to check, and what to watch out for.</p></div>
-            <div class="fcard fade-up"><div class="fcard-ico">🛡️</div><div class="fcard-title">Certification Fraud Alerts</div><p class="fcard-desc">We verify certifications and flag misleading claims. 60% of Muslims worry about halal fraud — we built a system to address it.</p></div>
-        </div>
-    </div>
-</section>
-
-<!-- ── MARKET ── -->
-<section class="market" id="market">
-    <div class="wrap">
-        <div class="market-grid">
-            <div class="fade-up">
-                <div class="eyebrow">Market Opportunity</div>
-                <h2 class="h2">A $170 billion market with no clear winner</h2>
-                <p class="lead">The U.S. Muslim consumer market is massive, growing fast, and deeply underserved. Existing apps are outdated, incomplete, and lack the depth serious halal-conscious shoppers need.</p>
-                <br>
-                <p class="lead" style="color:var(--gold-l);opacity:.9">Supermarkets account for 48% of halal food sales — meaning most halal shopping already happens in regular grocery stores. Haliable meets consumers where they already shop.</p>
-            </div>
-            <div class="mlist fade-up">
-                <div class="mitem"><div class="mline"></div><div><div class="mbig">$170B+</div><div class="mlbl">U.S. Muslim consumer market — one of the fastest-growing segments in American retail</div></div></div>
-                <div class="mitem"><div class="mline"></div><div><div class="mbig">48%</div><div class="mlbl">of halal food sales occur in supermarkets and hypermarkets, not specialty stores</div></div></div>
-                <div class="mitem"><div class="mline"></div><div><div class="mbig">2040</div><div class="mlbl">Muslims projected to become the second-largest religious group in the United States</div></div></div>
-            </div>
+            <div class="fcard fade-up"><div class="fcard-ico">🏬</div><div class="fcard-title">Store Atlas</div><p class="fcard-desc">A map of halal places, starting with the UConn Storrs campus. Every listing shows its source, and the community confirms or disputes it.</p></div>
+            <div class="fcard fade-up"><div class="fcard-ico">⚖️</div><div class="fcard-title">Your Standard, Your Verdict</div><p class="fcard-desc">Zabiha-only, Hanafi-strict, General Halal or Lenient. Switch with one tap and watch the verdict change. Haliable reports what scholars said; it doesn't rule.</p></div>
         </div>
     </div>
 </section>
@@ -828,108 +803,6 @@
 
 <div class="divider-geo"><span class="ln"></span><span class="st"></span><span class="ln r"></span></div>
 
-<!-- ── STORES ── -->
-<section class="stores" id="stores">
-    <div class="wrap">
-        <div class="stores-head fade-up">
-            <div class="eyebrow">Coverage</div>
-            <h2 class="h2">The stores you already shop at</h2>
-            <p class="lead">Haliable covers the major U.S. grocery chains where Muslims do their weekly shopping.</p>
-        </div>
-        <div class="store-cloud fade-up">
-            <div class="store-pill">Walmart</div>
-            <div class="store-pill">Publix</div>
-            <div class="store-pill">Shoprite</div>
-            <div class="store-pill">Stop &amp; Shop</div>
-            <div class="store-pill">Kroger</div>
-            <div class="store-pill">Whole Foods</div>
-            <div class="store-pill">Trader Joe's</div>
-            <div class="store-pill">Costco</div>
-            <div class="store-pill">Aldi</div>
-            <div class="store-pill">Meijer</div>
-            <div class="store-pill">H-E-B</div>
-            <div class="store-pill">Wegmans</div>
-            <div class="store-pill">Target</div>
-            <div class="store-pill">Sam's Club</div>
-            <div class="store-pill">BJ's Wholesale</div>
-            <div class="store-pill">Food Lion</div>
-            <div class="store-pill">Giant Food</div>
-            <div class="store-pill">Harris Teeter</div>
-            <div class="store-pill">Hannaford</div>
-            <div class="store-pill">+ More Added Regularly</div>
-        </div>
-    </div>
-</section>
-
-<!-- ── COMPARE ── -->
-<section class="compare" id="compare">
-    <div class="wrap">
-        <div class="fade-up">
-            <div class="eyebrow">Why Haliable</div>
-            <h2 class="h2">Not just another scanner</h2>
-            <p class="lead">Deeper, more reliable, and more transparent halal verification than anything else on the market.</p>
-        </div>
-        <div class="table-wrap fade-up">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Feature</th><th class="hi">Haliable</th><th>TagHalal</th><th>Scan Halal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>USDA + Open Food Facts database</td><td class="hi tick">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
-                    <tr><td>Full ingredient-level breakdown</td><td class="hi tick">✓</td><td class="part">Partial</td><td class="part">Partial</td></tr>
-                    <tr><td>Community photo submissions</td><td class="hi tick">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
-                    <tr><td>Certification fraud detection</td><td class="hi tick">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
-                    <tr><td>Islamic standards education</td><td class="hi tick">✓</td><td class="cross">✗</td><td class="part">Limited</td></tr>
-                    <tr><td>Store directory &amp; coverage map</td><td class="hi tick">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
-                    <tr><td>Free for the first year</td><td class="hi tick">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</section>
-
-<!-- ── PRICING / PAYMENT ── -->
-<section class="pricing" id="pricing">
-    <div class="wrap">
-        <div class="pricing-head fade-up">
-            <div class="eyebrow">Pricing</div>
-            <h2 class="h2">Simple, honest pricing</h2>
-            <p class="lead" style="margin:0 auto">Start free. Stay because it works.</p>
-        </div>
-        <div class="plan-grid">
-            <div class="plan fade-up">
-                <div class="plan-tier">Free — Year One</div>
-                <div class="plan-price">$0 <sub>/ first year</sub></div>
-                <div class="plan-period">Full access, no credit card required</div>
-                <ul class="plan-list">
-                    <li><span class="chk">✓</span> Unlimited barcode scans</li>
-                    <li><span class="chk">✓</span> Full database access</li>
-                    <li><span class="chk">✓</span> Ingredient-level breakdowns</li>
-                    <li><span class="chk">✓</span> Islamic standards guide</li>
-                    <li><span class="chk">✓</span> Community photo submissions</li>
-                </ul>
-                <a class="btn-plan btn-plan-ghost" href="#waitlist">Get Started Free</a>
-            </div>
-            <div class="plan featured fade-up">
-                <div class="plan-badge">Most Popular</div>
-                <div class="plan-tier">Premium</div>
-                <div class="plan-price">$15 <sub>/ year</sub></div>
-                <div class="plan-period">After year one — cancel anytime</div>
-                <ul class="plan-list">
-                    <li><span class="chk">✓</span> Everything in Free</li>
-                    <li><span class="chk">✓</span> Priority ingredient verification</li>
-                    <li><span class="chk">✓</span> Advanced fraud detection alerts</li>
-                    <li><span class="chk">✓</span> Halal store locator map</li>
-                    <li><span class="chk">✓</span> Early access to new features</li>
-                </ul>
-                <a class="btn-plan btn-plan-solid" href="#waitlist">Join the waitlist</a>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- ── CTA ── -->
 <section class="cta-sec" id="waitlist">
     <div class="cta-glow"></div>
@@ -941,6 +814,7 @@
         <p class="cta-sub">Haliable is coming to the App Store. Put your email in and you&rsquo;ll be among the first to know.</p>
         <form class="cta-form" onsubmit="joinWaitlist(event, this)">
             <input class="email-input" type="email" placeholder="your@email.com" required>
+            <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
             <button class="btn-primary" type="submit">Notify Me</button>
         </form>
         <p class="hero-fine">No spam. One email when we launch. Unsubscribe anytime.</p>
@@ -990,9 +864,6 @@
                 <div class="foot-brand">Haliable</div>
                 <div class="foot-copy">&copy; 2026 Haliable. All rights reserved.</div>
                 <div class="social-row">
-                    <a class="social-link" href="#" aria-label="Instagram" title="Instagram">&#9654;</a>
-                    <a class="social-link" href="#" aria-label="Twitter/X" title="Twitter/X">𝕏</a>
-                    <a class="social-link" href="#" aria-label="TikTok" title="TikTok">&#9834;</a>
                 </div>
             </div>
         </div>
@@ -1001,8 +872,6 @@
             <a href="#how-it-works">How It Works</a>
             <a href="#features">Features</a>
             <a href="#standards">Standards</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#compare">Compare</a>
             <a href="/privacy/">Privacy</a>
             <a href="/terms/">Terms</a>
             <a href="mailto:omarmontasir876@gmail.com">Contact</a>
@@ -1074,6 +943,7 @@ async function joinWaitlist(e, form) {
     const inp = form.querySelector('input');
     const orig = btn.textContent;
     const email = inp.value.trim();
+    const company = (form.querySelector('input[name="company"]') || {}).value || '';
 
     btn.disabled = true; inp.disabled = true;
     btn.textContent = 'Joining…';
@@ -1082,7 +952,7 @@ async function joinWaitlist(e, form) {
         const res = await fetch('/.netlify/functions/subscribe', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email }),
+            body: JSON.stringify({ email, company }),
         });
         const data = await res.json().catch(() => ({}));
 

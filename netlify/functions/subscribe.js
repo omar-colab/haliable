@@ -21,12 +21,15 @@ exports.handler = async (event) => {
   }
 
   // Parse + validate the email.
-  let email;
+  let email, company;
   try {
-    ({ email } = JSON.parse(event.body || '{}'));
+    ({ email, company } = JSON.parse(event.body || '{}'));
   } catch {
     return json(400, { error: 'Invalid request.' });
   }
+  // Honeypot: the "company" field is invisible to people, so only bots fill it.
+  // Answer like a success so the bot learns nothing, and subscribe no one.
+  if (company) return json(200, { ok: true });
   email = (email || '').trim().toLowerCase();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return json(400, { error: 'Please enter a valid email address.' });
