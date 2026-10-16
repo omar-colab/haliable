@@ -283,7 +283,7 @@ struct VerdictView: View {
                         .padding(.vertical, 8)
                         .background(
                             active
-                            ? AnyShapeStyle(LinearGradient(colors: [DSColor.accent, DSColor.accentDeep],
+                            ? AnyShapeStyle(LinearGradient(colors: [DSColor.accent, DSColor.accentGradientEnd],
                                                            startPoint: .topLeading,
                                                            endPoint: .bottomTrailing))
                             : AnyShapeStyle(DSColor.surface),

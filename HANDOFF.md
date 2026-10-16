@@ -73,6 +73,33 @@ Suggested order if the work continues: **standards picker** (small, and it is th
 control the demo turns on) → **Atlas list sheet** → **the dock** (biggest visual
 change, most risk, least functional gain).
 
+## 🎨 UI rebuild to the Guard board — branch `ui/guard` (Oct 16)
+
+Full plan (phases U0–U7): Notion "UI Build Plan — Haliable Guard". Board:
+`~/Desktop/haliable-guard2.html`. Build 5 on TestFlight stays the fallback; nothing
+from this branch ships until U7.
+
+**U0 palette — DONE.** Colorsets retuned to the board (neutral `#0A0A0B` dark /
+`#F6F8F6` light, accent `#30D98F`/`#19B377`, danger/warning per board, hairlines as
+alpha). New `DSColor.accentGradientEnd` (`#0A7A4C`) — every accent gradient used
+`accentDeep`, which is LIGHT in dark mode, so cards faded the wrong way. Third
+`GuardOrbs` orb. Default theme now `.system`; `LaunchBackground` adaptive.
+Light-mode tertiary text darkened to `#7D8B83` (board's `#96A49C` ≈ 2.6:1 on white).
+Unit tests green, Release builds, all tabs screenshotted light + dark.
+
+**Omar's decisions (Oct 16):** crescent pill in app-icon colors instead of "AI" ·
+no heart, About takes that dock slot · Home has no live camera (scan = full-screen
+cover) · no live OCR tags · welcome name = SIWA name else "Welcome" · theme follows
+phone · ALL of U0–U6 before the interview · OK: standard on History rows (new
+optional field), store page drops hours, Settings/About behind Home gear, delete old
+V1 screen files · Welch's demo line reworded to "citation pending" · landing-page
+overclaims removed + honeypot · look up CrossRoads/Market Cafe addresses · lookup
+order: fixed (one source then the other) · E627/E542 soften to match citations and
+AHF/HFA toward hanafiStrict — **through the citation pipeline, not by hand (rule 3)** ·
+seafood axis after interview · after the interview → FinGuard.
+
+**Next: U1 standards picker.**
+
 ## Where we are
 
 **Phase 0 (enroll + reset) — DONE.**

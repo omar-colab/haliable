@@ -90,7 +90,7 @@ struct GuardAction: View {
             }
             .padding(14)
             .background(
-                LinearGradient(colors: [DSColor.accent, DSColor.accentDeep],
+                LinearGradient(colors: [DSColor.accent, DSColor.accentGradientEnd],
                                startPoint: .topLeading, endPoint: .bottomTrailing),
                 in: RoundedRectangle(cornerRadius: 28, style: .continuous)
             )
@@ -261,6 +261,9 @@ struct GuardOrbs: View {
                 orb(DSColor.gold.opacity(0.18), 180)
                     .offset(x: -geo.size.width * 0.36, y: geo.size.height * 0.24)
                     .offset(x: drift ? 16 : -10, y: drift ? -14 : 10)
+                orb(DSColor.accent.opacity(0.16), 150)
+                    .offset(x: geo.size.width * 0.40, y: geo.size.height * 0.04)
+                    .offset(x: drift ? 10 : -12, y: drift ? -16 : 12)
             }
             .animation(reduceMotion ? nil
                        : .easeInOut(duration: 19).repeatForever(autoreverses: true),

@@ -86,7 +86,7 @@ struct HistoryV2: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background {
             if onGradient {
-                LinearGradient(colors: [DSColor.accent, DSColor.accentDeep],
+                LinearGradient(colors: [DSColor.accent, DSColor.accentGradientEnd],
                                startPoint: .topLeading, endPoint: .bottomTrailing)
             } else {
                 DSColor.surface
