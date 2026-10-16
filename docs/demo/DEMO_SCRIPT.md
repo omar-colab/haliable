@@ -9,14 +9,33 @@ about a minute and tells you exactly which barcode to drop.
 
 ---
 
-## The kit — 6 barcodes, verified Oct 14, 2026
+## Using what you already have (Omar, Oct 16 — not buying the kit)
+
+You don't need these exact six. You need three *kinds* of product, from your own
+kitchen or the nearest store:
+
+1. **A clean pass** — simple ingredients (plain chips, crackers, cereal). Shows
+   "Nothing flagged".
+2. **One that changes between standards** — anything with **gelatin, whey,
+   enzymes, mono- and diglycerides, or "natural flavors"** (yogurt, candy, cheese
+   snacks, peanut butter). Tap through the four standard chips on the verdict and
+   watch it move. This is the money shot.
+3. **A draft** — a soda or anything with caramel color (E150). Shows the honest
+   "no citation yet" state.
+
+The night before: scan each one once at home and note what it shows. Or send the
+barcode numbers to Claude and it will run them through `./scripts/run-demo-probe.sh`
+and tell you which ones are stable. Avoid store-brand items. They're the most
+likely to be missing from Open Food Facts.
+
+## The kit we tested — 6 barcodes, verified Oct 14, 2026
 
 | # | Product | Barcode | What it proves |
 |---|---|---|---|
 | 1 | Oreo | `044000032029` | Clean pass. **Halal under all four standards** |
 | 2 | Jif Creamy Peanut Butter | `0051500255162` | **Diverges**, and the citation is live — not a draft |
 | 3 | Yoplait Original red raspberry | `070470003016` | The money shot: **haram under Zabiha-only, doubtful under the other three** |
-| 4 | Welch's Fruit Snacks | `0034856008187` | **Haram under all four.** The app doesn't hedge when it shouldn't. **Don't tap into the citation on this one** — see below |
+| 4 | Welch's Fruit Snacks | `0034856008187` | **Haram under all four — and marked draft**, because the pork ruling has no citation attached yet. Shows the app labels even the obvious ones honestly |
 | 5 | Cheetos XXtra Flamin' Hot | `028400433303` | **Diverges** on enzymes / whey |
 | 6 | Diet Coke | `0049000028911` | Shows a **draft** grade — the honest "no citation yet" state |
 
@@ -61,15 +80,17 @@ from General Halal to **Zabiha-only**. The verdict changes to **haram** on the
 gelatin. "Same product, same ingredients, different school of thought — and the
 app says so out loud instead of pretending there's one answer."
 
-**2:10 — where it doesn't hedge (20s).** Scan **#4 Welch's Fruit Snacks**.
-Haram under all four. "When it's clear, it's clear."
+**2:10 — honest even when it's obvious (20s).** Scan **#4 Welch's Fruit Snacks**.
+Haram under all four, and marked **draft**. "Pork is haram everywhere — but the
+citation for that ruling isn't attached yet, so the app says so. It never
+pretends a ruling is backed when it isn't."
 
 **2:30 — the map (20s).** Find tab. Real halal locations near campus, pulled
 live from the backend, with a community submit button.
 
 **2:50 — honesty (10s).** Show **#6 Diet Coke**, marked a draft. "Where no
-scholar has ruled on an additive yet, it says so rather than guessing. 123 cells
-are cited; the rest are marked. A false halal is the one error I won't ship."
+scholar has ruled on an additive yet, it says so rather than guessing. 148 of 153
+ingredient rulings are cited; the rest are marked. A false halal is the one error I won't ship."
 
 ---
 
@@ -120,7 +141,7 @@ ingredient text. `041331092609` Goya — unstable, see above.
 
 ## Still to do (yours)
 
-- [ ] Buy the six products, or find them in a store you can stand in.
+- [ ] Pick your three products (see "Using what you already have") and scan each once the night before.
 - [ ] Three dry runs **on cellular**, not campus wifi.
 - [ ] Two out-loud reps of the 60-second version.
 - [ ] A backup screen recording of the 60-second version, on your phone, offline.

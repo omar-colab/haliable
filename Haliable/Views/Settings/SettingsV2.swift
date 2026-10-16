@@ -7,8 +7,7 @@
 //  verbatim), re-housed in the app's holistic dark look with the "Done" action
 //  moved into the consistent header. Original SettingsView is untouched.
 //
-//  Preview swap: in ScannerViewV2.swift, change the settings sheet's
-//  `SettingsView()` to `SettingsV2()`.
+//  Opened from the gear on Home.
 //
 
 import SwiftUI

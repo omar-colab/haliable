@@ -51,32 +51,43 @@ struct GuardAction: View {
     let symbol: String
     let title: String
     let subtitle: String
-    var action: () -> Void = {}
+    /// nil renders a static summary card: no arrow, not a button.
+    var action: (() -> Void)? = {}
 
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: DSSpacing.sm) {
-                Image(systemName: symbol)
-                    .font(.system(size: 19, weight: .medium))
+        if let action {
+            Button(action: action) { card(arrow: true) }
+                .pressable()
+                .accessibilityLabel("\(title). \(subtitle)")
+        } else {
+            card(arrow: false).accessibilityElement(children: .combine)
+        }
+    }
+
+    private func card(arrow: Bool) -> some View {
+        HStack(spacing: DSSpacing.sm) {
+            Image(systemName: symbol)
+                .font(.system(size: 19, weight: .medium))
+                .foregroundStyle(.white)
+                .frame(width: 44, height: 44)
+                .background(.white.opacity(0.18), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(.white.opacity(0.3), lineWidth: 1)
+                )
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(.white)
-                    .frame(width: 44, height: 44)
-                    .background(.white.opacity(0.18), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .strokeBorder(.white.opacity(0.3), lineWidth: 1)
-                    )
+                Text(subtitle)
+                    .font(.system(size: 11))
+                    .foregroundStyle(.white.opacity(0.9))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(.white)
-                    Text(subtitle)
-                        .font(.system(size: 11))
-                        .foregroundStyle(.white.opacity(0.9))
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-
+            if arrow {
                 Image(systemName: "arrow.up.right")
                     .font(.system(size: 19, weight: .semibold))
                     .foregroundStyle(.white)
@@ -88,16 +99,34 @@ struct GuardAction: View {
                     )
                     .overlay(Circle().strokeBorder(.white.opacity(0.5), lineWidth: 1.5))
             }
-            .padding(14)
-            .background(
-                LinearGradient(colors: [DSColor.accent, DSColor.accentGradientEnd],
-                               startPoint: .topLeading, endPoint: .bottomTrailing),
-                in: RoundedRectangle(cornerRadius: 28, style: .continuous)
-            )
-            .shadow(color: DSColor.accent.opacity(0.35), radius: 18, y: 8)
         }
-        .pressable()
-        .accessibilityLabel("\(title). \(subtitle)")
+        .padding(14)
+        .frame(minHeight: arrow ? 0 : 72)
+        .background(
+            LinearGradient(colors: [DSColor.accent, DSColor.accentGradientEnd],
+                           startPoint: .topLeading, endPoint: .bottomTrailing),
+            in: RoundedRectangle(cornerRadius: 28, style: .continuous)
+        )
+        .overlay {
+            // The board's halftone — a faint dot grid over the gradient.
+            Canvas { ctx, size in
+                let step: CGFloat = 7
+                var y: CGFloat = 0
+                while y < size.height {
+                    var x: CGFloat = 0
+                    while x < size.width {
+                        ctx.fill(Path(ellipseIn: CGRect(x: x, y: y, width: 1.5, height: 1.5)), with: .color(.white))
+                        x += step
+                    }
+                    y += step
+                }
+            }
+            .opacity(0.22)
+            .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+        }
+        .shadow(color: DSColor.accent.opacity(0.35), radius: 18, y: 8)
     }
 }
 
@@ -306,6 +335,267 @@ struct RingEmblem: View {
         }
         .frame(height: 86)
         .clipped()
+        .accessibilityHidden(true)
+    }
+}
+
+// MARK: - Ring button
+
+/// The thin-ring circular button from the board's top rows (back, settings, torch).
+struct RingButton: View {
+    let symbol: String
+    let label: String
+    var active: Bool = false
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(active ? DSColor.accent : DSColor.textPrimary)
+                .frame(width: 38, height: 38)
+                .background(DSColor.surface.opacity(0.92), in: Circle())
+                .overlay(Circle().strokeBorder(active ? DSColor.accent : DSColor.outlineStrong, lineWidth: 1))
+                .frame(width: 44, height: 44)
+                .contentShape(Circle())
+        }
+        .pressable(0.92)
+        .accessibilityLabel(label)
+    }
+}
+
+// MARK: - Live chip
+
+/// A floating capsule used over the camera and the map. `live` adds the pulsing dot.
+struct GuardChip: View {
+    let text: String
+    var live: Bool = false
+
+    var body: some View {
+        HStack(spacing: 7) {
+            if live {
+                Circle().fill(DSColor.accent)
+                    .frame(width: 7, height: 7)
+                    .background(Circle().fill(DSColor.accent.opacity(0.22)).frame(width: 15, height: 15))
+            }
+            Text(text)
+                .font(.system(size: 12, weight: .bold))
+                .foregroundStyle(DSColor.textPrimary)
+                .lineLimit(1)
+        }
+        .padding(.horizontal, 13)
+        .padding(.vertical, 8)
+        .background(.ultraThinMaterial, in: Capsule())
+        .background(DSColor.surface.opacity(0.6), in: Capsule())
+        .overlay(Capsule().strokeBorder(DSColor.outlineStrong, lineWidth: 1))
+        .accessibilityElement(children: .combine)
+    }
+}
+
+// MARK: - Crescent pill
+
+/// The headline pill, in the app icon's colours: a gold crescent on black with
+/// the mint-green glow ring. Replaces the board's "AI" pill — the verdicts come
+/// from rules and citations, not a model, so "AI" would be an overclaim.
+struct CrescentPill: View {
+    var body: some View {
+        Image(systemName: "moon.fill")
+            .font(.system(size: 17, weight: .bold))
+            .rotationEffect(.degrees(-25))
+            .foregroundStyle(LinearGradient(colors: [Color(red: 0.93, green: 0.78, blue: 0.36), DSColor.gold],
+                                            startPoint: .top, endPoint: .bottom))
+            .padding(.horizontal, 15)
+            .padding(.vertical, 5)
+            .background(Capsule().fill(.black))
+            .overlay(Capsule().strokeBorder(DSColor.accent, lineWidth: 2))
+            .shadow(color: DSColor.accent.opacity(0.55), radius: 13)
+            .accessibilityHidden(true)
+    }
+}
+
+// MARK: - Scan reticle
+
+/// Glowing corner brackets with a sweeping beam. Decorative; respects Reduce Motion.
+struct ScanReticle: View {
+    var active: Bool = true
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var beamDown = false
+
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width * 0.72, h = min(geo.size.height * 0.36, w * 1.05)
+            ZStack {
+                ReticleCorners()
+                    .stroke(DSColor.accent, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                    .shadow(color: DSColor.accent.opacity(0.6), radius: 8)
+                if active {
+                    LinearGradient(colors: [DSColor.accent.opacity(0), DSColor.accent, DSColor.accent.opacity(0)],
+                                   startPoint: .leading, endPoint: .trailing)
+                        .frame(height: 2)
+                        .shadow(color: DSColor.accent, radius: 8)
+                        .opacity(beamDown ? 1 : 0.35)
+                        .offset(y: (beamDown ? 0.47 : -0.47) * h)
+                }
+            }
+            .frame(width: w, height: h)
+            .position(x: geo.size.width / 2, y: geo.size.height * 0.45)
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+        .onAppear {
+            guard active, !reduceMotion else { return }
+            withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) { beamDown = true }
+        }
+    }
+
+    private struct ReticleCorners: Shape {
+        func path(in r: CGRect) -> Path {
+            var p = Path(); let l: CGFloat = 28, c: CGFloat = 8
+            for (x, y, dx, dy) in [(r.minX, r.minY, 1.0, 1.0), (r.maxX, r.minY, -1.0, 1.0),
+                                   (r.minX, r.maxY, 1.0, -1.0), (r.maxX, r.maxY, -1.0, -1.0)] {
+                p.move(to: CGPoint(x: x, y: y + dy * l))
+                p.addLine(to: CGPoint(x: x, y: y + dy * c))
+                p.addQuadCurve(to: CGPoint(x: x + dx * c, y: y), control: CGPoint(x: x, y: y))
+                p.addLine(to: CGPoint(x: x + dx * l, y: y))
+            }
+            return p
+        }
+    }
+}
+
+// MARK: - Dock bubbles
+
+/// One overlapping circle in a floating dock.
+struct DockBubble: View {
+    let symbol: String
+    let label: String
+    var selected: Bool = false
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.system(size: 19, weight: selected ? .semibold : .regular))
+                .foregroundStyle(selected ? DSColor.accent : DSColor.textPrimary)
+                .frame(width: 56, height: 56)
+                .background(.ultraThinMaterial, in: Circle())
+                .background(DSColor.surface.opacity(0.7), in: Circle())
+                .overlay(Circle().strokeBorder(selected ? DSColor.accent.opacity(0.7) : DSColor.outline, lineWidth: 1))
+                .shadow(color: .black.opacity(0.18), radius: 8, y: 3)
+        }
+        .pressable(0.92)
+        .accessibilityLabel(label)
+        .accessibilityAddTraits(selected ? [.isSelected] : [])
+    }
+}
+
+/// The big gradient centre circle of a dock.
+struct DockMainBubble: View {
+    let symbol: String
+    let label: String
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.system(size: 24, weight: .medium))
+                .foregroundStyle(.white)
+                .frame(width: 66, height: 66)
+                .background(LinearGradient(colors: [DSColor.accent, DSColor.accentGradientEnd],
+                                           startPoint: .topLeading, endPoint: .bottomTrailing),
+                            in: Circle())
+                .overlay(Circle().strokeBorder(.white.opacity(0.22), lineWidth: 2))
+                .background(Circle().fill(DSColor.accent.opacity(0.12)).frame(width: 80, height: 80))
+                .shadow(color: DSColor.accent.opacity(0.5), radius: 17)
+        }
+        .pressable(0.92)
+        .accessibilityLabel(label)
+        .zIndex(1)
+    }
+}
+
+// MARK: - Identity row
+
+/// The board's top row: crescent avatar, a two-line title, and a trailing control.
+struct GuardIDRow<Trailing: View>: View {
+    let title: String
+    let subtitle: String
+    @ViewBuilder var trailing: () -> Trailing
+
+    var body: some View {
+        HStack(spacing: 9) {
+            Image(systemName: "moon.fill")
+                .font(.system(size: 14, weight: .semibold))
+                .rotationEffect(.degrees(-25))
+                .foregroundStyle(.white)
+                .frame(width: 34, height: 34)
+                .background(LinearGradient(colors: [DSColor.accent, DSColor.accentGradientEnd],
+                                           startPoint: .topLeading, endPoint: .bottomTrailing), in: Circle())
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(title)
+                    .font(.system(size: 14, weight: .semibold))
+                    .italic()
+                    .foregroundStyle(DSColor.textPrimary)
+                Text(subtitle)
+                    .font(.system(size: 10.5))
+                    .foregroundStyle(DSColor.textTertiary)
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isHeader)
+            Spacer(minLength: 0)
+            trailing()
+        }
+    }
+}
+
+// MARK: - Segments
+
+/// The board's row of pill filters. The selected one takes the brand gradient.
+struct GuardSegments<Value: Hashable>: View {
+    let options: [(Value, String)]
+    @Binding var selection: Value
+
+    var body: some View {
+        HStack(spacing: 5) {
+            ForEach(options, id: \.0) { value, label in
+                let on = value == selection
+                Button {
+                    withAnimation(DSMotion.move) { selection = value }
+                } label: {
+                    Text(label)
+                        .font(.system(size: 11, weight: .semibold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 9)
+                        .padding(.horizontal, 2)
+                        .background(
+                            on ? AnyShapeStyle(LinearGradient(colors: [DSColor.accent, DSColor.accentGradientEnd],
+                                                              startPoint: .topLeading, endPoint: .bottomTrailing))
+                               : AnyShapeStyle(DSColor.surfaceElevated),
+                            in: Capsule())
+                        .overlay(Capsule().strokeBorder(on ? .clear : DSColor.outline, lineWidth: 1))
+                        .foregroundStyle(on ? .white : DSColor.textSecondary)
+                        .shadow(color: on ? DSColor.accent.opacity(0.35) : .clear, radius: 8, y: 4)
+                }
+                .pressable()
+                .accessibilityLabel(label)
+                .accessibilityAddTraits(on ? [.isSelected] : [])
+            }
+        }
+    }
+}
+
+/// Shared backdrop for the Guard screens: canvas, lattice, and slow orbs.
+struct GuardBackground: View {
+    var body: some View {
+        ZStack {
+            DSColor.background
+            GeometryBackdrop(intensity: 0.8)
+            GuardOrbs()
+        }
+        .ignoresSafeArea()
         .accessibilityHidden(true)
     }
 }

@@ -39,7 +39,9 @@ to add resources. You *do* edit it for build settings.
    ingredients. Never "optimize" that into an average or a best case.
 5. **`NoTodoGuardTests` must stay green.** No `TODO`/`FIXME` in fiqh source files.
 6. **Run the full test suite before every commit.** Green, or you don't commit.
-7. **No new features before the Connect.AI interview.** See `docs/phases/TESTFLIGHT.md`.
+7. **No new features before the Connect.AI interview** — except the Guard UI rebuild
+   (U0–U6 on branch `ui/guard`), which Omar approved Oct 16 (see `HANDOFF.md`).
+   See `docs/phases/TESTFLIGHT.md`.
 
 ## Device / signing rules (until the paid Apple team is approved)
 

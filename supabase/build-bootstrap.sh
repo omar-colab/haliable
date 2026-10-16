@@ -28,6 +28,8 @@ FILES=(
   FILES+=(supabase/migrations/0008_security_hardening.up.sql)
 [ -f supabase/migrations/0009_review_evidence.up.sql ] && \
   FILES+=(supabase/migrations/0009_review_evidence.up.sql)
+[ -f supabase/migrations/0010_campus_cafes.up.sql ] && \
+  FILES+=(supabase/migrations/0010_campus_cafes.up.sql)
 
 {
   echo "-- ============================================================================"

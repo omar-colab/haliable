@@ -98,7 +98,50 @@ order: fixed (one source then the other) · E627/E542 soften to match citations 
 AHF/HFA toward hanafiStrict — **through the citation pipeline, not by hand (rule 3)** ·
 seafood axis after interview · after the interview → FinGuard.
 
-**Next: U1 standards picker.**
+**U1–U6 — BUILT (Oct 16, same day).** All eight board screens are in the app:
+- **U1 Standards picker** — board cards, gradient tick, "· DEFAULT", neutral pill. The app's
+  own `shortDescription`s kept (they match what the engine does), not the board's copy.
+- **U2 Verdict** — sheet layout: ring → Spectral grade → product → "N flagged · standard",
+  segment chips, "Flagged" GuardRows whose subtitle is the source + year or the honest
+  **"awaiting citation"**; tapping a row expands the explanation + full citations. Draft
+  banner and standing disclosure kept. "Ask a scholar" GuardAction.
+- **U3 Home + Scanning split** — `HomeView` (no camera; ID row with the SIWA first name
+  else "Welcome", pill, emblem, headline + `CrescentPill` in app-icon gold/green, Start
+  action, **Needs attention** = non-halal saved scans + reviews still awaiting a human;
+  rows re-check that barcode under the current standard). `ScanSessionView` = full-screen
+  cover: same BarcodeScannerView + lookup/evaluate/save, reticle + beam, standard chip,
+  torch, mini dock (manual entry · scan again · photo review). No OCR tags.
+  `ScannerViewV2` deleted. `ScanRecord.standardRaw` (optional, migration-safe) added.
+  `AuthManager.givenName` stored on first SIWA (Apple only sends it once); cleared on sign-out.
+- **U4 Atlas + Store** — capsule `Annotation` pins, live chip, list panel with All / Fully
+  halal / Meat / Options, distance, OSM credit line. Store detail: chips (scope, Verified
+  only if approved, N confirms), source rows, "Still accurate?" → confirm/dispute dialog
+  (same `vote_store` path), address row opens Apple Maps. No hours.
+- **U5 Reviews + History** — Reviews: action card + rows with verdict in the subtitle.
+  History: week summary card, filter chips, grouped by day, standard per row, swipe-delete,
+  tap = re-check.
+- **U6 Dock** — `TabView` kept (per-tab state), system bar hidden, `GuardDock` overlay:
+  Find · About · [Home/Scan] · Reviews · History. Centre = Home; on Home it opens the
+  scanner. About took the board's heart slot. Settings opens from Home's gear.
+- Old V1 screens deleted (ScannerView, ScannerViewV2, AtlasView, MyReviewsView, HistoryView,
+  SettingsView, MethodologyView). About restyled onto GuardBackground.
+- `ScreenshotUITests` rewritten for the dock (identifiers `dock.*`, `home.startScan`) +
+  a separate standards-picker capture.
+
+**Also done Oct 16:** site overclaims removed + honeypot (live on `main`, `6bfd451`);
+DEMO_SCRIPT Welch's line reworded + "use what you already have" section (Omar isn't buying
+the kit); `docs/demo/STORY.md` (3-minute story); migration **0010_campus_cafes** (CrossRoads
++ Market Cafe at their buildings' OSM coordinates) — **written, NOT applied live**.
+
+⚠️ **Mistake, fixed:** the staged V1 deletions rode along in the site commit and were
+cherry-picked to `main` (`6bfd451`), which would have broken main's build. Restored on
+main in `ba0f21a`; main's app code is identical to `0f285c1`.
+
+**Still open:** apply 0010 live (Omar, SQL Editor) · E627/E542 softening + AHF/HFA promotion
+— decided, NOT implemented: it changes verdicts, so it goes through the citation pipeline
+after the UI ships, not in a rush before a demo · U7 (QA on device, upload build 6).
+
+**Next: U7 — QA on the iPhone 14, then `./scripts/testflight-upload.sh`.**
 
 ## Where we are
 

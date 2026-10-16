@@ -2,11 +2,9 @@
 //  MyReviewsV2.swift
 //  Haliable
 //
-//  Redesigned "Reviews" tab on the shared AppScreen scaffold. Same data and logic
-//  as MyReviewsView (ReviewStore refresh, request sheet, auth gate) — re-skinned
-//  to match the app's holistic dark look. Original MyReviewsView is untouched.
-//
-//  Preview swap: in RootTabView.swift, change `MyReviewsView()` to `MyReviewsV2()`.
+//  Board screen 7 — Reviews. Same data and logic as before (ReviewStore refresh,
+//  request sheet, Sign in with Apple gate); the verdict now sits in the row so
+//  nobody has to tap in to learn the answer.
 //
 
 import SwiftUI
@@ -19,151 +17,101 @@ struct MyReviewsV2: View {
 
     var body: some View {
         NavigationStack {
-            AppScreen(eyebrow: "Human checks", title: "Reviews", trailing: {
-                if auth.isSignedIn {
-                    Button { showRequest = true } label: {
-                        Image(systemName: "plus")
-                            .font(DSFont.headline)
-                            .foregroundStyle(DSColor.accent)
+            ZStack {
+                GuardBackground()
+                ScrollView {
+                    VStack(spacing: 10) {
+                        GuardIDRow(title: "Reviews", subtitle: "Ask a human") {
+                            if auth.isSignedIn {
+                                RingButton(symbol: "pencil.line", label: "Request a review") { showRequest = true }
+                            }
+                        }
+                        .padding(.bottom, DSSpacing.xxs)
+
+                        if auth.isSignedIn { signedIn } else { signedOut }
                     }
-                    .headerChip()
-                    .accessibilityLabel("Request a review")
+                    .padding(.horizontal, DSSpacing.md)
+                    .padding(.top, DSSpacing.xs)
+                    .padding(.bottom, DSSpacing.lg)
                 }
-            }) {
-                content
-                    .navigationDestination(for: ReviewRequest.self) { ReviewDetailView(request: $0) }
+                .scrollIndicators(.hidden)
+                .refreshable { await reload() }
             }
+            .toolbar(.hidden, for: .navigationBar)
+            .navigationDestination(for: ReviewRequest.self) { ReviewDetailView(request: $0) }
             .sheet(isPresented: $showRequest) { RequestReviewView() }
             .task { await reload() }
         }
     }
 
-    @ViewBuilder private var content: some View {
-        if !auth.isSignedIn {
-            signedOut
-        } else if store.requests.isEmpty {
-            emptyState
+    @ViewBuilder private var signedIn: some View {
+        GuardAction(symbol: "pencil.line",
+                    title: "Not sure about something?",
+                    subtitle: "Photograph the label — a scholar rules on it.") {
+            showRequest = true
+        }
+        GuardSection(title: "Your requests")
+            .padding(.top, DSSpacing.xs)
+        if store.requests.isEmpty {
+            GuardRow(symbol: "tray", tint: DSColor.textSecondary,
+                     title: "No requests yet",
+                     subtitle: "Send a tricky label and the answer lands here.",
+                     showsArrow: false)
         } else {
-            list
-        }
-    }
-
-    private var list: some View {
-        ScrollView {
-            VStack(spacing: DSSpacing.sm) {
-                tagline
-                PrimaryButton(title: "Request a review", systemImage: "plus") { showRequest = true }
-                SectionLabel("Your requests")
-                    .padding(.top, DSSpacing.xs)
-                ForEach(store.requests) { request in
-                    NavigationLink(value: request) { row(request) }
-                        .buttonStyle(.plain)
-                }
-            }
-            .padding(.horizontal, DSSpacing.lg)
-            .padding(.bottom, DSSpacing.xl)
-        }
-        .scrollIndicators(.hidden)
-        .refreshable { await reload() }
-    }
-
-    /// The editorial italic promise — a real person checks tricky labels.
-    private var tagline: some View {
-        ObliqueText(runs: [
-            .italic("Stuck on a tricky label? Send a photo — ", size: 17, color: "TextSecondary"),
-            .italic("a real person checks it and writes back.", size: 17, color: "TextPrimary"),
-        ], lineSpacing: 3)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.bottom, DSSpacing.xs)
-    }
-
-    private func row(_ request: ReviewRequest) -> some View {
-        HStack(spacing: DSSpacing.md) {
-            ProductMonogram(text: request.productName ?? "Untitled product", size: 46)
-            VStack(alignment: .leading, spacing: DSSpacing.xs) {
-                Text(request.productName ?? "Untitled product")
-                    .font(DSFont.headline)
-                    .foregroundStyle(DSColor.textPrimary)
-                    .lineLimit(1)
-                HStack(spacing: DSSpacing.xs) {
-                    statusChip(request)
-                    if let v = request.verdict { VerdictBadge(verdict: v) }
-                }
-            }
-            Spacer(minLength: 0)
-            VStack(alignment: .trailing, spacing: DSSpacing.xxs) {
-                Text(request.createdAt, style: .date)
-                    .font(DSFont.caption)
-                    .foregroundStyle(DSColor.textSecondary)
-                Image(systemName: "chevron.right")
-                    .font(.caption2.bold())
-                    .foregroundStyle(DSColor.textSecondary.opacity(0.6))
+            ForEach(store.requests) { request in
+                NavigationLink(value: request) { row(request) }
+                    .buttonStyle(PressableStyle(scale: 0.985))
             }
         }
-        .glassCard()
-        .accessibilityElement(children: .combine)
+        if let errorMessage { errorText(errorMessage) }
     }
 
     private var signedOut: some View {
-        VStack(spacing: DSSpacing.md) {
-            Spacer()
-            brandMark
+        VStack(spacing: DSSpacing.sm) {
+            Image("HMark")
+                .renderingMode(.template)
+                .resizable().scaledToFit()
+                .frame(width: 52, height: 52)
+                .foregroundStyle(DSColor.accent)
+                .shadow(color: DSColor.accent.opacity(0.4), radius: 16)
+                .accessibilityHidden(true)
             Text("Sign in to request reviews")
                 .font(DSFont.title)
                 .foregroundStyle(DSColor.textPrimary)
                 .multilineTextAlignment(.center)
-            Text("Send us photos of a tricky product and we'll return a human halal verdict to your account.")
-                .font(DSFont.body)
+            Text("Photograph a tricky label and a person rules on it. The answer comes back to your account.")
+                .font(.system(size: 14))
                 .foregroundStyle(DSColor.textSecondary)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, DSSpacing.lg)
             AppleSignInButton { errorMessage = $0 }
-                .padding(.horizontal, DSSpacing.xl)
-                .padding(.top, DSSpacing.sm)
-            if let errorMessage {
-                Text(errorMessage)
-                    .font(DSFont.caption)
-                    .foregroundStyle(DSColor.danger)
+                .padding(.top, DSSpacing.xs)
+            if let errorMessage { errorText(errorMessage) }
+        }
+        .padding(DSSpacing.lg)
+        .background(DSColor.surface, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 28, style: .continuous).strokeBorder(DSColor.outline, lineWidth: 1))
+        .padding(.top, DSSpacing.xl)
+    }
+
+    private func row(_ r: ReviewRequest) -> some View {
+        let sent = r.createdAt.formatted(.relative(presentation: .named))
+        let (symbol, tint, detail): (String, Color, String) = {
+            if r.status == .completed, let v = r.verdict {
+                return (v.rowSymbol, v.tint, "Answered · \(v.displayName.lowercased())")
             }
-            Spacer(); Spacer()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.horizontal, DSSpacing.lg)
+            return ("clock", DSColor.warning, "\(r.status.displayName) · sent \(sent)")
+        }()
+        return GuardRow(symbol: symbol, tint: tint,
+                        title: r.productName ?? "Untitled product",
+                        subtitle: detail)
     }
 
-    private var emptyState: some View {
-        VStack(spacing: DSSpacing.md) {
-            Spacer()
-            brandMark
-            Text("No reviews yet")
-                .font(DSFont.title)
-                .foregroundStyle(DSColor.textPrimary)
-            Text("Tap + to send photos of a tricky product — we'll give it a human halal verdict and return it here.")
-                .font(DSFont.body)
-                .foregroundStyle(DSColor.textSecondary)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, DSSpacing.xl)
-            Spacer(); Spacer()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.horizontal, DSSpacing.lg)
-    }
-
-    private var brandMark: some View {
-        Image("HMark")
-            .renderingMode(.template)
-            .resizable().scaledToFit()
-            .frame(width: 64, height: 64)
-            .foregroundStyle(DSColor.accent)
-            .shadow(color: DSColor.accent.opacity(0.4), radius: 16)
-            .accessibilityHidden(true)
-    }
-
-    private func statusChip(_ r: ReviewRequest) -> some View {
-        StatusBadge(text: r.status.displayName,
-                    tint: r.status == .completed ? DSColor.success : DSColor.warning)
+    private func errorText(_ text: String) -> some View {
+        Text(text)
+            .font(DSFont.caption)
+            .foregroundStyle(DSColor.danger)
+            .multilineTextAlignment(.center)
     }
 
     private func reload() async {
@@ -180,20 +128,11 @@ struct MyReviewsV2: View {
     MyReviewsV2()
         .environment(AuthManager.previewSignedIn())
         .environment(ReviewStore.previewSeeded())
-        .preferredColorScheme(.dark)
-}
-
-#Preview("Reviews - empty") {
-    MyReviewsV2()
-        .environment(AuthManager.previewSignedIn())
-        .environment(ReviewStore.previewSeeded([]))
-        .preferredColorScheme(.dark)
 }
 
 #Preview("Reviews - signed out") {
     MyReviewsV2()
         .environment(AuthManager())
         .environment(ReviewStore())
-        .preferredColorScheme(.dark)
 }
 #endif
