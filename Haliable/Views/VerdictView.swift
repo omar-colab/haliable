@@ -33,6 +33,9 @@ struct VerdictView: View {
                     headerSection
                         .padding(.top)
 
+                    clearedHeader
+                    standardChips
+
                     // Standing disclosure (Spec §A3) — persistent on every verdict
                     // surface so "report, don't rule" stays true to the user.
                     standingDisclosure
@@ -230,6 +233,68 @@ struct VerdictView: View {
                 StandardPill(standard: settings.halalStandard) {
                     showStandardSheet = true
                 }
+            }
+        }
+    }
+
+    /// How much of the label actually cleared. A product with two flags out of
+    /// eighteen ingredients is mostly fine; a bare red badge says otherwise and
+    /// is the less honest of the two.
+    private var clearedHeader: some View {
+        HStack(spacing: DSSpacing.sm) {
+            FlaggedRing(flagged: live.flagged.count,
+                        checked: live.matched.count,
+                        tint: live.overall.tint)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(live.overall.displayName)
+                    .font(DSFont.title)
+                    .foregroundStyle(live.overall.tint)
+                Text(live.flagged.isEmpty
+                     ? "Nothing flagged · \(settings.halalStandard.displayName)"
+                     : "from \(live.matched.count) checked · \(settings.halalStandard.displayName)")
+                    .font(DSFont.caption)
+                    .foregroundStyle(DSColor.textSecondary)
+            }
+            Spacer(minLength: 0)
+        }
+        .animation(DSMotion.arrive, value: live.overallGrade)
+        .accessibilityElement(children: .combine)
+    }
+
+    /// All four standards on screen. The whole point of this app is that the
+    /// verdict moves with the standard, and that was previously buried behind a
+    /// sheet — so it may as well have been invisible.
+    private var standardChips: some View {
+        @Bindable var settings = settings
+        return HStack(spacing: 5) {
+            ForEach(HalalStandard.allCases.sorted { $0.strictnessRank > $1.strictnessRank }) { std in
+                let active = std == settings.halalStandard
+                Button {
+                    withAnimation(DSMotion.move) {
+                        settings.halalStandard = std
+                        settings.hasChosenStandard = true
+                    }
+                } label: {
+                    Text(std.displayName)
+                        .font(.system(size: 11, weight: .semibold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(
+                            active
+                            ? AnyShapeStyle(LinearGradient(colors: [DSColor.accent, DSColor.accentDeep],
+                                                           startPoint: .topLeading,
+                                                           endPoint: .bottomTrailing))
+                            : AnyShapeStyle(DSColor.surface),
+                            in: Capsule()
+                        )
+                        .overlay(Capsule().strokeBorder(active ? .clear : DSColor.outline, lineWidth: 1))
+                        .foregroundStyle(active ? DSColor.onAccent : DSColor.textSecondary)
+                }
+                .pressable()
+                .accessibilityLabel(std.displayName)
+                .accessibilityAddTraits(active ? [.isSelected] : [])
             }
         }
     }

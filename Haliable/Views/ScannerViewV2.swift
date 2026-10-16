@@ -307,10 +307,11 @@ struct ScannerViewV2: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 4)
             } else {
-                PrimaryButton(title: "Start scanning", systemImage: "barcode.viewfinder") {
+                GuardAction(symbol: "barcode.viewfinder",
+                            title: "Start a halal scan",
+                            subtitle: "Check a label before it goes in the basket.") {
                     impactLight(); startCamera()
                 }
-                .accessibilityLabel("Start scanning")
             }
 
             SecondaryButton(title: showManualEntry ? "Hide manual entry" : "Enter barcode manually",
@@ -359,26 +360,23 @@ struct ScannerViewV2: View {
 
     private var recentlyChecked: some View {
         VStack(alignment: .leading, spacing: DSSpacing.sm) {
-            SectionLabel("Recently checked") { SectionMore("All") {} }
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 11) {
-                    ForEach(recentScans.prefix(8)) { rec in
-                        VStack(spacing: 7) {
-                            ProductMonogram(text: rec.productName, size: 92, corner: 18)
-                                .overlay(alignment: .topTrailing) {
-                                    verdictDot(rec.overallVerdict).padding(7)
-                                }
-                            Text(rec.productName)
-                                .font(DSFont.caption)
-                                .foregroundStyle(DSColor.textSecondary)
-                                .lineLimit(1)
-                                .frame(width: 92)
-                        }
-                    }
-                }
-                .padding(.vertical, 1)
+            GuardSection(title: "Recently checked", trailing: "All")
+            ForEach(recentScans.prefix(3)) { rec in
+                GuardRow(symbol: symbolFor(rec.overallVerdict),
+                         tint: rec.overallVerdict.tint,
+                         title: rec.productName,
+                         subtitle: rec.overallVerdict.displayName,
+                         trailing: rec.scannedAt.formatted(.relative(presentation: .numeric)),
+                         showsArrow: false)
             }
-            .scrollClipDisabled()
+        }
+    }
+
+    private func symbolFor(_ verdict: Verdict) -> String {
+        switch verdict {
+        case .halal:    return "checkmark.circle"
+        case .haram:    return "xmark.circle"
+        case .doubtful: return "questionmark.circle"
         }
     }
 
