@@ -289,19 +289,19 @@ struct RingEmblem: View {
         ZStack {
             ForEach(0..<rings, id: \.self) { i in
                 let step = CGFloat(i + 1)
-                RoundedRectangle(cornerRadius: (54 + step * 11) / 2, style: .continuous)
-                    .strokeBorder(DSColor.outline.opacity(1 - Double(i) / Double(rings + 2)),
+                RoundedRectangle(cornerRadius: (46 + step * 10) / 2, style: .continuous)
+                    .strokeBorder(DSColor.outlineStrong.opacity(0.85 - Double(i) / Double(rings + 1)),
                                   lineWidth: 1)
-                    .frame(width: 104 + step * 30, height: 50 + step * 11)
+                    .frame(width: 92 + step * 32, height: 46 + step * 10)
             }
             Image("HMark")
                 .resizable().scaledToFit()
-                .frame(width: 24, height: 24)
-                .frame(width: 100, height: 48)
+                .frame(width: 19, height: 19)
+                .frame(width: 86, height: 42)
                 .background(DSColor.surface, in: Capsule())
                 .overlay(Capsule().strokeBorder(DSColor.outlineStrong, lineWidth: 1))
         }
-        .frame(height: 104)
+        .frame(height: 86)
         .clipped()
         .accessibilityHidden(true)
     }

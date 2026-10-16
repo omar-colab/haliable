@@ -74,7 +74,7 @@ struct ScannerViewV2: View {
                             }
                             Spacer(minLength: 0)
                         }
-                        .reveal(appeared, delay: 0.06)
+                        .reveal(appeared, delay: 0.08)
 
                         viewfinder
                             .frame(height: 396)
@@ -88,9 +88,13 @@ struct ScannerViewV2: View {
                                 .reveal(appeared, delay: 0.24)
                         }
                     }
+                    .animation(DSMotion.move, value: cameraActive)
                     .padding(.horizontal, DSSpacing.lg)
                     .padding(.top, DSSpacing.sm)
-                    .padding(.bottom, DSSpacing.lg)
+                    // Clear the floating tab bar. The emblem and headline made
+                    // the page tall enough that the action card was sliding
+                    // underneath it.
+                    .padding(.bottom, 96)
                 }
                 .scrollIndicators(.hidden)
             }
