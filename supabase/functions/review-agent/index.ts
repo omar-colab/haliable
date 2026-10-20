@@ -134,7 +134,10 @@ async function run(id: string) {
       <p>${esc(draft.summary)}</p>
       <p><b>Deciding ingredient:</b> ${esc(draft.concern)}<br><b>Label read as:</b> ${esc(draft.ingredients_read)}</p>
       <ul>${rows || "<li>No sources found.</li>"}</ul>
-      <p><a href="${link("approve")}">✅ Approve &amp; send to user</a> &nbsp; · &nbsp; <a href="${link("reject")}">❌ Reject (I'll handle it)</a></p>`);
+      <p>Replying to this email does nothing — tap a button.</p>
+      <p><a href="${link("approve")}" style="display:inline-block;padding:14px 22px;background:#1f8a4c;color:#fff;border-radius:10px;text-decoration:none;font-weight:600">✅ Approve &amp; send to user</a>
+         &nbsp; <a href="${link("reject")}" style="display:inline-block;padding:14px 22px;background:#b3261e;color:#fff;border-radius:10px;text-decoration:none;font-weight:600">❌ Reject</a></p>
+      <p style="font-size:12px;color:#666">If the buttons don't work, open:<br>Approve: ${link("approve")}<br>Reject: ${link("reject")}</p>`);
   } catch (e) {
     console.error(e);
     await db.from("review_agent_drafts").update({ status: "failed", draft: { error: String(e) }, updated_at: new Date().toISOString() }).eq("request_id", id);
