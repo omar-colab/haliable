@@ -47,7 +47,9 @@ struct StoreDetailView: View {
                 GuardRow(symbol: "checkmark.circle",
                          tint: store.halalScope == .halalOptions ? DSColor.warning : DSColor.success,
                          title: store.halalScope.displayName,
-                         subtitle: store.certifications.isEmpty
+                         subtitle: store.isAppleMaps
+                            ? "Found by Apple Maps search — not verified by Haliable. Ask before you order."
+                            : store.certifications.isEmpty
                             ? "Listed in the Haliable Store Atlas"
                             : "Certified: " + store.certifications.joined(separator: ", "),
                          showsArrow: false)
@@ -55,10 +57,11 @@ struct StoreDetailView: View {
                 GuardRow(symbol: "mappin.and.ellipse",
                          tint: DSColor.textPrimary,
                          title: store.address,
-                         subtitle: "\(store.city), \(store.state) · OpenStreetMap · ODbL") {
+                         subtitle: "\(store.city), \(store.state) · \(store.isAppleMaps ? "Apple Maps" : "OpenStreetMap · ODbL")") {
                     openInMaps()
                 }
 
+                if !store.isAppleMaps {
                 GuardAction(symbol: "checkmark.circle",
                             title: "Still accurate?",
                             subtitle: "Confirm or dispute what's listed here.") {
@@ -71,6 +74,7 @@ struct StoreDetailView: View {
                     .foregroundStyle(DSColor.textTertiary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.top, DSSpacing.xxs)
+                }
             }
             .padding(.horizontal, DSSpacing.screen)
             .padding(.top, DSSpacing.lg)

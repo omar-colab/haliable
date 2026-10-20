@@ -15,3 +15,11 @@ Deno.test("no verified tier-1/2 source → doubtful, never halal", () => {
   eq(settle({ ...base, verdict: "haram", sources: [{ name: "x", url: "u", tier: 2, quote: "q", verified: true }] }).verdict, "haram");
   eq(settle({ ...base, verdict: "unresolved", sources: [] }).verdict, "doubtful");
 });
+
+Deno.test("agent only fetches public web pages", async () => {
+  const { isPublicUrl } = await import("./verdict.ts");
+  eq(isPublicUrl("https://www.ifanca.org/gelatin"), true);
+  for (const bad of ["http://169.254.169.254/latest", "http://localhost:54321", "http://[::1]/", "file:///etc/passwd",
+                     "http://db.internal/x", "https://user:pw@example.com", "http://example.com:5432", "http://intranet/"])
+    eq([bad, isPublicUrl(bad)], [bad, false]);
+});

@@ -269,6 +269,11 @@ struct ScanSessionView: View {
             hapticSuccess()
             currentVerdict = verdict
             showManualEntry = false
+            // One History row per product: a re-check replaces the old row
+            // instead of stacking duplicates (TestFlight feedback, Oct 20).
+            let old = (try? modelContext.fetch(FetchDescriptor<ScanRecord>(
+                predicate: #Predicate { $0.barcode == code }))) ?? []
+            old.forEach(modelContext.delete)
             modelContext.insert(ScanRecord(
                 barcode: code,
                 productName: product.name,

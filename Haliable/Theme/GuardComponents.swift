@@ -287,6 +287,7 @@ struct ScoreRing: View {
 
     var body: some View {
         ZStack {
+            Circle().fill(tint.opacity(0.14))
             Circle().strokeBorder(DSColor.outline, lineWidth: 3.5)
             Circle()
                 .trim(from: 0, to: Double(min(max(score, 0), 100)) / 100)

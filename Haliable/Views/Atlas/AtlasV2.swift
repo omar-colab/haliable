@@ -20,6 +20,7 @@ struct AtlasV2: View {
     @State private var showSubmit = false
     @State private var filter: ScopeFilter = .all
     @State private var listOpen = true
+    @State private var appleSearch: Task<Void, Never>?
 
     private let fallback = CLLocationCoordinate2D.atlasFallback
 
@@ -37,7 +38,7 @@ struct AtlasV2: View {
     }
 
     private var visible: [Store] {
-        stores.stores
+        (stores.stores + stores.appleStores)
             .filter { filter.admits($0.halalScope) }
             .sorted { ($0.distanceM ?? .greatestFiniteMagnitude) < ($1.distanceM ?? .greatestFiniteMagnitude) }
     }
@@ -86,6 +87,11 @@ struct AtlasV2: View {
             }
         }
         .mapStyle(.standard(pointsOfInterest: .excludingAll))
+        // Wherever the map is pointed, fill it with Apple Maps halal results.
+        .onMapCameraChange(frequency: .onEnd) { ctx in
+            appleSearch?.cancel()
+            appleSearch = Task { await stores.searchAppleMaps(in: ctx.region, from: location.coordinate) }
+        }
     }
 
     private func pin(_ store: Store) -> some View {
@@ -188,7 +194,7 @@ struct AtlasV2: View {
                     .frame(maxHeight: 230)
                     .scrollIndicators(.hidden)
                 }
-                Text("Locations © OpenStreetMap contributors (ODbL)")
+                Text("Locations © OpenStreetMap contributors (ODbL) · grey pins: Apple Maps, not verified")
                     .font(.system(size: 9.5))
                     .foregroundStyle(DSColor.textTertiary)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -203,7 +209,7 @@ struct AtlasV2: View {
     }
 
     private func rowDetail(_ store: Store) -> String {
-        [store.halalScope.displayName.lowercased(), store.distanceText].compactMap { $0 }.joined(separator: " · ")
+        [store.isAppleMaps ? "Apple Maps · not verified" : store.halalScope.displayName.lowercased(), store.distanceText].compactMap { $0 }.joined(separator: " · ")
     }
 
     // MARK: - Logic

@@ -35,3 +35,17 @@ export function settle(d: Draft): { verdict: Grade; note?: string } {
   if (!backed) return { verdict: "doubtful", note: `Agent said ${d.verdict}, but no tier-1/2 quote was found on its page.` };
   return { verdict: d.verdict };
 }
+
+/** SSRF guard: the agent fetches URLs a model chose (and a user's notes can
+ *  steer the model), so only public http(s) hostnames — no IPs, no localhost,
+ *  no internal names. */
+export function isPublicUrl(raw: string): boolean {
+  let u: URL;
+  try { u = new URL(raw); } catch { return false; }
+  if (u.protocol !== "https:" && u.protocol !== "http:") return false;
+  if (u.username || u.password || (u.port && u.port !== "80" && u.port !== "443")) return false;
+  const h = u.hostname.toLowerCase();
+  if (!h.includes(".") || h.endsWith(".local") || h.endsWith(".internal") || h === "localhost") return false;
+  if (/^[\d.]+$/.test(h) || h.includes(":") || h.startsWith("[")) return false; // IPv4/IPv6 literals
+  return true;
+}

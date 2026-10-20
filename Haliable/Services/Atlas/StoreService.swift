@@ -15,6 +15,7 @@
 
 import Foundation
 import CoreLocation
+import MapKit
 import Observation
 #if canImport(Supabase)
 import Supabase
@@ -24,6 +25,8 @@ import Auth   // Swift 6 MemberImportVisibility: Auth types are no longer re-exp
 @Observable
 final class StoreService {
     private(set) var stores: [Store] = []
+    /// Apple Maps "halal" results for wherever the map is pointed (see searchAppleMaps).
+    private(set) var appleStores: [Store] = []
     private(set) var isLoading = false
     var lastError: String?
 
@@ -75,6 +78,25 @@ final class StoreService {
         // Not live (no package / no secrets): nothing real to show.
         lastError = "The store map isn't connected yet."
         stores = []
+    }
+
+    /// Fill the map beyond the Atlas: ask Apple Maps for "halal" around `region`.
+    /// Results come back `.unverified` and flagged `isAppleMaps`; any within 80 m of
+    /// an Atlas place is dropped so the verified entry wins.
+    func searchAppleMaps(in region: MKCoordinateRegion, from user: CLLocationCoordinate2D?) async {
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = "halal"
+        request.region = region
+        request.resultTypes = .pointOfInterest
+        guard let items = try? await MKLocalSearch(request: request).start().mapItems,
+              !Task.isCancelled else { return }
+        let origin = user ?? region.center
+        let here = CLLocation(latitude: origin.latitude, longitude: origin.longitude)
+        appleStores = items.compactMap { Store(appleMapItem: $0, from: here) }
+            .filter { a in
+                let pa = CLLocation(latitude: a.lat, longitude: a.lng)
+                return !stores.contains { CLLocation(latitude: $0.lat, longitude: $0.lng).distance(from: pa) < 80 }
+            }
     }
 
     /// Submit a community store. Validates client-side, then (when live) calls the
@@ -293,3 +315,25 @@ private struct VoteParams: Encodable {
     let in_vote: String
 }
 #endif
+
+extension Store {
+    /// An Apple Maps result. Kept only when it's food-related or literally named
+    /// "halal" — a gas station matching the word is noise, not a place to eat.
+    init?(appleMapItem item: MKMapItem, from here: CLLocation) {
+        let food: [MKPointOfInterestCategory: StoreCategory] = [
+            .restaurant: .restaurant, .cafe: .cafe, .bakery: .bakery,
+            .foodMarket: .grocery, .store: .grocery,
+        ]
+        let name = item.name ?? ""
+        let category = item.pointOfInterestCategory.flatMap { food[$0] }
+        guard !name.isEmpty, category != nil || name.lowercased().contains("halal") else { return nil }
+        let p = item.placemark
+        let loc = CLLocation(latitude: p.coordinate.latitude, longitude: p.coordinate.longitude)
+        self.init(id: UUID(), name: name, category: category ?? .other, halalScope: .unverified,
+                  address: [p.subThoroughfare, p.thoroughfare].compactMap { $0 }.joined(separator: " "),
+                  city: p.locality ?? "", state: p.administrativeArea ?? "", zip: p.postalCode ?? "",
+                  lat: loc.coordinate.latitude, lng: loc.coordinate.longitude,
+                  certifications: [], status: .pending, confirmCount: 0, disputeCount: 0,
+                  distanceM: loc.distance(from: here), createdAt: "", isAppleMaps: true)
+    }
+}

@@ -54,6 +54,18 @@ final class RulesEngineTests: XCTestCase {
         XCTAssertEqual(empty.clearedScore, 100)
     }
 
+    // The History score counts the whole label, so one flagged item in four is 75.
+    func testClearedScoreUsesWholeLabel() {
+        XCTAssertEqual(ProductVerdict.ingredientCount("Flour, sugar, gelatin (beef, pork); water."), 4)
+        XCTAssertEqual(ProductVerdict.ingredientCount("  "), 0)
+        let pv = ProductVerdict(
+            product: Product(id: "1", name: "P", brand: nil,
+                             rawIngredientsText: "flour, sugar, gelatin, water", additivesENumbers: []),
+            matched: [MatchedIngredient(originalText: "gelatin", matchedRule: nil)],
+            overallGrade: .mashboohContested)
+        XCTAssertEqual(pv.clearedScore, 75)
+    }
+
     func testQuestionableDisplayName() {
         XCTAssertEqual(Verdict.doubtful.displayName, "Questionable")
     }

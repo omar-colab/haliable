@@ -12,7 +12,7 @@
 
 import Anthropic from "npm:@anthropic-ai/sdk@0.110.0";
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
-import { type Draft, quoteOnPage, settle } from "../_shared/verdict.ts";
+import { type Draft, isPublicUrl, quoteOnPage, settle } from "../_shared/verdict.ts";
 
 const BASE = "https://abumevloleevhoqxfnoe.supabase.co";
 const db = createClient(BASE, Deno.env.get("HALIABLE_SECRET_KEY")!, { auth: { persistSession: false } });
@@ -89,8 +89,18 @@ async function research(req: Record<string, unknown>, photoUrls: string[]): Prom
 
 async function verify(d: Draft): Promise<Draft> {
   await Promise.all(d.sources.map(async (s) => {
+    if (!isPublicUrl(s.url)) { s.verified = false; return; }
     try {
-      const r = await fetch(s.url, { headers: { "User-Agent": "Mozilla/5.0 (Haliable review agent)" }, signal: AbortSignal.timeout(10000) });
+      // Follow redirects by hand so every hop passes the SSRF guard — a public
+      // page must not bounce us to an internal one.
+      let url = s.url, r: Response | undefined;
+      for (let hop = 0; hop < 4 && isPublicUrl(url); hop++) {
+        r = await fetch(url, { redirect: "manual", headers: { "User-Agent": "Mozilla/5.0 (Haliable review agent)" }, signal: AbortSignal.timeout(10000) });
+        const next = r.status >= 300 && r.status < 400 ? r.headers.get("location") : null;
+        if (!next) break;
+        url = new URL(next, url).toString(); r = undefined;
+      }
+      if (!r) { s.verified = false; return; }
       s.verified = r.ok && quoteOnPage(s.quote, await r.text());
     } catch { s.verified = false; }
   }));
