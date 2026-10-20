@@ -76,6 +76,9 @@ enum DSSpacing {
     static let xs:  CGFloat = 8
     static let sm:  CGFloat = 12
     static let md:  CGFloat = 16
+    /// Screen-edge gutter — Apple's standard iPhone layout margin. Content at 16
+    /// sat too close to the bezel on device (TestFlight feedback, Oct 20).
+    static let screen: CGFloat = 20
     static let lg:  CGFloat = 24
     static let xl:  CGFloat = 32
     static let xxl: CGFloat = 48

@@ -41,13 +41,15 @@ to add resources. You *do* edit it for build settings.
 6. **Run the full test suite before every commit.** Green, or you don't commit.
 7. **No new features before the Connect.AI interview** — except the Guard UI rebuild
    (U0–U6 on branch `ui/guard`), which Omar approved Oct 16 (see `HANDOFF.md`).
-   See `docs/phases/TESTFLIGHT.md`.
+   See `docs/phases/TESTFLIGHT.md`. Omar also asked for, Oct 20: SIWA fix, the cloud review
+   agent, the History score ring and the wider screen gutter.
 
-## Device / signing rules (until the paid Apple team is approved)
+## Device / signing
 
-- **Simulator only.** Do not build to a physical device with `app.haliable.ios`.
-- Do **not** add the Sign in with Apple capability or entitlement yet — registering the
-  bundle ID under the free Personal Team would bind it to the wrong team.
+The paid team (UX6CT4G932) is approved. Sign in with Apple is ON: `Haliable.entitlements`
+(app target, Debug + Release), capability enabled on the App ID, and the manual
+"Haliable App Store" profile regenerated with it (Oct 20). Supabase Apple provider is
+enabled with client id `app.haliable.ios`.
 
 ## Commands
 

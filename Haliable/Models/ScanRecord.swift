@@ -24,6 +24,8 @@ final class ScanRecord {
     /// The standard this scan was graded under. Optional so rows saved before it
     /// existed migrate cleanly (they simply show no standard).
     var standardRaw: String? = nil
+    /// `ProductVerdict.clearedScore` at scan time. Optional for the same reason.
+    var score: Int? = nil
 
     var standard: HalalStandard? { standardRaw.flatMap(HalalStandard.init(rawValue:)) }
 
@@ -33,7 +35,8 @@ final class ScanRecord {
         productName: String,
         overallVerdict: Verdict,
         scannedAt: Date = .now,
-        standard: HalalStandard? = nil
+        standard: HalalStandard? = nil,
+        score: Int? = nil
     ) {
         self.id = id
         self.barcode = barcode
@@ -41,5 +44,6 @@ final class ScanRecord {
         self.overallVerdict = overallVerdict
         self.scannedAt = scannedAt
         self.standardRaw = standard?.rawValue
+        self.score = score
     }
 }

@@ -142,16 +142,22 @@ struct GuardRow: View {
     let subtitle: String
     var trailing: String? = nil
     var showsArrow: Bool = true
+    /// 0–100 score; when set, a ring replaces the symbol (History rows).
+    var score: Int? = nil
     var action: (() -> Void)? = nil
 
     var body: some View {
         let content = HStack(spacing: DSSpacing.sm) {
-            Image(systemName: symbol)
-                .font(.system(size: 17, weight: .medium))
-                .foregroundStyle(tint)
-                .frame(width: 42, height: 42)
-                .background(tint.opacity(0.14), in: Circle())
-                .overlay(Circle().strokeBorder(DSColor.outline, lineWidth: 1))
+            if let score {
+                ScoreRing(score: score, tint: tint)
+            } else {
+                Image(systemName: symbol)
+                    .font(.system(size: 17, weight: .medium))
+                    .foregroundStyle(tint)
+                    .frame(width: 42, height: 42)
+                    .background(tint.opacity(0.14), in: Circle())
+                    .overlay(Circle().strokeBorder(DSColor.outline, lineWidth: 1))
+            }
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
@@ -270,6 +276,31 @@ struct FlaggedRing: View {
         .accessibilityLabel(flagged == 0
                             ? "Nothing flagged out of \(checked) ingredients checked"
                             : "\(flagged) of \(checked) checked ingredients flagged")
+    }
+}
+
+/// Small 0–100 ring for list rows — same stroke language as FlaggedRing.
+struct ScoreRing: View {
+    let score: Int
+    let tint: Color
+    var diameter: CGFloat = 42
+
+    var body: some View {
+        ZStack {
+            Circle().strokeBorder(DSColor.outline, lineWidth: 3.5)
+            Circle()
+                .trim(from: 0, to: Double(min(max(score, 0), 100)) / 100)
+                .stroke(tint, style: StrokeStyle(lineWidth: 3.5, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+                .padding(1.75)
+            Text("\(score)")
+                .font(.system(size: 13, weight: .semibold))
+                .monospacedDigit()
+                .foregroundStyle(DSColor.textPrimary)
+        }
+        .frame(width: diameter, height: diameter)
+        .accessibilityElement()
+        .accessibilityLabel("Score \(score) out of 100")
     }
 }
 

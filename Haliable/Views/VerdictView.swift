@@ -73,7 +73,7 @@ struct VerdictView: View {
                 standingDisclosure
                     .padding(.top, DSSpacing.xs)
             }
-            .padding(.horizontal, DSSpacing.md)
+            .padding(.horizontal, DSSpacing.screen)
             .padding(.bottom, DSSpacing.xl)
             .animation(.easeInOut(duration: 0.3), value: live.overall)
         }

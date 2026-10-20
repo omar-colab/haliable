@@ -66,7 +66,7 @@ struct HomeView: View {
                     attention
                         .padding(.top, DSSpacing.md)
                 }
-                .padding(.horizontal, DSSpacing.md)
+                .padding(.horizontal, DSSpacing.screen)
                 .padding(.top, DSSpacing.xs)
                 .padding(.bottom, DSSpacing.lg)
             }

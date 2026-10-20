@@ -43,7 +43,7 @@ struct AboutV2: View {
                             paragraph("The scanner runs on your device. Barcodes are only sent to the anonymous Open Food Facts / USDA lookups. Sign-in (Apple) is required only to submit a manual review or a store — never to scan.")
                         }
                     }
-                    .padding(.horizontal, DSSpacing.md)
+                    .padding(.horizontal, DSSpacing.screen)
                     .padding(.top, DSSpacing.xs)
                     .padding(.bottom, DSSpacing.xl)
                 }

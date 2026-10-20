@@ -72,7 +72,7 @@ struct StoreDetailView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.top, DSSpacing.xxs)
             }
-            .padding(.horizontal, DSSpacing.md)
+            .padding(.horizontal, DSSpacing.screen)
             .padding(.top, DSSpacing.lg)
             .padding(.bottom, DSSpacing.lg)
         }

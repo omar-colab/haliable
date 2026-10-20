@@ -98,7 +98,8 @@ struct HistoryV2: View {
         return GuardRow(symbol: rec.overallVerdict.rowSymbol,
                         tint: rec.overallVerdict.tint,
                         title: rec.productName,
-                        subtitle: [rec.standard?.displayName, when].compactMap { $0 }.joined(separator: " · ")) {
+                        subtitle: [rec.standard?.displayName, when].compactMap { $0 }.joined(separator: " · "),
+                        score: rec.score) {
             onOpen(rec.barcode)
         }
         .accessibilityHint("Re-checks this product. Swipe left to delete.")
@@ -114,7 +115,7 @@ private extension View {
     func guardListRow() -> some View {
         listRowBackground(Color.clear)
             .listRowSeparator(.hidden)
-            .listRowInsets(EdgeInsets(top: 5, leading: DSSpacing.md, bottom: 5, trailing: DSSpacing.md))
+            .listRowInsets(EdgeInsets(top: 5, leading: DSSpacing.screen, bottom: 5, trailing: DSSpacing.screen))
     }
 }
 

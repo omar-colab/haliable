@@ -53,7 +53,7 @@ struct AtlasV2: View {
                     statusChip
                     listPanel
                 }
-                .padding(.horizontal, DSSpacing.md)
+                .padding(.horizontal, DSSpacing.screen)
                 // The map ignores the safe area, and the dock's inset doesn't reach
                 // this overlay on device; clear the dock explicitly.
                 .padding(.bottom, 78)

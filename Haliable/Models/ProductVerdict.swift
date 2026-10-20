@@ -29,6 +29,14 @@ struct ProductVerdict: Identifiable, Hashable {
             .sorted { $0.verdict.severity > $1.verdict.severity }
     }
 
+    /// 0–100: share of checked ingredients that cleared (100 when nothing
+    /// questionable matched). Shown in History's ring. It never replaces the
+    /// worst-case verdict — the ring is tinted by that verdict.
+    var clearedScore: Int {
+        guard !matched.isEmpty else { return 100 }
+        return Int((Double(matched.count - flagged.count) / Double(matched.count) * 100).rounded())
+    }
+
     /// True when the grade driving the headline verdict is still a DRAFT cell
     /// (`needsReview`). Phase 4: the verdict screen reads this to swap the
     /// confident badge for an unmistakable "pending scholar review" treatment so

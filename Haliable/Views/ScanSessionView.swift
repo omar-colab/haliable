@@ -26,10 +26,12 @@ struct ScanSessionView: View {
     @Environment(AppSettings.self) private var settings
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
 
     @State private var cameraUnavailable = false
     @State private var warming = true
     @State private var scannerID = UUID()
+    @State private var rescanToken = 0
     @State private var isLoading = false
     @State private var currentVerdict: ProductVerdict?
     @State private var errorMessage: String?
@@ -53,7 +55,7 @@ struct ScanSessionView: View {
                 Spacer(minLength: 0)
                 bottomArea
             }
-            .padding(.horizontal, DSSpacing.md)
+            .padding(.horizontal, DSSpacing.screen)
             .padding(.bottom, DSSpacing.xs)
 
             if warming && !cameraUnavailable && initialBarcode == nil { statusOverlay("Starting camera…") }
@@ -61,7 +63,7 @@ struct ScanSessionView: View {
         }
         .animation(DSMotion.move, value: showManualEntry)
         .animation(DSMotion.move, value: errorMessage)
-        .sheet(item: $currentVerdict, onDismiss: resume) { VerdictView(verdict: $0) }
+        .sheet(item: $currentVerdict) { VerdictView(verdict: $0) }
         .sheet(isPresented: $showManualReview) {
             RequestReviewView(prefillBarcode: manualBarcode.isEmpty ? nil : manualBarcode)
         }
@@ -70,7 +72,15 @@ struct ScanSessionView: View {
             try? await Task.sleep(for: .seconds(0.7))
             withAnimation(.easeOut(duration: 0.4)) { warming = false }
         }
+        .onChange(of: cameraActive) { _, active in if !active && torchOn { setTorch(false) } }
         .onDisappear { setTorch(false) }
+    }
+
+    /// The camera runs only while the scanner is what you're looking at: not
+    /// under the verdict or review sheet, and not while the app is in the
+    /// background. It resumes in place when that changes — no rebuild, no freeze.
+    private var cameraActive: Bool {
+        !cameraUnavailable && currentVerdict == nil && !showManualReview && scenePhase == .active
     }
 
     // MARK: - Camera
@@ -79,16 +89,17 @@ struct ScanSessionView: View {
         if cameraUnavailable {
             RadialGradient(colors: [DSColor.surfaceElevated, DSColor.background],
                            center: UnitPoint(x: 0.5, y: 0.42), startRadius: 10, endRadius: 460)
-        } else if currentVerdict == nil {
+        } else {
             BarcodeScannerView(
                 onFound: { code in Task { await handleScan(barcode: code) } },
-                onError: { _ in withAnimation(.easeInOut(duration: 0.3)) { cameraUnavailable = true } }
+                onError: { _ in withAnimation(.easeInOut(duration: 0.3)) { cameraUnavailable = true } },
+                isActive: cameraActive,
+                acceptsCodes: !isLoading,
+                rescanToken: rescanToken
             )
             .id(scannerID)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("Camera viewfinder. Point at a product barcode to scan it.")
-        } else {
-            DSColor.background
         }
     }
 
@@ -126,7 +137,7 @@ struct ScanSessionView: View {
                 impactLight(); showManualEntry.toggle()
             }
             DockMainBubble(symbol: "barcode.viewfinder", label: "Scan again") {
-                impactLight(); errorMessage = nil; restartCamera()
+                impactLight(); errorMessage = nil; scanAgain()
             }
             DockBubble(symbol: "camera.viewfinder", label: "Send photos for a human review") {
                 showManualReview = true
@@ -224,14 +235,15 @@ struct ScanSessionView: View {
 
     // MARK: - Camera lifecycle
 
-    private func restartCamera() {
-        cameraUnavailable = false
-        scannerID = UUID()
-    }
-
-    private func resume() {
-        guard !cameraUnavailable else { return }
-        scannerID = UUID()
+    /// "Scan again": forget the last barcode so the one in frame is read again.
+    /// Only a camera that failed outright is rebuilt from scratch.
+    private func scanAgain() {
+        if cameraUnavailable {
+            cameraUnavailable = false
+            scannerID = UUID()
+        } else {
+            rescanToken += 1
+        }
     }
 
     private func setTorch(_ on: Bool) {
@@ -261,7 +273,8 @@ struct ScanSessionView: View {
                 barcode: code,
                 productName: product.name,
                 overallVerdict: verdict.overall,
-                standard: settings.halalStandard
+                standard: settings.halalStandard,
+                score: verdict.clearedScore
             ))
             try? modelContext.save()
         } catch let error as OFFError {

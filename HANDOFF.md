@@ -4,7 +4,33 @@ Last updated: **Oct 20, 2026** · **Builds 4 and 5 are on TestFlight** ·
 site live · review agent built · **136 tests green**
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 
-## ▶️ RESUME HERE (saved Oct 20, 2026)
+## ▶️ RESUME HERE (Oct 20, afternoon)
+
+### Done Oct 20 (branch `fix/testflight-feedback`)
+- Oct 17 work reviewed + committed (132 pass / 4 env-gated skips, Release OK).
+- **Sign in with Apple** — two root causes, both fixed: no entitlement in the app, and the
+  Apple provider was DISABLED in Supabase. Now: `Haliable.entitlements`, capability on the
+  App ID (via ASC API), "Haliable App Store" profile regenerated + installed, Supabase
+  provider on (client id `app.haliable.ios`). Signed Release build carries the entitlement.
+  Review requests need sign-in, so this also unblocks "Ask a scholar".
+- **Cloud review agent** (runs with the Mac off): migration **0012 applied live** →
+  trigger on `review_requests` INSERT → Edge Function `review-agent` (Haiku 5.5 + web search,
+  ≤3 searches, ~1–3¢/request) → fetches each cited page and keeps only quotes really on it →
+  emails Omar the draft with Approve/Reject → `review-decide` (confirm page, POST only) writes
+  the verdict the user sees. Drafts live in `review_agent_drafts` (RLS on, no policies).
+  New secret key `edge_functions` created for it (legacy JWTs are off).
+- History rows: 0–100 ring (`ScanRecord.score` = share of checked ingredients that cleared,
+  tinted by the worst-case verdict). Old scans keep the icon.
+- Screen gutter 16 → 20pt (`DSSpacing.screen`).
+
+### Needs Omar
+1. Supabase → Edge Functions → Secrets: add `ANTHROPIC_API_KEY` and `RESEND_API_KEY`
+   (resend.com, sign up with omarmontasir876@gmail.com — onboarding@resend.dev can only
+   mail the signup address). Until then the agent fails and emails nothing.
+2. Archive + upload build 7 from Xcode, then test SIWA + "Ask a scholar" on the iPhone.
+3. 0011 still not applied live.
+
+## Earlier resume point (Oct 20 morning)
 
 ### State of the repo
 - **`ui/guard`** (pushed, `09fef4c`): the new Guard UI. All 8 board screens + floating dock;

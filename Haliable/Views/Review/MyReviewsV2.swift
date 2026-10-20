@@ -30,7 +30,7 @@ struct MyReviewsV2: View {
 
                         if auth.isSignedIn { signedIn } else { signedOut }
                     }
-                    .padding(.horizontal, DSSpacing.md)
+                    .padding(.horizontal, DSSpacing.screen)
                     .padding(.top, DSSpacing.xs)
                     .padding(.bottom, DSSpacing.lg)
                 }
