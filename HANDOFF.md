@@ -1,8 +1,49 @@
 # HANDOFF — Haliable → TestFlight
 
-Last updated: **Oct 16, 2026** · **Builds 4 and 5 are on TestFlight** ·
+Last updated: **Oct 20, 2026** · **Builds 4 and 5 are on TestFlight** ·
 site live · review agent built · **136 tests green**
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
+
+## ▶️ RESUME HERE (saved Oct 20, 2026)
+
+### State of the repo
+- **`ui/guard`** (pushed, `09fef4c`): the new Guard UI. All 8 board screens + floating dock;
+  unit tests green, Release builds, screenshots verified light + dark (Oct 16).
+- **`fix/testflight-feedback`** (local, branched from `ui/guard`, current checkout): an
+  Oct 17 session working from Omar's TestFlight feedback. **UNCOMMITTED and NOT reviewed:**
+  build number 6 → **7** + App Store category food-and-drink (pbxproj), migration
+  **0011_storrs_places** (four more Storrs places — NOT applied live), BarcodeScannerView
+  (+212 lines), ScanSessionView, RulesEngine + tests, e-numbers.json, OpenFoodFactsService.
+  **First job on resume: review that diff, run the full suite + Release build, then commit.**
+- **`main`** (`ba0f21a`): old UI + the site fixes (overclaims removed, honeypot) — live.
+- Live DB: migration 0010 applied + verified (7 campus places). 0011 not applied.
+
+### TestFlight
+- In App Store Connect, **build 1.0 (6) = OLD UI**, in external Beta App Review. Omar added
+  himself as an *Individual* tester on it → "No Builds Available" (individual = external =
+  waits for review). Fix: TestFlight → "‹ iOS Builds" → sidebar **INTERNAL TESTING +** →
+  group "Me" → add himself under Testers → add the build under Builds → TestFlight app on
+  the iPhone 14. (He has since given TestFlight feedback, so he may have done this.)
+- **Sign in with Apple has never been confirmed on a real device** — ask Omar.
+
+### Next, in order
+1. Review + verify + commit the Oct 17 work on `fix/testflight-feedback`.
+2. Ask Omar to run 0011 in the SQL Editor (paste the file, Run), then verify via REST.
+3. On Omar's OK: merge to `main`, upload **build 7** (`./scripts/testflight-upload.sh`) —
+   the first build with the new UI. Add it to the internal "Me" group.
+4. QA build 7 on the iPhone 14 (`docs/demo/QA_CHECKLIST.md`).
+5. Later (decided, not built): E627/E542 softened to match citations, AHF/HFA toward
+   hanafiStrict — through the citation pipeline only (rule 3).
+6. After the interview → FinGuard.
+
+### Omar's open items
+Interview date unknown · pick 3 demo products (clean pass / gelatin-whey-enzymes / soda),
+scan each the night before · ChatGPT Plus: later.
+
+### Gotcha learned Oct 20
+Another session can be mid-work in this checkout. **Check `git branch --show-current` and
+`git status` before committing, and never `git commit -a` here** — it nearly swept another
+session's uncommitted work into a doc commit (caught and undone before any push).
 
 ## ✅ The app is on TestFlight
 
