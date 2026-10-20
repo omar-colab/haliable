@@ -129,9 +129,7 @@ final class OpenFoodFactsService: ProductLookupSource {
 
         // Extract the E-numbers from OFF's additives_tags array.
         // OFF tags look like "en:e120" — we strip "en:" and uppercase.
-        let eNumbers = (offProduct.additivesTags ?? []).map {
-            $0.replacingOccurrences(of: "en:", with: "").uppercased()
-        }
+        let eNumbers = RulesEngine.normalizedENumbers(offProduct.additivesTags ?? [])
 
         // Translate from OFF's shape to our app's clean Product type.
         // From here on, the rest of the app never sees OFF's structure —
