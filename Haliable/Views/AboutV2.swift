@@ -16,7 +16,7 @@ struct AboutV2: View {
                     VStack(alignment: .leading, spacing: DSSpacing.lg) {
                         GuardIDRow(title: "About", subtitle: "How Haliable works") { EmptyView() }
                         section("How verdicts work") {
-                            VStack(spacing: DSSpacing.md) {
+                            VStack(alignment: .leading, spacing: DSSpacing.md) {
                                 verdictRow(.halal, "Halal",
                                            "No prohibited or questionable ingredients matched our verified rules.")
                                 divider
@@ -27,6 +27,8 @@ struct AboutV2: View {
                                            "Contains an ingredient that is not permissible, such as pork or wine.")
                             }
                         }
+
+                        proTeaser
 
                         section("Our safety stance") {
                             stance
@@ -51,6 +53,92 @@ struct AboutV2: View {
             }
             .toolbar(.hidden, for: .navigationBar)
         }
+    }
+
+    // MARK: - Haliable Pro (coming soon)
+
+    /// A teaser only — nothing is sold in the app. Every feature listed is one the
+    /// current stack can grow into (review agent, certified-brands.json, OFF data,
+    /// SwiftData). Scanning and verdicts stay free: safety is never paywalled.
+    private static let proFeatures: [(String, String, String)] = [
+        ("person.badge.clock", "Priority scholar reviews",
+         "Unlimited requests, answered first — with the published source quoted in full."),
+        ("menucard", "Menu scanner",
+         "Photograph a restaurant menu and see which dishes to ask the staff about."),
+        ("checkmark.seal", "Certificate check",
+         "Scan a halal logo or certificate and see whether that certifier and brand are on file."),
+        ("bell.badge", "Ingredient-change alerts",
+         "Get notified when a product you buy changes its recipe."),
+        ("person.3", "Family profiles",
+         "A standard for everyone in the house — Zabiha for one, General for another."),
+        ("icloud.and.arrow.down", "Offline mode",
+         "The full ingredient library on your phone, for travel and dead zones."),
+    ]
+
+    private var proTeaser: some View {
+        VStack(alignment: .leading, spacing: DSSpacing.md) {
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("COMING SOON")
+                        .font(.system(size: 10.5, weight: .bold))
+                        .tracking(1.4)
+                        .foregroundStyle(DSColor.gold)
+                    Text("Haliable Pro")
+                        .font(.system(size: 26, weight: .heavy))
+                        .tracking(-0.6)
+                        .foregroundStyle(.white)
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: 0) {
+                    Text("$10").font(.system(size: 24, weight: .heavy)).foregroundStyle(.white)
+                    Text("per month").font(.system(size: 11)).foregroundStyle(.white.opacity(0.75))
+                }
+            }
+
+            VStack(alignment: .leading, spacing: DSSpacing.sm) {
+                ForEach(Self.proFeatures, id: \.1) { symbol, title, detail in
+                    HStack(alignment: .top, spacing: DSSpacing.sm) {
+                        Image(systemName: symbol)
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(DSColor.gold)
+                            .frame(width: 34, height: 34)
+                            .background(.white.opacity(0.14), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                            .accessibilityHidden(true)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(title).font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+                            Text(detail)
+                                .font(.system(size: 12.5))
+                                .foregroundStyle(.white.opacity(0.8))
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                    .accessibilityElement(children: .combine)
+                }
+            }
+
+            Link(destination: URL(string: "https://haliable.netlify.app/#waitlist")!) {
+                Text("Join the waitlist")
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(DSColor.accentDeep)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 13)
+                    .background(.white, in: Capsule())
+            }
+            .accessibilityHint("Opens the Haliable website")
+
+            Text("Scanning and verdicts stay free, always. Nothing is charged today.")
+                .font(.system(size: 11))
+                .foregroundStyle(.white.opacity(0.7))
+                .frame(maxWidth: .infinity, alignment: .center)
+        }
+        .padding(DSSpacing.md + 2)
+        .background(
+            LinearGradient(colors: [DSColor.accentDeep, DSColor.accent],
+                           startPoint: .topLeading, endPoint: .bottomTrailing),
+            in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 28, style: .continuous)
+            .strokeBorder(DSColor.gold.opacity(0.45), lineWidth: 1))
+        .shadow(color: DSColor.accent.opacity(0.3), radius: 18, y: 8)
     }
 
     // MARK: - Building blocks
