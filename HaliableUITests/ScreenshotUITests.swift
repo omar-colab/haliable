@@ -51,6 +51,13 @@ final class ScreenshotUITests: XCTestCase {
         app.launch()
         let pill = app.buttons["Halal standard: General Halal"]
         guard pill.waitForExistence(timeout: 8) else { return }
+        // History again: by now the main run has saved a verdict, so the row and its
+        // score ring are in frame (the main run's History shot comes before any scan).
+        app.buttons["dock.history"].tap()
+        Thread.sleep(forTimeInterval: 1.5)
+        capture(app, name: "04b-History")
+        app.buttons["dock.main"].tap()
+        guard pill.waitForExistence(timeout: 5) else { return }
         pill.tap()
         Thread.sleep(forTimeInterval: 1.2)
         capture(app, name: "06-Standards")

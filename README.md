@@ -4,13 +4,17 @@
 
 An iOS app that scans a product barcode, looks it up live against Open Food Facts and USDA FoodData Central, and reports a halal verdict — with the published scholarly sources behind every flagged ingredient shown right in the UI. No black-box rulings: every grade is backed by a citation the user can tap and read.
 
-Built entirely in SwiftUI. 128 unit/integration tests. Prepared for App Store submission (privacy manifest, account deletion, screenshots, listing copy all done).
+Built entirely in SwiftUI, with no UI packages: every animation is drawn natively. 142 Swift tests and 4 Deno tests. Live on TestFlight (build 11).
 
 ## Screenshots
 
-| Scan | Find Stores | Reviews | History | About |
-|:---:|:---:|:---:|:---:|:---:|
-| ![Scan](docs/screenshots/01-Scan.png) | ![Find](docs/screenshots/02-Find.png) | ![Reviews](docs/screenshots/03-Reviews.png) | ![History](docs/screenshots/04-History.png) | ![About](docs/screenshots/05-About.png) |
+| Home | Scanning | Verdict | Halal Atlas |
+|:---:|:---:|:---:|:---:|
+| ![Home](docs/screenshots/01-Home.png) | ![Scanning](docs/screenshots/02-Scanning.png) | ![Verdict](docs/screenshots/03-Verdict.png) | ![Atlas](docs/screenshots/04-Atlas.png) |
+
+| Reviews | History | About | Your standard |
+|:---:|:---:|:---:|:---:|
+| ![Reviews](docs/screenshots/05-Reviews.png) | ![History](docs/screenshots/06-History.png) | ![About](docs/screenshots/07-About.png) | ![Standards](docs/screenshots/08-Standards.png) |
 
 ## What makes it different
 
@@ -28,7 +32,10 @@ Most halal-checker apps ship a static verdict database with no sources. Haliable
 - **Five-level grading engine** (halal → widely accepted → doubtful/contested → avoid → haram) with per-standard grade matrices and a certified-brand layer that recognizes certifier marks (AHF, HFA, and others).
 - **Store Atlas** — a community map of halal stores backed by Supabase/PostGIS: spatial nearby queries, validated submissions with server-side dedupe, and confirm/dispute voting, all through Postgres RPCs behind Row-Level Security.
 - **Manual photo review** — when the verdict isn't a clean halal, users can submit product photos for human review.
-- **Scan history** persisted locally with SwiftData; works offline with cached results.
+- **Scan history** persisted locally with SwiftData. Rescanning a product replaces its old row. Each row shows an animated score ring, and any haram ingredient scores the product 0.
+- **Cloud review agent.** A Supabase Edge Function reads the label photos and searches for a published halal-body passage, then checks by machine that the quote really appears on the page it cites. The verdict is the worst grade across all ingredients. Nothing reaches a user until the owner approves it, and unverified sources are never published.
+- **Guard UI.** A custom design system with a floating dock, a dot-sphere scan orb, a liquid "thinking" orb for slow work, a sonar ring pulse and staggered screen reveals. All of it is drawn in SwiftUI `Canvas`/`TimelineView` and holds still under Reduce Motion.
+- **Map beyond the Atlas.** Apple Maps places named "halal" or "zabiha" appear as grey "not verified" pins. Verified Atlas places reload as you pan.
 - **Sign in with Apple** with full account lifecycle: server-side data export and one-tap account deletion (Postgres RPC wipes the user's rows, Netlify serverless functions revoke the Apple token per Apple TN3194).
 
 ## Architecture
@@ -41,6 +48,7 @@ SwiftUI app (iOS, iPhone)
 │                                 (shared HTTPRetry: timeouts, 429/5xx backoff)
 ├── SwiftData                     scan history, local state
 └── Supabase (PostGIS)            auth, review photos, Store Atlas RPCs, RLS throughout
+    ├── Edge Functions            review-agent (Anthropic API + web search, quote-verified) · review-decide (owner approval)
     └── Netlify functions         Sign in with Apple token store + revoke (ES256, no deps)
 ```
 
@@ -50,7 +58,7 @@ SwiftUI app (iOS, iPhone)
 
 ## Testing
 
-128 tests across the grading engine, citation gate, lookup resilience (offline, rate-limit, retry), store service, account deletion, and review flows — plus guard tests that fail the build on TODO markers and screenshot UI tests that generate the App Store screenshots (1320×2868) automatically via `xcresulttool`.
+142 Swift tests across the grading engine, citation gate, lookup resilience (offline, rate-limit, retry), store service, account deletion, and review flows — plus Deno tests for the review agent's verdict rules (quote verification, worst-case roll-up, SSRF guard), guard tests that fail the build on TODO markers, and screenshot UI tests that generate the App Store screenshots (1320×2868) automatically via `xcresulttool`.
 
 ```bash
 xcodebuild test -scheme Haliable \
