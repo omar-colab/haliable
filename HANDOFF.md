@@ -4,6 +4,19 @@ Last updated: **Oct 20, 2026 (evening)** · **Build 8 is on TestFlight** ·
 site live · review agent built · **136 tests green**
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 
+## ▶️ RESUME HERE (Oct 21)
+
+**Build 11 uploaded to TestFlight** (archived from d368ced). It adds the ThinkingOrb (liquid
+blob) on the Home rows and review waits, a RingEmblem sonar pulse and the staggered Home
+reveal, and removes the "Pro coming soon" teaser from About (App Review 2.1/2.3 risk).
+Reviewer 🔴s are fixed: Apple Maps name filter, loadNearby stale/keep-last-good, agent
+worst-grade verdict, review-decide publishes verified-only sources (both functions
+redeployed), and haram scores 0 (d368ced, Omar's ruling).
+Needs Omar: decide on the Pro features + StoreKit (build the features and the purchase in the
+same release, never a lock with no way to buy); self-host the Google Fonts in site/index.html;
+add a postal address to the MailerLite footer. Migration 0014 (reviewer, 117a6e1) still needs
+to be applied live.
+
 ## ▶️ RESUME HERE (Oct 20, evening)
 
 **Build 10 is live on TestFlight ("Me" group, Oct 20 10:12 PM) — it is the planned "build 9";
