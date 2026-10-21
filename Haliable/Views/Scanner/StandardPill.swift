@@ -18,18 +18,18 @@ struct StandardPill: View {
             HStack(spacing: DSSpacing.xs) {
                 Image(systemName: standard.symbol)
                     .font(.caption.weight(.semibold))
+                    .foregroundStyle(DSColor.accent)
                 Text(standard.displayName)
                     .font(DSFont.caption.weight(.semibold))
                 Image(systemName: "chevron.down")
                     .font(.caption2.weight(.bold))
                     .opacity(0.7)
             }
-            .foregroundStyle(DSColor.accent)
+            .foregroundStyle(DSColor.textPrimary)
             .padding(.horizontal, DSSpacing.sm)
-            .padding(.vertical, DSSpacing.xs)
-            .background(DSColor.accent.opacity(0.10), in: Capsule())
-            .overlay(Capsule().strokeBorder(DSColor.accent.opacity(0.55), lineWidth: 1))
-            .shadow(color: DSColor.accent.opacity(0.30), radius: 8)
+            .padding(.vertical, 7)
+            .background(DSColor.surface, in: Capsule())
+            .overlay(Capsule().strokeBorder(DSColor.outlineStrong, lineWidth: 1))
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .ignore)

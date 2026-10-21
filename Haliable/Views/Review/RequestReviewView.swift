@@ -106,7 +106,7 @@ struct RequestReviewView: View {
             Button {
                 Task { await submit() }
             } label: {
-                if store.isWorking { ProgressView() } else { Text("Submit for review").bold() }
+                if store.isWorking { ThinkingOrb(diameter: 28) } else { Text("Submit for review").bold() }
             }
             .disabled(images.isEmpty || store.isWorking)
             if !store.isLive {

@@ -60,7 +60,7 @@ final class RulesEngine {
         // STEP 1: structured E-number list from Open Food Facts (most reliable).
         // Origin is read from the label segment that names the additive, so an
         // E-number paired with "soy lecithin" on the label resolves to plant.
-        for eNumber in product.additivesENumbers {
+        for eNumber in Self.normalizedENumbers(product.additivesENumbers) {
             let canonicalName = eNumberMap[eNumber] ?? eNumber
             let rule = eNumIndex[eNumber] ?? aliasIndex[canonicalName.lowercased()]
             // An E-number we don't recognize stays as a nil-rule match → Questionable.
@@ -121,6 +121,29 @@ final class RulesEngine {
         }
 
         return ProductVerdict(product: product, matched: matched, overallGrade: overallGrade)
+    }
+
+    /// OFF tags sub-variants ("en:e322i", "en:e472e", "en:e150d") that the rule,
+    /// E-number and matrix tables key on the base code ("E322"). Without this a
+    /// gum label's soy lecithin arrived twice — once as E322 (resolved, halal) and
+    /// once as "E322I", unknown and therefore Questionable. Normalizes to the base
+    /// code, upper-cased, and drops duplicates while keeping label order. Anything
+    /// that isn't an E-number shape passes through untouched.
+    static func normalizedENumbers(_ raw: [String]) -> [String] {
+        var seen = Set<String>()
+        var out: [String] = []
+        for tag in raw {
+            let code = normalizeENumber(tag)
+            if seen.insert(code).inserted { out.append(code) }
+        }
+        return out
+    }
+
+    static func normalizeENumber(_ tag: String) -> String {
+        var t = tag.trimmingCharacters(in: .whitespaces).uppercased()
+        if let colon = t.lastIndex(of: ":") { t = String(t[t.index(after: colon)...]) }
+        guard let r = t.range(of: #"^E\d{3,4}"#, options: .regularExpression) else { return t }
+        return String(t[r])
     }
 
     /// True when `term` appears in `text` starting at a word boundary. A bare

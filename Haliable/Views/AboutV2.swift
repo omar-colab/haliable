@@ -2,11 +2,7 @@
 //  AboutV2.swift
 //  Haliable
 //
-//  Redesigned "About" (methodology) on the shared AppScreen scaffold. Same copy
-//  and intent as MethodologyView — re-skinned into the app's holistic dark look.
-//  Original MethodologyView is untouched.
-//
-//  Preview swap: in RootTabView.swift, change `MethodologyView()` to `AboutV2()`.
+//  About / methodology, on the Guard background and header (board style).
 //
 
 import SwiftUI
@@ -14,11 +10,13 @@ import SwiftUI
 struct AboutV2: View {
     var body: some View {
         NavigationStack {
-            AppScreen(eyebrow: "HOW IT WORKS", title: "About") {
+            ZStack {
+                GuardBackground()
                 ScrollView {
                     VStack(alignment: .leading, spacing: DSSpacing.lg) {
+                        GuardIDRow(title: "About", subtitle: "How Haliable works") { EmptyView() }
                         section("How verdicts work") {
-                            VStack(spacing: DSSpacing.md) {
+                            VStack(alignment: .leading, spacing: DSSpacing.md) {
                                 verdictRow(.halal, "Halal",
                                            "No prohibited or questionable ingredients matched our verified rules.")
                                 divider
@@ -45,11 +43,13 @@ struct AboutV2: View {
                             paragraph("The scanner runs on your device. Barcodes are only sent to the anonymous Open Food Facts / USDA lookups. Sign-in (Apple) is required only to submit a manual review or a store — never to scan.")
                         }
                     }
-                    .padding(.horizontal, DSSpacing.lg)
+                    .padding(.horizontal, DSSpacing.screen)
+                    .padding(.top, DSSpacing.xs)
                     .padding(.bottom, DSSpacing.xl)
                 }
                 .scrollIndicators(.hidden)
             }
+            .toolbar(.hidden, for: .navigationBar)
         }
     }
 

@@ -33,78 +33,85 @@ struct StandardSelectorSheet: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: DSSpacing.md) {
-                    if isFirstRun { firstRunHeader }
-                    ForEach(ordered) { card($0) }
-                }
-                .padding(DSSpacing.md)
-            }
-            .scrollContentBackground(.hidden)
-            .background(DSColor.background)
-            .navigationTitle(isFirstRun ? "How strict should we be?" : "Halal Standard")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { showInfo = true } label: {
-                        Image(systemName: "questionmark.circle")
-                    }
-                    .accessibilityLabel("Learn about halal standards")
-                }
+        ScrollView {
+            VStack(alignment: .leading, spacing: DSSpacing.xs) {
+                header
+                ForEach(ordered) { card($0) }
                 if isFirstRun {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button("Decide later") { onDecideLater(); dismiss() }
-                    }
+                    Button("Decide later — keep General Halal") { onDecideLater(); dismiss() }
+                        .font(DSFont.caption.weight(.semibold))
+                        .foregroundStyle(DSColor.textSecondary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, DSSpacing.xs)
                 }
             }
-            .sheet(isPresented: $showInfo) {
-                NavigationStack { HalalStandardEducationView() }
-            }
+            .padding(.horizontal, DSSpacing.md)
+            .padding(.top, DSSpacing.lg)
+            .padding(.bottom, DSSpacing.lg)
+        }
+        .background(DSColor.surface)
+        .sheet(isPresented: $showInfo) {
+            NavigationStack { HalalStandardEducationView() }
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
+        .presentationCornerRadius(30)
+        .presentationBackground(DSColor.surface)
     }
 
-    private var firstRunHeader: some View {
-        VStack(spacing: DSSpacing.xs) {
-            Text("Pick the position you follow. You can change it any time — from here or in Settings — and every scan uses it consistently.")
-                .font(DSFont.body)
-                .foregroundStyle(DSColor.textSecondary)
-                .multilineTextAlignment(.center)
-            Text("Default: General Halal")
-                .font(DSFont.caption.weight(.semibold))
-                .foregroundStyle(DSColor.accent)
+    private var header: some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(isFirstRun ? "How strict should we be?" : "Which standard?")
+                    .font(.system(size: 20, weight: .heavy))
+                    .tracking(-0.4)
+                    .foregroundStyle(DSColor.textPrimary)
+                Text("Haliable reports what scholars ruled. Stricter settings flag more.")
+                    .font(.system(size: 12.5))
+                    .foregroundStyle(DSColor.textSecondary)
+            }
+            Spacer(minLength: DSSpacing.sm)
+            Button { showInfo = true } label: {
+                Image(systemName: "questionmark")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(DSColor.textPrimary)
+                    .frame(width: 34, height: 34)
+                    .background(DSColor.surfaceElevated, in: Circle())
+                    .overlay(Circle().strokeBorder(DSColor.outlineStrong, lineWidth: 1))
+            }
+            .pressable()
+            .accessibilityLabel("Learn about halal standards")
         }
-        .frame(maxWidth: .infinity, alignment: .center)
         .padding(.bottom, DSSpacing.xs)
     }
 
     private func card(_ std: HalalStandard) -> some View {
         let isSelected = std == selected
         let isExpanded = expanded.contains(std)
+        let shape = RoundedRectangle(cornerRadius: 20, style: .continuous)
 
-        return VStack(alignment: .leading, spacing: DSSpacing.sm) {
+        return VStack(alignment: .leading, spacing: DSSpacing.xs) {
             Button { select(std) } label: {
                 HStack(alignment: .top, spacing: DSSpacing.sm) {
-                    Image(systemName: std.symbol)
-                        .font(.headline)
-                        .foregroundStyle(DSColor.accent)
-                        .frame(width: 24)
-                    VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                        Text(std.displayName)
-                            .font(DSFont.headline)
-                            .foregroundStyle(DSColor.textPrimary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(spacing: 6) {
+                            Text(std.displayName)
+                                .font(.system(size: 15, weight: .bold))
+                                .foregroundStyle(DSColor.textPrimary)
+                            if std == .fallback {
+                                Text("· DEFAULT")
+                                    .font(.system(size: 9, weight: .heavy))
+                                    .tracking(1)
+                                    .foregroundStyle(DSColor.textTertiary)
+                            }
+                        }
                         Text(std.shortDescription)
-                            .font(DSFont.caption)
+                            .font(.system(size: 12))
                             .foregroundStyle(DSColor.textSecondary)
                             .fixedSize(horizontal: false, vertical: true)
                     }
-                    Spacer(minLength: DSSpacing.xs)
-                    Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                        .font(.title3)
-                        .foregroundStyle(isSelected ? DSColor.accent : DSColor.textSecondary)
-                        .symbolEffect(.bounce, value: isSelected)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    tick(isSelected)
                 }
                 .contentShape(Rectangle())
             }
@@ -116,14 +123,14 @@ struct StandardSelectorSheet: View {
             .accessibilityHint("Double-tap to choose this standard")
 
             Button {
-                withAnimation(.easeInOut(duration: 0.22)) { toggleExpanded(std) }
+                withAnimation(DSMotion.move) { toggleExpanded(std) }
             } label: {
                 HStack(spacing: DSSpacing.xxs) {
                     Text(isExpanded ? "Hide details" : "What this means")
                     Image(systemName: "chevron.down")
                         .rotationEffect(.degrees(isExpanded ? 180 : 0))
                 }
-                .font(DSFont.caption.weight(.semibold))
+                .font(.system(size: 11.5, weight: .semibold))
                 .foregroundStyle(DSColor.accent)
             }
             .buttonStyle(.plain)
@@ -131,20 +138,41 @@ struct StandardSelectorSheet: View {
 
             if isExpanded {
                 Text(std.whatThisMeans)
-                    .font(DSFont.body)
+                    .font(.system(size: 12.5))
                     .foregroundStyle(DSColor.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .padding(DSSpacing.md)
-        .background(DSColor.surface, in: RoundedRectangle(cornerRadius: DSRadius.lg, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: DSRadius.lg, style: .continuous)
-                .strokeBorder(isSelected ? DSColor.accent : DSColor.outline,
-                              lineWidth: isSelected ? 2 : 1)
-        )
-        .shadow(color: isSelected ? DSColor.accent.opacity(0.25) : .clear, radius: 10)
+        .padding(DSSpacing.sm)
+        .background {
+            if isSelected {
+                shape.fill(LinearGradient(colors: [DSColor.accent.opacity(0.18), DSColor.accentGradientEnd.opacity(0.12)],
+                                          startPoint: .topLeading, endPoint: .bottomTrailing))
+            } else {
+                shape.fill(DSColor.surfaceElevated)
+            }
+        }
+        .overlay(shape.strokeBorder(isSelected ? DSColor.accent : DSColor.outline,
+                                    lineWidth: isSelected ? 1.5 : 1))
+        .animation(DSMotion.move, value: isSelected)
+    }
+
+    private func tick(_ on: Bool) -> some View {
+        ZStack {
+            if on {
+                Circle().fill(LinearGradient(colors: [DSColor.accent, DSColor.accentGradientEnd],
+                                             startPoint: .topLeading, endPoint: .bottomTrailing))
+                Image(systemName: "checkmark")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(.white)
+            } else {
+                Circle().strokeBorder(DSColor.outlineStrong, lineWidth: 1.5)
+            }
+        }
+        .frame(width: 22, height: 22)
+        .padding(.top, 2)
+        .accessibilityHidden(true)
     }
 
     private func toggleExpanded(_ std: HalalStandard) {

@@ -1,8 +1,115 @@
 # HANDOFF — Haliable → TestFlight
 
-Last updated: **Oct 16, 2026** · **Builds 4 and 5 are on TestFlight** ·
+Last updated: **Oct 20, 2026 (evening)** · **Build 8 is on TestFlight** ·
 site live · review agent built · **136 tests green**
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
+
+## ▶️ RESUME HERE (Oct 21)
+
+**Build 11 uploaded to TestFlight** (archived from d368ced). It adds the ThinkingOrb (liquid
+blob) on the Home rows and review waits, a RingEmblem sonar pulse and the staggered Home
+reveal, and removes the "Pro coming soon" teaser from About (App Review 2.1/2.3 risk).
+Reviewer 🔴s are fixed: Apple Maps name filter, loadNearby stale/keep-last-good, agent
+worst-grade verdict, review-decide publishes verified-only sources (both functions
+redeployed), and haram scores 0 (d368ced, Omar's ruling).
+Needs Omar: decide on the Pro features + StoreKit (build the features and the purchase in the
+same release, never a lock with no way to buy); self-host the Google Fonts in site/index.html;
+add a postal address to the MailerLite footer. Migration 0014 (reviewer, 117a6e1) still needs
+to be applied live.
+
+## ▶️ RESUME HERE (Oct 20, evening)
+
+**Build 10 is live on TestFlight ("Me" group, Oct 20 10:12 PM) — it is the planned "build 9";
+testflight-upload.sh bumps the number itself, never pre-bump.** Next: Supabase "security
+vulnerabilities" email (Oct 20) is unread — check the Security Advisor first.
+Full handoff in Notion: "Handoff — Oct 20–21, 2026 (build 10 on TestFlight)".
+SIWA confirmed working on Omar's iPhone. Migration **0011 applied live** (11 approved places).
+
+### Done after build 8 (live in build 10)
+- History: rescanning a barcode replaces its row (no duplicates); score = whole-label share cleared.
+- Map: follows the phone's location; every pan reloads verified Atlas places for the visible
+  area (`StoreService.loadVisible`, radius = half the span, 1–50 km; distances stay from the
+  user) + Apple Maps "halal" POIs as grey "not verified" pins (80 m dedupe vs Atlas).
+- Security pass (reel checklist): SSRF guard on the agent's fetches, 5 review requests/day
+  (0013, live). Rest was already fine.
+- About: "Haliable Pro — coming soon, $10/mo" teaser + waitlist link. Nothing charges.
+- Scan loader: `ScanOrb` (Canvas dot-sphere, gold scan band, cycling status). Native, no
+  package (Orbs library reel). Score ring draws in + counts up (UI-libraries post: all React,
+  only ideas borrowed).
+
+### Decisions made while Omar was away
+- Kathmandu Kitchen / Husky Pizza / Gansett Wraps / Spice Venue still OFF the map: no halal
+  claim from the operator itself (only menu copies, delivery-app categories, student press).
+- Screenshot UI test hangs the full suite; ran `-only-testing:HaliableTests` (green).
+- The repo lives in iCloud-synced ~/Desktop; iCloud evicted .git files while offline and git
+  hung. Suggested moving to ~/Developer/Haliable — Omar to decide.
+
+## Earlier resume point (Oct 20, afternoon)
+
+### Done Oct 20 (branch `fix/testflight-feedback`)
+- Oct 17 work reviewed + committed (132 pass / 4 env-gated skips, Release OK).
+- **Sign in with Apple** — two root causes, both fixed: no entitlement in the app, and the
+  Apple provider was DISABLED in Supabase. Now: `Haliable.entitlements`, capability on the
+  App ID (via ASC API), "Haliable App Store" profile regenerated + installed, Supabase
+  provider on (client id `app.haliable.ios`). Signed Release build carries the entitlement.
+  Review requests need sign-in, so this also unblocks "Ask a scholar".
+- **Cloud review agent** (runs with the Mac off): migration **0012 applied live** →
+  trigger on `review_requests` INSERT → Edge Function `review-agent` (Haiku 5.5 + web search,
+  ≤3 searches, ~1–3¢/request) → fetches each cited page and keeps only quotes really on it →
+  emails Omar the draft with Approve/Reject → `review-decide` (confirm page, POST only) writes
+  the verdict the user sees. Drafts live in `review_agent_drafts` (RLS on, no policies).
+  New secret key `edge_functions` created for it (legacy JWTs are off).
+- History rows: 0–100 ring (`ScanRecord.score` = share of checked ingredients that cleared,
+  tinted by the worst-case verdict). Old scans keep the icon.
+- Screen gutter 16 → 20pt (`DSSpacing.screen`).
+
+### Needs Omar
+1. Supabase → Edge Functions → Secrets: add `ANTHROPIC_API_KEY` and `RESEND_API_KEY`
+   (resend.com, sign up with omarmontasir876@gmail.com — onboarding@resend.dev can only
+   mail the signup address). Until then the agent fails and emails nothing.
+2. Archive + upload build 7 from Xcode, then test SIWA + "Ask a scholar" on the iPhone.
+3. 0011 still not applied live.
+
+## Earlier resume point (Oct 20 morning)
+
+### State of the repo
+- **`ui/guard`** (pushed, `09fef4c`): the new Guard UI. All 8 board screens + floating dock;
+  unit tests green, Release builds, screenshots verified light + dark (Oct 16).
+- **`fix/testflight-feedback`** (local, branched from `ui/guard`, current checkout): an
+  Oct 17 session working from Omar's TestFlight feedback. **UNCOMMITTED and NOT reviewed:**
+  build number 6 → **7** + App Store category food-and-drink (pbxproj), migration
+  **0011_storrs_places** (four more Storrs places — NOT applied live), BarcodeScannerView
+  (+212 lines), ScanSessionView, RulesEngine + tests, e-numbers.json, OpenFoodFactsService.
+  **First job on resume: review that diff, run the full suite + Release build, then commit.**
+- **`main`** (`ba0f21a`): old UI + the site fixes (overclaims removed, honeypot) — live.
+- Live DB: migration 0010 applied + verified (7 campus places). 0011 not applied.
+
+### TestFlight
+- In App Store Connect, **build 1.0 (6) = OLD UI**, in external Beta App Review. Omar added
+  himself as an *Individual* tester on it → "No Builds Available" (individual = external =
+  waits for review). Fix: TestFlight → "‹ iOS Builds" → sidebar **INTERNAL TESTING +** →
+  group "Me" → add himself under Testers → add the build under Builds → TestFlight app on
+  the iPhone 14. (He has since given TestFlight feedback, so he may have done this.)
+- **Sign in with Apple has never been confirmed on a real device** — ask Omar.
+
+### Next, in order
+1. Review + verify + commit the Oct 17 work on `fix/testflight-feedback`.
+2. Ask Omar to run 0011 in the SQL Editor (paste the file, Run), then verify via REST.
+3. On Omar's OK: merge to `main`, upload **build 7** (`./scripts/testflight-upload.sh`) —
+   the first build with the new UI. Add it to the internal "Me" group.
+4. QA build 7 on the iPhone 14 (`docs/demo/QA_CHECKLIST.md`).
+5. Later (decided, not built): E627/E542 softened to match citations, AHF/HFA toward
+   hanafiStrict — through the citation pipeline only (rule 3).
+6. After the interview → FinGuard.
+
+### Omar's open items
+Interview date unknown · pick 3 demo products (clean pass / gelatin-whey-enzymes / soda),
+scan each the night before · ChatGPT Plus: later.
+
+### Gotcha learned Oct 20
+Another session can be mid-work in this checkout. **Check `git branch --show-current` and
+`git status` before committing, and never `git commit -a` here** — it nearly swept another
+session's uncommitted work into a doc commit (caught and undone before any push).
 
 ## ✅ The app is on TestFlight
 
@@ -72,6 +179,76 @@ approved one — https://claude.ai/artifact/JbVaVBBdmWpkrc71H8wSxL
 Suggested order if the work continues: **standards picker** (small, and it is the
 control the demo turns on) → **Atlas list sheet** → **the dock** (biggest visual
 change, most risk, least functional gain).
+
+## 🎨 UI rebuild to the Guard board — branch `ui/guard` (Oct 16)
+
+Full plan (phases U0–U7): Notion "UI Build Plan — Haliable Guard". Board:
+`~/Desktop/haliable-guard2.html`. Build 5 on TestFlight stays the fallback; nothing
+from this branch ships until U7.
+
+**U0 palette — DONE.** Colorsets retuned to the board (neutral `#0A0A0B` dark /
+`#F6F8F6` light, accent `#30D98F`/`#19B377`, danger/warning per board, hairlines as
+alpha). New `DSColor.accentGradientEnd` (`#0A7A4C`) — every accent gradient used
+`accentDeep`, which is LIGHT in dark mode, so cards faded the wrong way. Third
+`GuardOrbs` orb. Default theme now `.system`; `LaunchBackground` adaptive.
+Light-mode tertiary text darkened to `#7D8B83` (board's `#96A49C` ≈ 2.6:1 on white).
+Unit tests green, Release builds, all tabs screenshotted light + dark.
+
+**Omar's decisions (Oct 16):** crescent pill in app-icon colors instead of "AI" ·
+no heart, About takes that dock slot · Home has no live camera (scan = full-screen
+cover) · no live OCR tags · welcome name = SIWA name else "Welcome" · theme follows
+phone · ALL of U0–U6 before the interview · OK: standard on History rows (new
+optional field), store page drops hours, Settings/About behind Home gear, delete old
+V1 screen files · Welch's demo line reworded to "citation pending" · landing-page
+overclaims removed + honeypot · look up CrossRoads/Market Cafe addresses · lookup
+order: fixed (one source then the other) · E627/E542 soften to match citations and
+AHF/HFA toward hanafiStrict — **through the citation pipeline, not by hand (rule 3)** ·
+seafood axis after interview · after the interview → FinGuard.
+
+**U1–U6 — BUILT (Oct 16, same day).** All eight board screens are in the app:
+- **U1 Standards picker** — board cards, gradient tick, "· DEFAULT", neutral pill. The app's
+  own `shortDescription`s kept (they match what the engine does), not the board's copy.
+- **U2 Verdict** — sheet layout: ring → Spectral grade → product → "N flagged · standard",
+  segment chips, "Flagged" GuardRows whose subtitle is the source + year or the honest
+  **"awaiting citation"**; tapping a row expands the explanation + full citations. Draft
+  banner and standing disclosure kept. "Ask a scholar" GuardAction.
+- **U3 Home + Scanning split** — `HomeView` (no camera; ID row with the SIWA first name
+  else "Welcome", pill, emblem, headline + `CrescentPill` in app-icon gold/green, Start
+  action, **Needs attention** = non-halal saved scans + reviews still awaiting a human;
+  rows re-check that barcode under the current standard). `ScanSessionView` = full-screen
+  cover: same BarcodeScannerView + lookup/evaluate/save, reticle + beam, standard chip,
+  torch, mini dock (manual entry · scan again · photo review). No OCR tags.
+  `ScannerViewV2` deleted. `ScanRecord.standardRaw` (optional, migration-safe) added.
+  `AuthManager.givenName` stored on first SIWA (Apple only sends it once); cleared on sign-out.
+- **U4 Atlas + Store** — capsule `Annotation` pins, live chip, list panel with All / Fully
+  halal / Meat / Options, distance, OSM credit line. Store detail: chips (scope, Verified
+  only if approved, N confirms), source rows, "Still accurate?" → confirm/dispute dialog
+  (same `vote_store` path), address row opens Apple Maps. No hours.
+- **U5 Reviews + History** — Reviews: action card + rows with verdict in the subtitle.
+  History: week summary card, filter chips, grouped by day, standard per row, swipe-delete,
+  tap = re-check.
+- **U6 Dock** — `TabView` kept (per-tab state), system bar hidden, `GuardDock` overlay:
+  Find · About · [Home/Scan] · Reviews · History. Centre = Home; on Home it opens the
+  scanner. About took the board's heart slot. Settings opens from Home's gear.
+- Old V1 screens deleted (ScannerView, ScannerViewV2, AtlasView, MyReviewsView, HistoryView,
+  SettingsView, MethodologyView). About restyled onto GuardBackground.
+- `ScreenshotUITests` rewritten for the dock (identifiers `dock.*`, `home.startScan`) +
+  a separate standards-picker capture.
+
+**Also done Oct 16:** site overclaims removed + honeypot (live on `main`, `6bfd451`);
+DEMO_SCRIPT Welch's line reworded + "use what you already have" section (Omar isn't buying
+the kit); `docs/demo/STORY.md` (3-minute story); migration **0010_campus_cafes** (CrossRoads
++ Market Cafe at their buildings' OSM coordinates) — **applied live by Omar Oct 16, verified: 7 approved places**.
+
+⚠️ **Mistake, fixed:** the staged V1 deletions rode along in the site commit and were
+cherry-picked to `main` (`6bfd451`), which would have broken main's build. Restored on
+main in `ba0f21a`; main's app code is identical to `0f285c1`.
+
+**Still open:** E627/E542 softening + AHF/HFA promotion
+— decided, NOT implemented: it changes verdicts, so it goes through the citation pipeline
+after the UI ships, not in a rush before a demo · U7 (QA on device, upload build 6).
+
+**Next: U7 — QA on the iPhone 14, then `./scripts/testflight-upload.sh`.**
 
 ## Where we are
 

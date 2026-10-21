@@ -28,6 +28,16 @@ FILES=(
   FILES+=(supabase/migrations/0008_security_hardening.up.sql)
 [ -f supabase/migrations/0009_review_evidence.up.sql ] && \
   FILES+=(supabase/migrations/0009_review_evidence.up.sql)
+[ -f supabase/migrations/0010_campus_cafes.up.sql ] && \
+  FILES+=(supabase/migrations/0010_campus_cafes.up.sql)
+[ -f supabase/migrations/0011_storrs_places.up.sql ] && \
+  FILES+=(supabase/migrations/0011_storrs_places.up.sql)
+[ -f supabase/migrations/0012_review_agent.up.sql ] && \
+  FILES+=(supabase/migrations/0012_review_agent.up.sql)
+[ -f supabase/migrations/0013_review_rate_limit.up.sql ] && \
+  FILES+=(supabase/migrations/0013_review_rate_limit.up.sql)
+[ -f supabase/migrations/0014_review_insert_guard.up.sql ] && \
+  FILES+=(supabase/migrations/0014_review_insert_guard.up.sql)
 
 {
   echo "-- ============================================================================"

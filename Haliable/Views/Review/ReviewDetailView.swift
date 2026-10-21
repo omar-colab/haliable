@@ -54,7 +54,7 @@ struct ReviewDetailView: View {
 
     private var pendingCard: some View {
         HStack(spacing: DSSpacing.sm) {
-            ProgressView()
+            ThinkingOrb(diameter: 40)
             VStack(alignment: .leading, spacing: DSSpacing.xxs / 2) {
                 Text(request.status.displayName)
                     .font(DSFont.headline).foregroundStyle(DSColor.textPrimary)

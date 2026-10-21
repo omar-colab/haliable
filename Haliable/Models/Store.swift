@@ -64,6 +64,10 @@ struct Store: Identifiable, Codable, Hashable {
     let disputeCount: Int
     var distanceM: Double?
     let createdAt: String
+    /// True for places found by Apple Maps search, not the Haliable Atlas. They
+    /// matched "halal" on Apple's side only — nobody here has verified them, so
+    /// they can't be voted on. Not in CodingKeys: never sent to or read from the DB.
+    var isAppleMaps = false
 
     var coordinate: CLLocationCoordinate2D { .init(latitude: lat, longitude: lng) }
 

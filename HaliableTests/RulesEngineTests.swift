@@ -49,6 +49,23 @@ final class RulesEngineTests: XCTestCase {
         )
         XCTAssertEqual(pv.flagged.count, 2)                  // halal lecithin excluded
         XCTAssertEqual(pv.flagged.first?.verdict, .haram)    // worst first
+        XCTAssertEqual(pv.clearedScore, 0)                   // haram → 0, not 1-of-3
+        let doubtful = ProductVerdict(product: pv.product, matched: Array(pv.matched.prefix(2)), overallGrade: .mashboohContested)
+        XCTAssertEqual(doubtful.clearedScore, 50)            // 1 of 2 cleared
+        let empty = ProductVerdict(product: pv.product, matched: [], overallGrade: .halal)
+        XCTAssertEqual(empty.clearedScore, 100)
+    }
+
+    // The History score counts the whole label, so one flagged item in four is 75.
+    func testClearedScoreUsesWholeLabel() {
+        XCTAssertEqual(ProductVerdict.ingredientCount("Flour, sugar, gelatin (beef, pork); water."), 4)
+        XCTAssertEqual(ProductVerdict.ingredientCount("  "), 0)
+        let pv = ProductVerdict(
+            product: Product(id: "1", name: "P", brand: nil,
+                             rawIngredientsText: "flour, sugar, gelatin, water", additivesENumbers: []),
+            matched: [MatchedIngredient(originalText: "gelatin", matchedRule: nil)],
+            overallGrade: .mashboohContested)
+        XCTAssertEqual(pv.clearedScore, 75)
     }
 
     func testQuestionableDisplayName() {
@@ -75,5 +92,48 @@ final class RulesEngineTests: XCTestCase {
         let matched = RulesEngine().evaluate(product: p).matched
         XCTAssertTrue(matched.contains { $0.matchedRule?.id == "lard" })
         XCTAssertEqual(matched.first { $0.matchedRule?.id == "pork" }?.originalText, "smoked ham")
+    }
+
+    // MARK: - Gum (TestFlight feedback, Oct 17)
+
+    /// OFF sub-variant tags collapse to the base code the tables key on, once each.
+    func testENumberSubVariantsNormalizeAndDedupe() {
+        XCTAssertEqual(
+            RulesEngine.normalizedENumbers(["en:e322", "en:e322i", "en:e472e", "en:e150d", "en:e1442", "E471"]),
+            ["E322", "E472", "E150", "E1442", "E471"])
+        XCTAssertEqual(RulesEngine.normalizeENumber("en:e500ii"), "E500")
+        XCTAssertEqual(RulesEngine.normalizeENumber("not-an-e-number"), "NOT-AN-E-NUMBER")
+    }
+
+    /// Extra Spearmint (022000112484), its real Open Food Facts record. Before the
+    /// fix, soy lecithin arrived as E322 AND as an unknown "E322I" (Questionable).
+    /// After: lecithin once, resolved to plant (halal). The product is STILL
+    /// Questionable — glycerol and natural flavors are cited, owner-approved
+    /// contested cells — and that must not change without a citation (rule 3).
+    func testGumLecithinResolvesOnceAndCitedDriversRemain() {
+        let gum = Product(id: "022000112484", name: "Spearmint sugar free gum", brand: "Extra",
+            rawIngredientsText: "Sorbitol, gum base, glycerol, natural and artificial flavors, less than 2% of: hydrogenated starch hydrolysate, aspartame, mannitol, acesulfame k, soy lecithin, bht (to maintain freshness), colors (turmeric, blue 1 lake).",
+            additivesENumbers: ["en:e133", "en:e321", "en:e322", "en:e322i", "en:e420", "en:e421", "en:e422", "en:e950", "en:e951"])
+        let verdict = RulesEngine().evaluate(product: gum, standard: .general)
+
+        XCTAssertFalse(verdict.matched.contains { $0.originalText.uppercased().contains("E322I") })
+        let lecithin = verdict.matched.filter { $0.matchedRule?.id == "lecithin" }
+        XCTAssertEqual(lecithin.count, 1)
+        XCTAssertEqual(lecithin.first?.grade, .halal)
+
+        let ids = Set(verdict.matched.compactMap(\.matchedRule?.id))
+        XCTAssertTrue(ids.contains("glycerin"))
+        XCTAssertTrue(ids.contains("natural-flavors"))
+        XCTAssertEqual(verdict.overallGrade, .mashboohContested)
+    }
+
+    /// Naming an additive (e-numbers.json) is display only: an uncited additive
+    /// still grades Questionable and is never silently Halal.
+    func testNamedButUncitedAdditiveStaysQuestionable() {
+        let p = Product(id: "3", name: "P", brand: nil, rawIngredientsText: "sorbitol",
+                        additivesENumbers: ["en:e420"])
+        let item = RulesEngine().evaluate(product: p).matched.first { $0.originalText.hasPrefix("E420") }
+        XCTAssertEqual(item?.originalText, "E420 (sorbitol)")
+        XCTAssertEqual(item?.verdict, .doubtful)
     }
 }

@@ -41,6 +41,10 @@ enum DSColor {
     static let accentDeep      = Color("AccentDeep")
     /// A quieter accent for backgrounds, fills, and resting states (green-wash).
     static let accentMuted     = Color("AccentMuted")
+    /// The deep end of the brand gradient (#0A7A4C in both modes). Never text —
+    /// `accentDeep` is the text green and turns LIGHT in dark mode, which made
+    /// every accent gradient fade the wrong way.
+    static let accentGradientEnd = Color("AccentGradientEnd")
     /// Text/icon color that sits ON the accent fill (white on light, deep green
     /// on the brighter dark-mode green) so primary buttons stay high-contrast.
     static let onAccent        = Color("OnAccent")
@@ -72,6 +76,9 @@ enum DSSpacing {
     static let xs:  CGFloat = 8
     static let sm:  CGFloat = 12
     static let md:  CGFloat = 16
+    /// Screen-edge gutter — Apple's standard iPhone layout margin. Content at 16
+    /// sat too close to the bezel on device (TestFlight feedback, Oct 20).
+    static let screen: CGFloat = 20
     static let lg:  CGFloat = 24
     static let xl:  CGFloat = 32
     static let xxl: CGFloat = 48

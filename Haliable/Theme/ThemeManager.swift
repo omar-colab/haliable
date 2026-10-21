@@ -65,9 +65,8 @@ final class ThemeManager {
 
     init() {
         let saved = UserDefaults.standard.string(forKey: Self.storageKey)
-        // Default to Dark on first launch — the brand reads best on near-black,
-        // and it matches the dark launch screen so there's no light/dark flip.
-        // Users can still switch to Light or System in Settings.
-        self.theme = AppTheme(rawValue: saved ?? "") ?? .dark
+        // Default follows the phone (Omar, Oct 16). The launch background is
+        // adaptive too, so there's no light/dark flip on first open.
+        self.theme = AppTheme(rawValue: saved ?? "") ?? .system
     }
 }

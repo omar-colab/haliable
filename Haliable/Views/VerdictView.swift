@@ -19,6 +19,7 @@ struct VerdictView: View {
     @State private var live: ProductVerdict
     @State private var showReviewRequest = false
     @State private var showStandardSheet = false
+    @State private var expanded: Set<UUID> = []
 
     init(verdict: ProductVerdict) {
         self.initialVerdict = verdict
@@ -27,114 +28,166 @@ struct VerdictView: View {
 
     var body: some View {
         @Bindable var settings = settings
-        return NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: DSSpacing.md) {
-                    headerSection
-                        .padding(.top)
+        return ScrollView {
+            VStack(alignment: .leading, spacing: DSSpacing.sm) {
+                verdictTop
+                    .padding(.top, DSSpacing.lg)
 
-                    clearedHeader
-                    standardChips
-
-                    // Standing disclosure (Spec §A3) — persistent on every verdict
-                    // surface so "report, don't rule" stays true to the user.
-                    standingDisclosure
-
-                    Text(live.product.name)
-                        .font(DSFont.title)
-                        .foregroundStyle(DSColor.textPrimary)
-                    if let brand = live.product.brand {
-                        Text(brand).font(DSFont.body).foregroundStyle(DSColor.textSecondary)
-                    }
-
-                    Text(live.summary)
-                        .font(DSFont.body)
-                        .foregroundStyle(DSColor.textSecondary)
-                        .id(live.overall)                // crossfade the summary too
+                // A draft driving cell is never shown as an authoritative ruling.
+                if live.overallNeedsReview {
+                    PendingReviewBanner(draftGrade: live.overallGrade)
+                        .id(live.overallGrade)
                         .transition(.opacity)
-
-                    // How this product's certification compares to the active
-                    // standard (renders nothing when there's no cert signal).
-                    CertificationStatusView(product: live.product,
-                                            standard: settings.halalStandard)
-                        .animation(.easeInOut(duration: 0.25), value: settings.halalStandard)
-
-                    Divider()
-
-                    Text("What we flagged")
-                        .font(DSFont.headline)
-                        .foregroundStyle(DSColor.textPrimary)
-
-                    if live.flagged.isEmpty {
-                        EmptyStateView(
-                            symbol: "checkmark.circle",
-                            title: "Nothing flagged",
-                            message: "No prohibited or questionable ingredients matched our verified rules."
-                        )
-                    } else {
-                        ForEach(live.flagged) { item in
-                            flaggedRow(item)
-                        }
-                    }
-
-                    // The bridge to the new photo-review feature: when the
-                    // verdict is anything but a clean halal, let the user ask a human.
-                    if live.overall != .halal {
-                        reviewPrompt
-                    }
                 }
-                .padding()
-                .animation(.easeInOut(duration: 0.3), value: live.overall)
-            }
-            .navigationTitle("Verdict")
-            .onChange(of: settings.halalStandard) { _, newStandard in
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    live = engine.evaluate(product: initialVerdict.product, standard: newStandard)
+
+                standardChips
+
+                CertificationStatusView(product: live.product,
+                                        standard: settings.halalStandard)
+                    .animation(.easeInOut(duration: 0.25), value: settings.halalStandard)
+
+                GuardSection(title: "Flagged",
+                             trailing: live.flagged.isEmpty ? nil : "\(live.flagged.count) of \(live.matched.count) checked")
+                    .padding(.top, DSSpacing.xs)
+
+                if live.flagged.isEmpty {
+                    EmptyStateView(
+                        symbol: "checkmark.circle",
+                        title: "Nothing flagged",
+                        message: "No prohibited or questionable ingredients matched our verified rules."
+                    )
+                } else {
+                    ForEach(live.flagged) { flaggedRow($0) }
                 }
+
+                if live.overall != .halal {
+                    GuardAction(symbol: "pencil.line",
+                                title: "Ask a scholar",
+                                subtitle: "Send the label for a human ruling.") {
+                        showReviewRequest = true
+                    }
+                    .padding(.top, DSSpacing.xxs)
+                }
+
+                // Standing disclosure (Spec §A3) — on every verdict surface.
+                standingDisclosure
+                    .padding(.top, DSSpacing.xs)
             }
-            .sheet(isPresented: $showReviewRequest) {
-                RequestReviewView(prefillName: live.product.name,
-                                  prefillBarcode: live.product.id)
+            .padding(.horizontal, DSSpacing.screen)
+            .padding(.bottom, DSSpacing.xl)
+            .animation(.easeInOut(duration: 0.3), value: live.overall)
+        }
+        .background(DSColor.surface)
+        .presentationDragIndicator(.visible)
+        .presentationCornerRadius(30)
+        .presentationBackground(DSColor.surface)
+        .onChange(of: settings.halalStandard) { _, newStandard in
+            withAnimation(.easeInOut(duration: 0.3)) {
+                live = engine.evaluate(product: initialVerdict.product, standard: newStandard)
             }
-            .sheet(isPresented: $showStandardSheet) {
-                StandardSelectorSheet(
-                    selected: $settings.halalStandard,
-                    onCommit: { _ in settings.hasChosenStandard = true }
-                )
-            }
+        }
+        .sheet(isPresented: $showReviewRequest) {
+            RequestReviewView(prefillName: live.product.name,
+                              prefillBarcode: live.product.id)
+        }
+        .sheet(isPresented: $showStandardSheet) {
+            StandardSelectorSheet(
+                selected: $settings.halalStandard,
+                onCommit: { _ in settings.hasChosenStandard = true }
+            )
         }
     }
 
-    private func flaggedRow(_ item: MatchedIngredient) -> some View {
-        VStack(alignment: .leading, spacing: DSSpacing.xs) {
-            HStack(spacing: DSSpacing.xs) {
-                Text(item.displayName)
-                    .font(DSFont.body.weight(.semibold))
-                    .foregroundStyle(DSColor.textPrimary)
-                if item.needsReview { DraftTag() }
-                Spacer()
-                GradeBadge(grade: item.grade, pendingReview: item.needsReview)
-            }
-            Text(item.explanation)
-                .font(DSFont.body)
-                .foregroundStyle(DSColor.textSecondary)
-
-            // Reported, cited positions (Spec §B). A contested cell carries more
-            // than one — we show BOTH rather than forcing a pick (Spec §A2).
-            if !item.citations.isEmpty {
-                citationsBlock(item)
-            }
-
-            if let source = item.source {
-                Link(destination: URL(string: source.url) ?? URL(string: "https://haliable.netlify.app")!) {
-                    Label("\(source.body) · \(source.title) (\(source.year))",
-                          systemImage: "book.closed")
-                        .font(DSFont.caption)
-                        .foregroundStyle(DSColor.accent)
+    /// Ring, grade, product, and how many of the checked ingredients flagged.
+    private var verdictTop: some View {
+        HStack(spacing: DSSpacing.sm) {
+            FlaggedRing(flagged: live.flagged.count,
+                        checked: live.matched.count,
+                        tint: live.overall.tint,
+                        diameter: 66)
+            VStack(alignment: .leading, spacing: 2) {
+                // A draft driving cell never gets a confident headline (§A3);
+                // the PendingReviewBanner below carries the draft grade.
+                Text(live.overallNeedsReview ? "Pending review" : live.overall.displayName)
+                    .font(.custom("Spectral-Medium", size: 27, relativeTo: .title))
+                    .tracking(-0.6)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .foregroundStyle(live.overallNeedsReview ? DSColor.warning : live.overall.tint)
+                    .id(live.overall)
+                    .transition(.opacity)
+                Text([live.product.name, live.product.brand].compactMap { $0 }.joined(separator: " · "))
+                    .font(.system(size: 13))
+                    .foregroundStyle(DSColor.textSecondary)
+                    .lineLimit(1)
+                Text(live.flagged.isEmpty
+                     ? "Nothing flagged · \(settings.halalStandard.displayName)"
+                     : "\(live.flagged.count) flagged · \(settings.halalStandard.displayName)")
+                    .font(.system(size: 11))
+                    .foregroundStyle(DSColor.textTertiary)
+                if !live.overallNeedsReview {
+                    GradeBadge(grade: live.overallGrade, pendingReview: false)
+                        .id(live.overallGrade)
+                        .transition(.opacity)
+                        .padding(.top, 4)
                 }
             }
+            Spacer(minLength: 0)
         }
-        .cardStyle()
+        .animation(DSMotion.arrive, value: live.overallGrade)
+        .accessibilityElement(children: .combine)
+    }
+
+    /// Who said so, in one line — or the honest "awaiting citation".
+    private func sourceLine(_ item: MatchedIngredient) -> String {
+        let base: String
+        if let c = item.citations.first {
+            base = "\(c.sourceName) · \(c.date.prefix(4))"
+        } else if let src = item.source {
+            base = "\(src.body) · \(src.year)"
+        } else {
+            base = "awaiting citation"
+        }
+        return item.needsReview && !item.citations.isEmpty ? base + " · draft" : base
+    }
+
+    private func flaggedRow(_ item: MatchedIngredient) -> some View {
+        let open = expanded.contains(item.id)
+        return VStack(alignment: .leading, spacing: DSSpacing.xs) {
+            GuardRow(symbol: item.grade.symbolName,
+                     tint: item.grade.tint,
+                     title: item.displayName,
+                     subtitle: sourceLine(item)) {
+                withAnimation(DSMotion.move) {
+                    if open { expanded.remove(item.id) } else { expanded.insert(item.id) }
+                }
+            }
+            if open {
+                VStack(alignment: .leading, spacing: DSSpacing.xs) {
+                    HStack(spacing: DSSpacing.xs) {
+                        GradeBadge(grade: item.grade, pendingReview: item.needsReview)
+                        if item.needsReview { DraftTag() }
+                    }
+                    Text(item.explanation)
+                        .font(.system(size: 13.5))
+                        .foregroundStyle(DSColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if !item.citations.isEmpty { citationsBlock(item) }
+                    if let source = item.source {
+                        Link(destination: URL(string: source.url) ?? URL(string: "https://haliable.netlify.app")!) {
+                            Label("\(source.body) · \(source.title) (\(source.year))",
+                                  systemImage: "book.closed")
+                                .font(DSFont.caption)
+                                .foregroundStyle(DSColor.accent)
+                        }
+                    }
+                }
+                .padding(DSSpacing.sm)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(DSColor.surfaceElevated, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
     }
 
     /// Renders each published, cited position for a cell. For a contested cell
@@ -209,58 +262,6 @@ struct VerdictView: View {
         .accessibilityElement(children: .combine)
     }
 
-    /// The headline verdict. When the driving cell is still a DRAFT
-    /// (`overallNeedsReview`), the confident `GradeBadge` is REPLACED by the
-    /// unmistakable `PendingReviewBanner` — never shown as an authoritative
-    /// ruling. Otherwise the confident badge sits beside the standard pill.
-    @ViewBuilder private var headerSection: some View {
-        if live.overallNeedsReview {
-            HStack(alignment: .center) {
-                Spacer()
-                StandardPill(standard: settings.halalStandard) {
-                    showStandardSheet = true
-                }
-            }
-            PendingReviewBanner(draftGrade: live.overallGrade)
-                .id(live.overallGrade)                  // re-id ⇒ crossfade on change
-                .transition(.opacity)
-        } else {
-            HStack(alignment: .center) {
-                GradeBadge(grade: live.overallGrade, pendingReview: false)
-                    .id(live.overallGrade)              // re-id ⇒ crossfade on change
-                    .transition(.opacity)
-                Spacer()
-                StandardPill(standard: settings.halalStandard) {
-                    showStandardSheet = true
-                }
-            }
-        }
-    }
-
-    /// How much of the label actually cleared. A product with two flags out of
-    /// eighteen ingredients is mostly fine; a bare red badge says otherwise and
-    /// is the less honest of the two.
-    private var clearedHeader: some View {
-        HStack(spacing: DSSpacing.sm) {
-            FlaggedRing(flagged: live.flagged.count,
-                        checked: live.matched.count,
-                        tint: live.overall.tint)
-            VStack(alignment: .leading, spacing: 1) {
-                Text(live.overall.displayName)
-                    .font(DSFont.title)
-                    .foregroundStyle(live.overall.tint)
-                Text(live.flagged.isEmpty
-                     ? "Nothing flagged · \(settings.halalStandard.displayName)"
-                     : "from \(live.matched.count) checked · \(settings.halalStandard.displayName)")
-                    .font(DSFont.caption)
-                    .foregroundStyle(DSColor.textSecondary)
-            }
-            Spacer(minLength: 0)
-        }
-        .animation(DSMotion.arrive, value: live.overallGrade)
-        .accessibilityElement(children: .combine)
-    }
-
     /// All four standards on screen. The whole point of this app is that the
     /// verdict moves with the standard, and that was previously buried behind a
     /// sheet — so it may as well have been invisible.
@@ -283,7 +284,7 @@ struct VerdictView: View {
                         .padding(.vertical, 8)
                         .background(
                             active
-                            ? AnyShapeStyle(LinearGradient(colors: [DSColor.accent, DSColor.accentDeep],
+                            ? AnyShapeStyle(LinearGradient(colors: [DSColor.accent, DSColor.accentGradientEnd],
                                                            startPoint: .topLeading,
                                                            endPoint: .bottomTrailing))
                             : AnyShapeStyle(DSColor.surface),
@@ -297,22 +298,6 @@ struct VerdictView: View {
                 .accessibilityAddTraits(active ? [.isSelected] : [])
             }
         }
-    }
-
-    private var reviewPrompt: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.xs) {
-            Text("Not sure? Ask a human.")
-                .font(DSFont.headline)
-                .foregroundStyle(DSColor.textPrimary)
-            Text("Send us photos of the product and ingredient list for a manual halal review.")
-                .font(DSFont.body)
-                .foregroundStyle(DSColor.textSecondary)
-            PrimaryButton(title: "Request manual review", systemImage: "camera.viewfinder") {
-                showReviewRequest = true
-            }
-            .padding(.top, DSSpacing.xxs)
-        }
-        .padding(.top, DSSpacing.xs)
     }
 }
 

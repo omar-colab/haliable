@@ -27,6 +27,10 @@ import Auth
 final class AuthManager {
     private(set) var userID: String?
     private(set) var email: String?
+    /// First name for the Home welcome row. Apple sends it only on the FIRST
+    /// sign-in, so it's kept locally; nothing else uses it.
+    private(set) var givenName: String? = UserDefaults.standard.string(forKey: AuthManager.givenNameKey)
+    private static let givenNameKey = "apple_given_name"
     var isSignedIn: Bool { userID != nil }
 
     /// Raw nonce kept between request and completion (Apple hashes it; Supabase
@@ -62,6 +66,10 @@ final class AuthManager {
             // revoke) the Apple refresh token, as required on account deletion.
             let authCode = credential.authorizationCode.flatMap { String(data: $0, encoding: .utf8) }
             if let appleEmail = credential.email { self.email = appleEmail }
+            if let first = credential.fullName?.givenName, !first.isEmpty {
+                givenName = first
+                UserDefaults.standard.set(first, forKey: Self.givenNameKey)
+            }
             try await exchange(idToken: idToken, nonce: currentNonce, authCode: authCode)
         }
     }
@@ -69,6 +77,8 @@ final class AuthManager {
     func signOut() {
         userID = nil
         email = nil
+        givenName = nil
+        UserDefaults.standard.removeObject(forKey: Self.givenNameKey)
         #if canImport(Supabase)
         Task { try? await SupabaseManager.shared?.auth.signOut() }
         #endif

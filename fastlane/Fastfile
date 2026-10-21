@@ -8,10 +8,12 @@ platform :ios do
   desc "Generate App Store screenshots (6.9\" iPhone) via the self-contained UITest"
   lane :screenshots do
     # Self-contained (no `snapshot init` needed). Captures to screens.xcresult,
-    # then exports PNGs to ./fastlane/screenshots.
+    # then exports PNGs to ./fastlane/screenshots. No parallel clones: a clone
+    # drops `simctl privacy grant camera`, so the camera prompt lands in the shot.
     sh("cd .. && xcodebuild test -scheme Haliable " \
        "-destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' " \
        "-only-testing:HaliableUITests/ScreenshotUITests " \
+       "-parallel-testing-enabled NO " \
        "-resultBundlePath fastlane/screens.xcresult CODE_SIGNING_ALLOWED=NO")
     sh("cd .. && rm -rf fastlane/screenshots && " \
        "xcrun xcresulttool export attachments " \

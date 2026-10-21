@@ -29,6 +29,35 @@ struct ProductVerdict: Identifiable, Hashable {
             .sorted { $0.verdict.severity > $1.verdict.severity }
     }
 
+    /// 0–100: share of the label's ingredients that are NOT flagged. Shown in
+    /// History's ring. A haram product scores 0 — one haram ingredient in twenty
+    /// is not "95% fine" (worst-case stance, Omar 2026-10-21).
+    var clearedScore: Int {
+        let total = max(Self.ingredientCount(product.rawIngredientsText ?? ""), matched.count)
+        // Worst case: one haram ingredient makes the whole product 0, not 95.
+        if overallGrade == .haram { return 0 }
+        guard total > 0 else { return 100 }
+        return Int((Double(total - flagged.count) / Double(total) * 100).rounded())
+    }
+
+    /// Top-level comma/semicolon items: "sugar, gelatin (beef, pork), salt" is 3.
+    static func ingredientCount(_ text: String) -> Int {
+        var depth = 0, count = 0, hasText = false
+        for ch in text {
+            switch ch {
+            case "(", "[": depth += 1
+            case ")", "]": depth = max(0, depth - 1)
+            case "," where depth == 0, ";" where depth == 0:
+                if hasText { count += 1 }
+                hasText = false
+                continue
+            default: break
+            }
+            if !ch.isWhitespace && ch != "." { hasText = true }
+        }
+        return count + (hasText ? 1 : 0)
+    }
+
     /// True when the grade driving the headline verdict is still a DRAFT cell
     /// (`needsReview`). Phase 4: the verdict screen reads this to swap the
     /// confident badge for an unmistakable "pending scholar review" treatment so

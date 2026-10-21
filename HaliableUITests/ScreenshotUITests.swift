@@ -26,25 +26,41 @@ final class ScreenshotUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        capture(app, name: "01-Scan")
+        let home = app.buttons["dock.main"]
+        guard home.waitForExistence(timeout: 8) else { return }
+        capture(app, name: "01-Home")
 
-        let tabs = app.tabBars.buttons
-        guard tabs.count >= 4 else { return }
-        tabs.element(boundBy: 1).tap()
+        app.buttons["dock.find"].tap()
         dismissLocationAlert()
         capture(app, name: "02-Find")
-        tabs.element(boundBy: 2).tap(); capture(app, name: "03-Reviews")
-        tabs.element(boundBy: 3).tap(); capture(app, name: "04-History")
-        if tabs.count >= 5 {
-            tabs.element(boundBy: 4).tap(); capture(app, name: "05-About")
-        }
+        app.buttons["dock.reviews"].tap(); capture(app, name: "03-Reviews")
+        app.buttons["dock.history"].tap(); capture(app, name: "04-History")
+        app.buttons["dock.about"].tap(); capture(app, name: "05-About")
 
-        // Verdict LAST, deliberately. It opens a sheet that has no close button and is
-        // dismissed by dragging, which is flaky — when the drag misses, every capture
-        // after it is the same stuck sheet. Doing it last means a miss costs this one
-        // shot instead of silently corrupting the whole set.
-        tabs.element(boundBy: 0).tap()
+        // Verdict LAST, deliberately. It opens a sheet that is dismissed by dragging,
+        // which is flaky — when the drag misses, every capture after it is the same
+        // stuck sheet. Doing it last means a miss costs this one shot.
+        home.tap()
         captureVerdict(app)
+    }
+
+    /// The standards picker on its own launch, so a missed sheet dismissal can't
+    /// spoil the main set.
+    func testCaptureStandardsPicker() {
+        let app = XCUIApplication()
+        app.launch()
+        let pill = app.buttons["Halal standard: General Halal"]
+        guard pill.waitForExistence(timeout: 8) else { return }
+        // History again: by now the main run has saved a verdict, so the row and its
+        // score ring are in frame (the main run's History shot comes before any scan).
+        app.buttons["dock.history"].tap()
+        Thread.sleep(forTimeInterval: 1.5)
+        capture(app, name: "04b-History")
+        app.buttons["dock.main"].tap()
+        guard pill.waitForExistence(timeout: 5) else { return }
+        pill.tap()
+        Thread.sleep(forTimeInterval: 1.2)
+        capture(app, name: "06-Standards")
     }
 
     /// A verdict is the app's whole point, so it belongs in the shot list. The camera
@@ -52,6 +68,12 @@ final class ScreenshotUITests: XCTestCase {
     /// live (OpenFoodFacts/USDA), so this is best-effort: with no network the scan screen
     /// shows an error card and we capture that rather than failing the suite.
     private func captureVerdict(_ app: XCUIApplication) {
+        let start = app.buttons["home.startScan"]
+        guard start.waitForExistence(timeout: 5) else { return }
+        start.tap()
+        Thread.sleep(forTimeInterval: 1.2)
+        capture(app, name: "01c-Scanning")
+
         let reveal = app.buttons["Enter barcode manually"]
         guard reveal.waitForExistence(timeout: 5) else { return }
         reveal.tap()
@@ -64,16 +86,8 @@ final class ScreenshotUITests: XCTestCase {
 
         // The verdict arrives as a sheet; wait for it, then let the reveal animate.
         _ = app.scrollViews.firstMatch.waitForExistence(timeout: 20)
-        Thread.sleep(forTimeInterval: 2)
+        Thread.sleep(forTimeInterval: 2.5)
         capture(app, name: "01b-Verdict")
-
-        // The verdict sheet has no close button by design — it's dismissed by dragging it
-        // down. Without this the sheet stays up and every later capture is the same frame.
-        let window = app.windows.firstMatch
-        window.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.12))
-            .press(forDuration: 0.1,
-                   thenDragTo: window.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.95)))
-        Thread.sleep(forTimeInterval: 1.5)
     }
 
     /// The Find tab triggers the system location prompt on first launch; it would

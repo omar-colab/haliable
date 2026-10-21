@@ -15,6 +15,7 @@
 
 import Foundation
 import CoreLocation
+import MapKit
 import Observation
 #if canImport(Supabase)
 import Supabase
@@ -24,6 +25,8 @@ import Auth   // Swift 6 MemberImportVisibility: Auth types are no longer re-exp
 @Observable
 final class StoreService {
     private(set) var stores: [Store] = []
+    /// Apple Maps "halal" results for wherever the map is pointed (see searchAppleMaps).
+    private(set) var appleStores: [Store] = []
     private(set) var isLoading = false
     var lastError: String?
 
@@ -62,11 +65,13 @@ final class StoreService {
                     .rpc(SupabaseConfig.nearbyStoresRPC, params: params)
                     .execute()
                     .value
+                guard !Task.isCancelled else { return }   // a newer pan owns the map now
                 stores = rows
                 return
             } catch {
+                // keep the last good pins on screen; an outage shouldn't empty the map
+                guard !Task.isCancelled else { return }
                 lastError = "Couldn't reach the store map. Check your connection and try again."
-                stores = []
                 return
             }
         }
@@ -75,6 +80,41 @@ final class StoreService {
         // Not live (no package / no secrets): nothing real to show.
         lastError = "The store map isn't connected yet."
         stores = []
+    }
+
+    /// Reload everything for the area on screen: verified Atlas places first (so the
+    /// Apple Maps dedupe sees them), then Apple Maps. Distances stay measured from
+    /// the user, not from wherever the map was panned to.
+    func loadVisible(_ region: MKCoordinateRegion, user: CLLocationCoordinate2D?) async {
+        let halfSpanKm = max(region.span.latitudeDelta, region.span.longitudeDelta) * 111 / 2
+        await loadNearby(center: region.center, radiusKm: min(max(halfSpanKm, 1), 50))
+        guard !Task.isCancelled else { return }
+        if let user {
+            let here = CLLocation(latitude: user.latitude, longitude: user.longitude)
+            for i in stores.indices {
+                stores[i].distanceM = CLLocation(latitude: stores[i].lat, longitude: stores[i].lng).distance(from: here)
+            }
+        }
+        await searchAppleMaps(in: region, from: user)
+    }
+
+    /// Fill the map beyond the Atlas: ask Apple Maps for "halal" around `region`.
+    /// Results come back `.unverified` and flagged `isAppleMaps`; any within 80 m of
+    /// an Atlas place is dropped so the verified entry wins.
+    func searchAppleMaps(in region: MKCoordinateRegion, from user: CLLocationCoordinate2D?) async {
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = "halal"
+        request.region = region
+        request.resultTypes = .pointOfInterest
+        guard let items = try? await MKLocalSearch(request: request).start().mapItems,
+              !Task.isCancelled else { return }
+        let origin = user ?? region.center
+        let here = CLLocation(latitude: origin.latitude, longitude: origin.longitude)
+        appleStores = items.compactMap { Store(appleMapItem: $0, from: here) }
+            .filter { a in
+                let pa = CLLocation(latitude: a.lat, longitude: a.lng)
+                return !stores.contains { CLLocation(latitude: $0.lat, longitude: $0.lng).distance(from: pa) < 80 }
+            }
     }
 
     /// Submit a community store. Validates client-side, then (when live) calls the
@@ -293,3 +333,27 @@ private struct VoteParams: Encodable {
     let in_vote: String
 }
 #endif
+
+extension Store {
+    /// An Apple Maps result. Kept only when the place's own name says "halal" or
+    /// "zabiha": Apple's search matches reviews and menus too, so a category alone
+    /// would pin any restaurant that once mentioned the word.
+    init?(appleMapItem item: MKMapItem, from here: CLLocation) {
+        let food: [MKPointOfInterestCategory: StoreCategory] = [
+            .restaurant: .restaurant, .cafe: .cafe, .bakery: .bakery,
+            .foodMarket: .grocery, .store: .grocery,
+        ]
+        let name = item.name ?? ""
+        let category = item.pointOfInterestCategory.flatMap { food[$0] }
+        let lower = name.lowercased()
+        guard lower.contains("halal") || lower.contains("zabiha") else { return nil }
+        let p = item.placemark
+        let loc = CLLocation(latitude: p.coordinate.latitude, longitude: p.coordinate.longitude)
+        self.init(id: UUID(), name: name, category: category ?? .other, halalScope: .unverified,
+                  address: [p.subThoroughfare, p.thoroughfare].compactMap { $0 }.joined(separator: " "),
+                  city: p.locality ?? "", state: p.administrativeArea ?? "", zip: p.postalCode ?? "",
+                  lat: loc.coordinate.latitude, lng: loc.coordinate.longitude,
+                  certifications: [], status: .pending, confirmCount: 0, disputeCount: 0,
+                  distanceM: loc.distance(from: here), createdAt: "", isAppleMaps: true)
+    }
+}
