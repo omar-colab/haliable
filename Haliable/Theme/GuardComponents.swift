@@ -25,6 +25,29 @@ enum DSMotion {
     static let sheet  = Animation.spring(response: 0.3, dampingFraction: 0.8)
 }
 
+/// Fades and lifts a block into place the first time it appears, `delay` after
+/// its siblings, so a screen assembles top to bottom instead of popping in.
+/// Reduce Motion: shows at once.
+struct RevealOnAppear: ViewModifier {
+    var delay: Double
+    @State private var shown = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func body(content: Content) -> some View {
+        content
+            .opacity(shown || reduceMotion ? 1 : 0)
+            .offset(y: shown || reduceMotion ? 0 : 14)
+            .onAppear {
+                guard !shown else { return }
+                withAnimation(DSMotion.arrive.delay(delay)) { shown = true }
+            }
+    }
+}
+
+extension View {
+    func reveal(_ delay: Double = 0) -> some View { modifier(RevealOnAppear(delay: delay)) }
+}
+
 /// Responds on press-DOWN, not on release. Waiting for touch-up is the single
 /// thing that makes an interface feel dead.
 struct PressableStyle: ButtonStyle {
@@ -144,12 +167,16 @@ struct GuardRow: View {
     var showsArrow: Bool = true
     /// 0–100 score; when set, a ring replaces the symbol (History rows).
     var score: Int? = nil
+    /// Something is still working on this row (a scholar review): the thinking orb replaces the symbol.
+    var thinking = false
     var action: (() -> Void)? = nil
 
     var body: some View {
         let content = HStack(spacing: DSSpacing.sm) {
             if let score {
                 ScoreRing(score: score, tint: tint)
+            } else if thinking {
+                ThinkingOrb(diameter: 42)
             } else {
                 Image(systemName: symbol)
                     .font(.system(size: 17, weight: .medium))
@@ -358,13 +385,30 @@ struct GuardOrbs: View {
 /// which is what a scanner does.
 struct RingEmblem: View {
     var rings: Int = 9
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
+        TimelineView(.animation(minimumInterval: 1 / 30, paused: reduceMotion)) { timeline in
+            // a slow sonar pulse travels outward through the rings every ~3 s
+            let wave = reduceMotion ? -1 : (timeline.date.timeIntervalSinceReferenceDate / 3)
+                .truncatingRemainder(dividingBy: 1) * Double(rings + 3) - 1
+            emblem(wave: wave)
+        }
+        .frame(height: 86)
+        .clipped()
+        .accessibilityHidden(true)
+    }
+
+    private func emblem(wave: Double) -> some View {
         ZStack {
             ForEach(0..<rings, id: \.self) { i in
                 let step = CGFloat(i + 1)
+                let glow = max(0, 1 - abs(Double(i) - wave))
                 RoundedRectangle(cornerRadius: (46 + step * 10) / 2, style: .continuous)
                     .strokeBorder(DSColor.outlineStrong.opacity(0.85 - Double(i) / Double(rings + 1)),
                                   lineWidth: 1)
+                    .overlay(RoundedRectangle(cornerRadius: (46 + step * 10) / 2, style: .continuous)
+                        .strokeBorder(DSColor.accent.opacity(0.55 * glow), lineWidth: 1.2))
                     .frame(width: 92 + step * 32, height: 46 + step * 10)
             }
             Image("HMark")
@@ -374,9 +418,6 @@ struct RingEmblem: View {
                 .background(DSColor.surface, in: Capsule())
                 .overlay(Capsule().strokeBorder(DSColor.outlineStrong, lineWidth: 1))
         }
-        .frame(height: 86)
-        .clipped()
-        .accessibilityHidden(true)
     }
 }
 

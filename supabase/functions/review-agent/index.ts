@@ -35,17 +35,31 @@ You REPORT what published sources say; you never rule on your own authority.
 5. Origin matters: gelatin, enzymes, glycerin, mono/diglycerides, natural flavors
    of unstated origin are "unresolved", not halal. If sources disagree, cite
    both and follow the stricter. Unsure → "unresolved".
+6. "graded" lists EVERY ingredient you read with its grade. The app takes the
+   worst grade as the product's verdict, so never leave out a doubtful one.
 
 Reply with the JSON object only.`;
 
 const SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["verdict", "ingredients_read", "concern", "summary", "sources"],
+  required: ["verdict", "ingredients_read", "concern", "summary", "sources", "graded"],
   properties: {
     verdict: { type: "string", enum: ["halal", "doubtful", "haram", "unresolved"] },
     ingredients_read: { type: "string", description: "Ingredients as read from the label" },
     concern: { type: "string", description: "The deciding ingredient(s), or 'none'" },
+    graded: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["ingredient", "grade"],
+        properties: {
+          ingredient: { type: "string" },
+          grade: { type: "string", enum: ["halal", "doubtful", "haram", "unresolved"] },
+        },
+      },
+    },
     summary: { type: "string", description: "2-3 sentences a user can read: what the sources say and why" },
     sources: {
       type: "array",

@@ -16,6 +16,14 @@ Deno.test("no verified tier-1/2 source → doubtful, never halal", () => {
   eq(settle({ ...base, verdict: "unresolved", sources: [] }).verdict, "doubtful");
 });
 
+Deno.test("verdict is the worst ingredient, not the model's headline", () => {
+  const src = [{ name: "x", url: "u", tier: 1, quote: "q", verified: true }];
+  const base = { ingredients_read: "", concern: "", summary: "", sources: src };
+  eq(settle({ ...base, verdict: "halal", graded: [{ ingredient: "sugar", grade: "halal" }, { ingredient: "pork gelatin", grade: "haram" }] }).verdict, "haram");
+  eq(settle({ ...base, verdict: "halal", graded: [{ ingredient: "natural flavors", grade: "unresolved" }] }).verdict, "doubtful");
+  eq(settle({ ...base, verdict: "halal", graded: [{ ingredient: "sugar", grade: "halal" }] }).verdict, "halal");
+});
+
 Deno.test("agent only fetches public web pages", async () => {
   const { isPublicUrl } = await import("./verdict.ts");
   eq(isPublicUrl("https://www.ifanca.org/gelatin"), true);

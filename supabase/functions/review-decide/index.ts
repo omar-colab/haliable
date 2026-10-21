@@ -34,11 +34,14 @@ Deno.serve(async (r) => {
 
   const draft = row.draft ?? {};
   if (!draft.final) return page("No draft to approve (the agent failed).", 409);
-  const best = (draft.sources ?? []).find((s: { verified?: boolean }) => s.verified);
+  // Only machine-verified quotes ever reach a user; none verified → nothing to publish.
+  const verified = (draft.sources ?? []).filter((s: { verified?: boolean }) => s.verified);
+  if (!verified.length) return page("No verified source — answer this one by hand.", 409);
+  const best = verified[0];
   const reason = [draft.summary, best && `Source: ${best.name} — “${best.quote}” ${best.url}`].filter(Boolean).join("\n\n");
   const { error } = await db.from("review_requests").update({
     status: "completed", verdict: draft.final, verdict_reason: reason,
-    evidence: draft.sources, reviewed_at: new Date().toISOString(),
+    evidence: verified, reviewed_at: new Date().toISOString(),
   }).eq("id", id);
   if (error) return page(`Couldn't publish: ${error.message}`, 500);
   await db.from("review_agent_drafts").update({ status: "approved", updated_at: new Date().toISOString() }).eq("request_id", id);

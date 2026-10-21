@@ -8,7 +8,18 @@ export type Draft = {
   concern: string;
   summary: string;
   sources: Source[];
+  /** Every label ingredient the agent graded. The overall verdict is the worst of these. */
+  graded?: { ingredient: string; grade: Grade | "unresolved" }[];
 };
+
+const RANK = { halal: 0, doubtful: 1, unresolved: 1, haram: 2 } as const;
+
+/** CLAUDE.md rule 4: the product is the WORST of its ingredients, whatever the
+ *  model wrote as its headline. "unresolved" counts as doubtful. */
+export function worstGrade(d: Draft): Grade | "unresolved" {
+  return [d.verdict, ...(d.graded ?? []).map((g) => g.grade)]
+    .reduce((a, b) => (RANK[b] > RANK[a] ? b : a));
+}
 
 const norm = (s: string) =>
   s.toLowerCase()
@@ -31,9 +42,11 @@ export function quoteOnPage(quote: string, html: string): boolean {
  *  Anything else is "doubtful" — silence is never permission. */
 export function settle(d: Draft): { verdict: Grade; note?: string } {
   const backed = d.sources.some((s) => s.verified && (s.tier === 1 || s.tier === 2));
-  if (d.verdict === "unresolved") return { verdict: "doubtful", note: "Agent could not resolve it." };
-  if (!backed) return { verdict: "doubtful", note: `Agent said ${d.verdict}, but no tier-1/2 quote was found on its page.` };
-  return { verdict: d.verdict };
+  const worst = worstGrade(d);
+  if (worst === "unresolved") return { verdict: "doubtful", note: "Agent could not resolve it." };
+  if (!backed) return { verdict: "doubtful", note: `Agent said ${worst}, but no tier-1/2 quote was found on its page.` };
+  const note = worst !== d.verdict ? `Agent's headline was ${d.verdict}; worst ingredient grade is ${worst}.` : undefined;
+  return { verdict: worst, note };
 }
 
 /** SSRF guard: the agent fetches URLs a model chose (and a user's notes can

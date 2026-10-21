@@ -48,13 +48,16 @@ struct HomeView: View {
                         Spacer(minLength: 0)
                     }
                     .padding(.top, DSSpacing.sm)
+                    .reveal()
 
                     RingEmblem()
                         .padding(.top, DSSpacing.xs)
+                        .reveal(0.05)
 
                     headline
                         .padding(.top, DSSpacing.xxs)
                         .padding(.bottom, DSSpacing.md)
+                        .reveal(0.1)
 
                     GuardAction(symbol: "barcode.viewfinder",
                                 title: "Start a halal scan",
@@ -62,9 +65,11 @@ struct HomeView: View {
                         onScan(nil)
                     }
                     .accessibilityIdentifier("home.startScan")
+                    .reveal(0.15)
 
                     attention
                         .padding(.top, DSSpacing.md)
+                        .reveal(0.22)
                 }
                 .padding(.horizontal, DSSpacing.screen)
                 .padding(.top, DSSpacing.xs)
@@ -115,6 +120,7 @@ struct HomeView: View {
                              tint: DSColor.textPrimary,
                              title: awaitingCount == 1 ? "1 awaiting a scholar" : "\(awaitingCount) awaiting a scholar",
                              subtitle: "Review requests in progress",
+                             thinking: true,
                              action: onSeeReviews)
                 }
             }
@@ -128,7 +134,8 @@ struct HomeView: View {
                      tint: DSColor.accent,
                      title: "Nothing needs you yet",
                      subtitle: "Scans that aren't clearly halal show up here.",
-                     showsArrow: false)
+                     showsArrow: false,
+                     thinking: true)
         }
     }
 

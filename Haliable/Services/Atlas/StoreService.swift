@@ -65,11 +65,13 @@ final class StoreService {
                     .rpc(SupabaseConfig.nearbyStoresRPC, params: params)
                     .execute()
                     .value
+                guard !Task.isCancelled else { return }   // a newer pan owns the map now
                 stores = rows
                 return
             } catch {
+                // keep the last good pins on screen; an outage shouldn't empty the map
+                guard !Task.isCancelled else { return }
                 lastError = "Couldn't reach the store map. Check your connection and try again."
-                stores = []
                 return
             }
         }
@@ -333,8 +335,9 @@ private struct VoteParams: Encodable {
 #endif
 
 extension Store {
-    /// An Apple Maps result. Kept only when it's food-related or literally named
-    /// "halal" — a gas station matching the word is noise, not a place to eat.
+    /// An Apple Maps result. Kept only when the place's own name says "halal" or
+    /// "zabiha": Apple's search matches reviews and menus too, so a category alone
+    /// would pin any restaurant that once mentioned the word.
     init?(appleMapItem item: MKMapItem, from here: CLLocation) {
         let food: [MKPointOfInterestCategory: StoreCategory] = [
             .restaurant: .restaurant, .cafe: .cafe, .bakery: .bakery,
@@ -342,7 +345,8 @@ extension Store {
         ]
         let name = item.name ?? ""
         let category = item.pointOfInterestCategory.flatMap { food[$0] }
-        guard !name.isEmpty, category != nil || name.lowercased().contains("halal") else { return nil }
+        let lower = name.lowercased()
+        guard lower.contains("halal") || lower.contains("zabiha") else { return nil }
         let p = item.placemark
         let loc = CLLocation(latitude: p.coordinate.latitude, longitude: p.coordinate.longitude)
         self.init(id: UUID(), name: name, category: category ?? .other, halalScope: .unverified,
