@@ -30,10 +30,12 @@ struct ProductVerdict: Identifiable, Hashable {
     }
 
     /// 0–100: share of the label's ingredients that are NOT flagged. Shown in
-    /// History's ring. It never replaces the worst-case verdict — the ring is
-    /// tinted by that verdict, so one haram ingredient in twenty is still red.
+    /// History's ring. A haram product scores 0 — one haram ingredient in twenty
+    /// is not "95% fine" (worst-case stance, Omar 2026-10-21).
     var clearedScore: Int {
         let total = max(Self.ingredientCount(product.rawIngredientsText ?? ""), matched.count)
+        // Worst case: one haram ingredient makes the whole product 0, not 95.
+        if overallGrade == .haram { return 0 }
         guard total > 0 else { return 100 }
         return Int((Double(total - flagged.count) / Double(total) * 100).rounded())
     }

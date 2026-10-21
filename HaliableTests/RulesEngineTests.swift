@@ -49,7 +49,9 @@ final class RulesEngineTests: XCTestCase {
         )
         XCTAssertEqual(pv.flagged.count, 2)                  // halal lecithin excluded
         XCTAssertEqual(pv.flagged.first?.verdict, .haram)    // worst first
-        XCTAssertEqual(pv.clearedScore, 33)                  // 1 of 3 cleared
+        XCTAssertEqual(pv.clearedScore, 0)                   // haram → 0, not 1-of-3
+        let doubtful = ProductVerdict(product: pv.product, matched: Array(pv.matched.prefix(2)), overallGrade: .mashboohContested)
+        XCTAssertEqual(doubtful.clearedScore, 50)            // 1 of 2 cleared
         let empty = ProductVerdict(product: pv.product, matched: [], overallGrade: .halal)
         XCTAssertEqual(empty.clearedScore, 100)
     }
