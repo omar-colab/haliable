@@ -6,10 +6,13 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 
 ## ▶️ RESUME HERE (Oct 20, evening)
 
-**Build 8 is on TestFlight ("Me" group). Build 9 NOT uploaded — Omar says when.**
+**Build 10 is live on TestFlight ("Me" group, Oct 20 10:12 PM) — it is the planned "build 9";
+testflight-upload.sh bumps the number itself, never pre-bump.** Next: Supabase "security
+vulnerabilities" email (Oct 20) is unread — check the Security Advisor first.
+Full handoff in Notion: "Handoff — Oct 20–21, 2026 (build 10 on TestFlight)".
 SIWA confirmed working on Omar's iPhone. Migration **0011 applied live** (11 approved places).
 
-### Done after build 8 (in code, ships in build 9)
+### Done after build 8 (live in build 10)
 - History: rescanning a barcode replaces its row (no duplicates); score = whole-label share cleared.
 - Map: follows the phone's location; every pan reloads verified Atlas places for the visible
   area (`StoreService.loadVisible`, radius = half the span, 1–50 km; distances stay from the
