@@ -284,22 +284,31 @@ struct ScoreRing: View {
     let score: Int
     let tint: Color
     var diameter: CGFloat = 42
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// Starts at 0 and springs to `score` on appear: the ring draws in, the number counts up.
+    @State private var shown = 0
 
     var body: some View {
         ZStack {
             Circle().fill(tint.opacity(0.14))
             Circle().strokeBorder(DSColor.outline, lineWidth: 3.5)
             Circle()
-                .trim(from: 0, to: Double(min(max(score, 0), 100)) / 100)
+                .trim(from: 0, to: Double(min(max(shown, 0), 100)) / 100)
                 .stroke(tint, style: StrokeStyle(lineWidth: 3.5, lineCap: .round))
                 .rotationEffect(.degrees(-90))
                 .padding(1.75)
-            Text("\(score)")
+            Text("\(shown)")
                 .font(.system(size: 13, weight: .semibold))
                 .monospacedDigit()
+                .contentTransition(.numericText(value: Double(shown)))
                 .foregroundStyle(DSColor.textPrimary)
         }
         .frame(width: diameter, height: diameter)
+        .onAppear {
+            guard !reduceMotion else { shown = score; return }
+            withAnimation(.spring(response: 0.9, dampingFraction: 0.9).delay(0.1)) { shown = score }
+        }
+        .onChange(of: score) { shown = score }
         .accessibilityElement()
         .accessibilityLabel("Score \(score) out of 100")
     }

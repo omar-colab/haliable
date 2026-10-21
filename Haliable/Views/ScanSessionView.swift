@@ -59,7 +59,7 @@ struct ScanSessionView: View {
             .padding(.bottom, DSSpacing.xs)
 
             if warming && !cameraUnavailable && initialBarcode == nil { statusOverlay("Starting camera…") }
-            if isLoading { statusOverlay("Checking ingredients…") }
+            if isLoading { statusOverlay("Reading barcode…", "Checking ingredients…", "Matching scholarly rulings…") }
         }
         .animation(DSMotion.move, value: showManualEntry)
         .animation(DSMotion.move, value: errorMessage)
@@ -214,17 +214,12 @@ struct ScanSessionView: View {
         .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).strokeBorder(DSColor.danger.opacity(0.4), lineWidth: 1))
     }
 
-    private func statusOverlay(_ text: String) -> some View {
+    private func statusOverlay(_ lines: String...) -> some View {
         ZStack {
             DSColor.background.opacity(0.88).ignoresSafeArea()
             VStack(spacing: DSSpacing.sm) {
-                Image("HMark")
-                    .renderingMode(.template)
-                    .resizable().scaledToFit()
-                    .frame(width: 48, height: 48)
-                    .foregroundStyle(DSColor.accent)
-                    .shadow(color: DSColor.accent.opacity(0.45), radius: 18)
-                Text(text)
+                ScanOrb()
+                CyclingStatus(lines: lines)
                     .font(DSFont.headline)
                     .foregroundStyle(DSColor.textPrimary)
             }

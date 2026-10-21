@@ -87,10 +87,10 @@ struct AtlasV2: View {
             }
         }
         .mapStyle(.standard(pointsOfInterest: .excludingAll))
-        // Wherever the map is pointed, fill it with Apple Maps halal results.
+        // Wherever the map is pointed, load verified places and Apple Maps results there.
         .onMapCameraChange(frequency: .onEnd) { ctx in
             appleSearch?.cancel()
-            appleSearch = Task { await stores.searchAppleMaps(in: ctx.region, from: location.coordinate) }
+            appleSearch = Task { await stores.loadVisible(ctx.region, user: location.coordinate) }
         }
     }
 

@@ -1,10 +1,34 @@
 # HANDOFF — Haliable → TestFlight
 
-Last updated: **Oct 20, 2026** · **Builds 4 and 5 are on TestFlight** ·
+Last updated: **Oct 20, 2026 (evening)** · **Build 8 is on TestFlight** ·
 site live · review agent built · **136 tests green**
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 
-## ▶️ RESUME HERE (Oct 20, afternoon)
+## ▶️ RESUME HERE (Oct 20, evening)
+
+**Build 8 is on TestFlight ("Me" group). Build 9 NOT uploaded — Omar says when.**
+SIWA confirmed working on Omar's iPhone. Migration **0011 applied live** (11 approved places).
+
+### Done after build 8 (in code, ships in build 9)
+- History: rescanning a barcode replaces its row (no duplicates); score = whole-label share cleared.
+- Map: follows the phone's location; every pan reloads verified Atlas places for the visible
+  area (`StoreService.loadVisible`, radius = half the span, 1–50 km; distances stay from the
+  user) + Apple Maps "halal" POIs as grey "not verified" pins (80 m dedupe vs Atlas).
+- Security pass (reel checklist): SSRF guard on the agent's fetches, 5 review requests/day
+  (0013, live). Rest was already fine.
+- About: "Haliable Pro — coming soon, $10/mo" teaser + waitlist link. Nothing charges.
+- Scan loader: `ScanOrb` (Canvas dot-sphere, gold scan band, cycling status). Native, no
+  package (Orbs library reel). Score ring draws in + counts up (UI-libraries post: all React,
+  only ideas borrowed).
+
+### Decisions made while Omar was away
+- Kathmandu Kitchen / Husky Pizza / Gansett Wraps / Spice Venue still OFF the map: no halal
+  claim from the operator itself (only menu copies, delivery-app categories, student press).
+- Screenshot UI test hangs the full suite; ran `-only-testing:HaliableTests` (green).
+- The repo lives in iCloud-synced ~/Desktop; iCloud evicted .git files while offline and git
+  hung. Suggested moving to ~/Developer/Haliable — Omar to decide.
+
+## Earlier resume point (Oct 20, afternoon)
 
 ### Done Oct 20 (branch `fix/testflight-feedback`)
 - Oct 17 work reviewed + committed (132 pass / 4 env-gated skips, Release OK).

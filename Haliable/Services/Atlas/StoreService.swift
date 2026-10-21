@@ -80,6 +80,22 @@ final class StoreService {
         stores = []
     }
 
+    /// Reload everything for the area on screen: verified Atlas places first (so the
+    /// Apple Maps dedupe sees them), then Apple Maps. Distances stay measured from
+    /// the user, not from wherever the map was panned to.
+    func loadVisible(_ region: MKCoordinateRegion, user: CLLocationCoordinate2D?) async {
+        let halfSpanKm = max(region.span.latitudeDelta, region.span.longitudeDelta) * 111 / 2
+        await loadNearby(center: region.center, radiusKm: min(max(halfSpanKm, 1), 50))
+        guard !Task.isCancelled else { return }
+        if let user {
+            let here = CLLocation(latitude: user.latitude, longitude: user.longitude)
+            for i in stores.indices {
+                stores[i].distanceM = CLLocation(latitude: stores[i].lat, longitude: stores[i].lng).distance(from: here)
+            }
+        }
+        await searchAppleMaps(in: region, from: user)
+    }
+
     /// Fill the map beyond the Atlas: ask Apple Maps for "halal" around `region`.
     /// Results come back `.unverified` and flagged `isAppleMaps`; any within 80 m of
     /// an Atlas place is dropped so the verified entry wins.
