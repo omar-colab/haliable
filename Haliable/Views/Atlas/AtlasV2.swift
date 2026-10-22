@@ -23,6 +23,10 @@ struct AtlasV2: View {
     @State private var listOpen = false
     /// What the map is showing right now (nil until the first camera settle).
     @State private var region: MKCoordinateRegion?
+    /// Places too close together to split by zooming (one building) — pick from a list.
+    @State private var stacked: [Store] = []
+    /// Centre on the person once, at the first GPS fix; after that the map stays where they put it.
+    @State private var centeredOnUser = false
     @State private var appleSearch: Task<Void, Never>?
 
     private let fallback = CLLocationCoordinate2D.atlasFallback
@@ -69,6 +73,13 @@ struct AtlasV2: View {
                 .padding(.bottom, 78)
             }
             .toolbar(.hidden, for: .navigationBar)
+            .confirmationDialog("\(stacked.count) places here",
+                                isPresented: Binding(get: { !stacked.isEmpty }, set: { if !$0 { stacked = [] } }),
+                                titleVisibility: .visible) {
+                ForEach(stacked) { store in
+                    Button(store.name) { selected = store }
+                }
+            }
             .sheet(item: $selected) { store in
                 StoreDetailView(store: store, service: stores)
                     .presentationDetents([.medium, .large])
@@ -78,6 +89,8 @@ struct AtlasV2: View {
             }
             .task { await begin() }
             .onChange(of: location.coordinate?.latitude) { _, _ in
+                guard !centeredOnUser else { return }
+                centeredOnUser = true
                 Task { await refreshAtUser() }
             }
         }
@@ -88,9 +101,9 @@ struct AtlasV2: View {
     private var map: some View {
         Map(position: $camera) {
             UserAnnotation()
-            ForEach(visible) { store in
-                Annotation(store.name, coordinate: store.coordinate, anchor: .bottom) {
-                    pin(store)
+            ForEach(clusters) { c in
+                Annotation(c.stores[0].name, coordinate: c.coordinate, anchor: .bottom) {
+                    if c.stores.count == 1 { pin(c.stores[0]) } else { clusterBubble(c) }
                 }
                 .annotationTitles(.hidden)
             }
@@ -102,6 +115,61 @@ struct AtlasV2: View {
             appleSearch?.cancel()
             guard zoomedIn else { return }
             appleSearch = Task { await stores.loadVisible(ctx.region, user: location.coordinate) }
+        }
+    }
+
+    // MARK: - Clustering
+
+    struct Cluster: Identifiable {
+        let stores: [Store]
+        var id: UUID { stores[0].id }
+        var coordinate: CLLocationCoordinate2D {
+            CLLocationCoordinate2D(latitude: stores.map(\.coordinate.latitude).reduce(0, +) / Double(stores.count),
+                                   longitude: stores.map(\.coordinate.longitude).reduce(0, +) / Double(stores.count))
+        }
+    }
+
+    /// Pins that would overlap on screen merge into one bubble. A pin with its
+    /// name is wide and short, so the grid cell is too: about a third of the
+    /// screen across and a twentieth down.
+    // ponytail: fixed grid, so two pins either side of a cell edge can still touch; distance-based clustering if that shows up.
+    private var clusters: [Cluster] {
+        guard let r = region else { return visible.map { Cluster(stores: [$0]) } }
+        let cellLat = r.span.latitudeDelta / 20, cellLng = r.span.longitudeDelta / 3
+        var cells: [String: [Store]] = [:]
+        for store in visible {
+            let key = "\(Int(floor(store.coordinate.latitude / cellLat))):\(Int(floor(store.coordinate.longitude / cellLng)))"
+            cells[key, default: []].append(store)
+        }
+        return cells.values.map { Cluster(stores: $0) }
+    }
+
+    private func clusterBubble(_ c: Cluster) -> some View {
+        let verified = c.stores.contains { !$0.isAppleMaps }
+        return Button { open(c) } label: {
+            Text("\(c.stores.count)")
+                .font(.system(size: 13, weight: .heavy))
+                .foregroundStyle(.white)
+                .frame(minWidth: 34, minHeight: 34)
+                .background(verified ? AnyShapeStyle(LinearGradient(colors: [DSColor.accent, DSColor.accentGradientEnd],
+                                                                    startPoint: .topLeading, endPoint: .bottomTrailing))
+                                     : AnyShapeStyle(DSColor.textSecondary), in: Circle())
+                .overlay(Circle().strokeBorder(.white.opacity(0.85), lineWidth: 2))
+                .shadow(color: .black.opacity(0.25), radius: 6, y: 3)
+        }
+        .pressable(0.94)
+        .accessibilityLabel("\(c.stores.count) halal places here. Double-tap to show them.")
+    }
+
+    /// Zoom in until the bubble splits; if they share one spot, list them instead.
+    private func open(_ c: Cluster) {
+        let lats = c.stores.map(\.coordinate.latitude), lngs = c.stores.map(\.coordinate.longitude)
+        let spread = max(lats.max()! - lats.min()!, lngs.max()! - lngs.min()!)
+        guard let r = region, spread > 0.0004 else { stacked = c.stores; return }
+        withAnimation(.easeInOut(duration: 0.35)) {
+            camera = .region(MKCoordinateRegion(center: c.coordinate,
+                                                span: MKCoordinateSpan(latitudeDelta: max(r.span.latitudeDelta / 4, spread * 3),
+                                                                       longitudeDelta: max(r.span.longitudeDelta / 4, spread * 3))))
         }
     }
 
@@ -234,9 +302,10 @@ struct AtlasV2: View {
     // MARK: - Logic
 
     /// Frames the Settings search radius (1° latitude ≈ 111 km).
+    /// Open close in on the person (~1.3 km tall, a few blocks); they can zoom out.
+    /// The Settings radius still sets how far the first load searches.
     private var radiusSpan: MKCoordinateSpan {
-        let deg = min(settings.searchRadiusKm * 2 / 111, Self.maxSpanDegrees)
-        return MKCoordinateSpan(latitudeDelta: deg, longitudeDelta: deg)
+        MKCoordinateSpan(latitudeDelta: 0.012, longitudeDelta: 0.012)
     }
 
     private func begin() async {
