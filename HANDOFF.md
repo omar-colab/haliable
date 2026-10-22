@@ -27,6 +27,8 @@ Fixed and live:
 `SUPABASE_SECRET_KEY`, `APPLE_TEAM_ID`, `APPLE_KEY_ID`, `APPLE_CLIENT_ID`, `APPLE_PRIVATE_KEY`.
 Until then no Apple refresh token is ever stored (`apple_tokens` has 0 rows), so the Sign in with
 Apple revoke on deletion can't happen. Deletion itself works without them.
+The site is NOT auto-deploying from `main` (headers and function fixes weren't live 4 min after the
+push): after setting the env vars, trigger a deploy (Netlify → Deploys → Trigger deploy).
 
 Known, not fixed: the SSRF guard checks hostnames, not resolved IPs (a public name pointing at a
 private IP would pass); PostGIS still lives in `public` (0008 note).
