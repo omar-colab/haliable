@@ -13,6 +13,7 @@ import MapKit
 
 struct AtlasV2: View {
     @Environment(AuthManager.self) private var auth
+    @Environment(AppSettings.self) private var settings
     @State private var stores = StoreService()
     @State private var location = LocationManager()
     @State private var camera: MapCameraPosition = .automatic
@@ -214,21 +215,27 @@ struct AtlasV2: View {
 
     // MARK: - Logic
 
+    /// Frames the Settings search radius (1° latitude ≈ 111 km).
+    private var radiusSpan: MKCoordinateSpan {
+        let deg = settings.searchRadiusKm * 2 / 111
+        return MKCoordinateSpan(latitudeDelta: deg, longitudeDelta: deg)
+    }
+
     private func begin() async {
         location.request()
         let center = location.coordinate ?? fallback
         camera = .region(MKCoordinateRegion(center: center,
-                          span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03)))
-        await stores.loadNearby(center: center)
+                          span: radiusSpan))
+        await stores.loadNearby(center: center, radiusKm: settings.searchRadiusKm)
     }
 
     private func refreshAtUser() async {
         guard let c = location.coordinate else { return }
         withAnimation {
             camera = .region(MKCoordinateRegion(center: c,
-                              span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03)))
+                              span: radiusSpan))
         }
-        await stores.loadNearby(center: c)
+        await stores.loadNearby(center: c, radiusKm: settings.searchRadiusKm)
     }
 
     private func tint(for scope: HalalScope) -> Color {
@@ -252,4 +259,5 @@ extension Store {
 #Preview {
     AtlasV2()
         .environment(AuthManager())
+        .environment(AppSettings())
 }

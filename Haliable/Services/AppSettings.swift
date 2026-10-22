@@ -64,17 +64,3 @@ final class AppSettings {
         searchRadiusKm    = store.double(forKey: Key.radius)
     }
 }
-
-// MARK: - Haptics helper
-
-/// Tiny wrapper so feature code can fire a tap that already respects the user's
-/// haptics preference. TODO: call `Haptics.success(settings)` from the scanner's
-/// success path (ScannerView.handleScan) so the toggle actually does something.
-enum Haptics {
-    static func success(_ settings: AppSettings) {
-        #if canImport(UIKit)
-        guard settings.hapticsEnabled else { return }
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
-        #endif
-    }
-}

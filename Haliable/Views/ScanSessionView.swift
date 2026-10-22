@@ -14,6 +14,7 @@
 import SwiftUI
 import SwiftData
 import AVFoundation
+import AudioToolbox
 #if canImport(UIKit)
 import UIKit
 #endif
@@ -262,8 +263,10 @@ struct ScanSessionView: View {
                 barcode: code, cache: SwiftDataProductCache(context: modelContext))
             let verdict = engine.evaluate(product: product, standard: settings.halalStandard)
             hapticSuccess()
+            if settings.soundEnabled { AudioServicesPlaySystemSound(1057) } // "Tink"
             currentVerdict = verdict
             showManualEntry = false
+            guard settings.autoSaveScans else { return }
             // One History row per product: a re-check replaces the old row
             // instead of stacking duplicates (TestFlight feedback, Oct 20).
             let old = (try? modelContext.fetch(FetchDescriptor<ScanRecord>(
