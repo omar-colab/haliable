@@ -7,12 +7,11 @@
 //  `canImport(Supabase)`; the caller (SettingsV2) wipes LOCAL data and signs out
 //  after `deleteServerData` returns.
 //
-//  Deletion order (TN3194): revoke the Sign in with Apple token FIRST (while the
-//  session is still valid), then delete Storage photos, then the DB rows via the
-//  security-definer RPC. Token revocation is best-effort — if the revoke function
-//  isn't deployed yet, deletion still completes and the app directs the user to
-//  revoke access manually (Settings ▸ Apple ID ▸ Sign in with Apple), which Apple
-//  accepts as the fallback.
+//  Deletion order: the DB rows via the security-definer RPC, then the Sign in
+//  with Apple revoke (TN3194, Netlify, best-effort, needs the session), then the
+//  `delete-account` Edge Function, which deletes the review photos and the auth
+//  user. If the revoke function isn't configured, deletion still completes and
+//  the user can revoke access in Settings ▸ Apple ID ▸ Sign in with Apple.
 //
 
 import Foundation
@@ -78,17 +77,18 @@ final class AccountService {
     /// and signs out afterward.
     func deleteServerData(auth: AuthManager) async throws {
         #if canImport(Supabase)
-        guard let client = SupabaseManager.shared, let uid = auth.userID else { return }
+        guard let client = SupabaseManager.shared, auth.userID != nil else { return }
 
-        // 1. Remove the user's review photos (their own Storage folder).
-        await deletePhotos(client: client, uid: uid)
-        // 2. Delete all owned DB rows via the security-definer RPC.
+        // 1. Delete all owned DB rows via the security-definer RPC.
         try await client.rpc(SupabaseConfig.deleteAccountRPC).execute()
-        // 3. LAST: revoke the Apple token + admin-delete the auth user. This runs
-        //    last because it removes auth.users, invalidating the session used above.
+        // 2. Revoke the Apple token while the session is still valid (best-effort).
         if let accessToken = await auth.accessToken() {
             await revokeAppleToken(accessToken: accessToken)
         }
+        // 3. LAST: the Edge Function removes the review photos and the auth user
+        //    itself. It throws on any failure, so the caller can say deletion
+        //    didn't finish instead of claiming it did.
+        try await client.functions.invoke("delete-account")
         #endif
     }
 
@@ -103,20 +103,6 @@ final class AccountService {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         request.timeoutInterval = 12
         _ = try? await URLSession.shared.data(for: request)
-    }
-
-    /// Best-effort recursive delete of `review-photos/{uid}/…`.
-    private func deletePhotos(client: SupabaseClient, uid: String) async {
-        let bucket = client.storage.from(SupabaseConfig.reviewPhotoBucket)
-        guard let folders = try? await bucket.list(path: uid) else { return }
-        var paths: [String] = []
-        for folder in folders {
-            let sub = "\(uid)/\(folder.name)"
-            if let files = try? await bucket.list(path: sub) {
-                paths.append(contentsOf: files.map { "\(sub)/\($0.name)" })
-            }
-        }
-        if !paths.isEmpty { _ = try? await bucket.remove(paths: paths) }
     }
     #endif
 }

@@ -26,8 +26,13 @@ Deno.serve(async (r) => {
       <button style="font-size:18px;padding:12px 22px">${d === "approve" ? "✅ Approve" : "❌ Reject"}</button></form>`);
   }
 
+  // Claim the decision atomically: of two taps (or approve + reject) racing,
+  // only the one that flips the status acts.
+  const open = ["researching", "drafted", "failed"];
   if (d === "reject") {
-    await db.from("review_agent_drafts").update({ status: "rejected", updated_at: new Date().toISOString() }).eq("request_id", id);
+    const { data: won } = await db.from("review_agent_drafts").update({ status: "rejected", updated_at: new Date().toISOString() })
+      .eq("request_id", id).in("status", open).select("request_id");
+    if (!won?.length) return page("Already decided.");
     await db.from("review_requests").update({ status: "in_review" }).eq("id", id);
     return page("Rejected. The request is marked in review for you to answer.");
   }
@@ -39,11 +44,18 @@ Deno.serve(async (r) => {
   if (!verified.length) return page("No verified source — answer this one by hand.", 409);
   const best = verified[0];
   const reason = [draft.summary, best && `Source: ${best.name} — “${best.quote}” ${best.url}`].filter(Boolean).join("\n\n");
+  const { data: won } = await db.from("review_agent_drafts").update({ status: "approved", updated_at: new Date().toISOString() })
+    .eq("request_id", id).in("status", open).select("request_id");
+  if (!won?.length) return page("Already decided.");
   const { error } = await db.from("review_requests").update({
     status: "completed", verdict: draft.final, verdict_reason: reason,
     evidence: verified, reviewed_at: new Date().toISOString(),
   }).eq("id", id);
-  if (error) return page(`Couldn't publish: ${error.message}`, 500);
-  await db.from("review_agent_drafts").update({ status: "approved", updated_at: new Date().toISOString() }).eq("request_id", id);
+  if (error) {
+    // Hand the decision back so the link works again after the fault is fixed.
+    await db.from("review_agent_drafts").update({ status: row.status }).eq("request_id", id);
+    console.error("publish", error);
+    return page("Couldn't publish — try the link again in a minute.", 500);
+  }
   return page(`Published: <b>${String(draft.final).toUpperCase()}</b>. The user sees it on their next refresh.`);
 });

@@ -22,6 +22,7 @@ function svcHeaders(extra = {}) {
 
 /// Identify the caller from their Supabase access token. Returns the user or null.
 async function getUser(accessToken) {
+  if (!URL || !SERVICE) throw new Error("SUPABASE_URL / SUPABASE_SECRET_KEY not set in Netlify");
   // Note the asymmetry, and leave it alone: `apikey` authenticates the *project*
   // (secret key, no Bearer), while `Authorization` carries the *user's* access
   // token — which really is a JWT and must stay on Bearer for this to resolve a user.
@@ -52,12 +53,5 @@ async function getAppleToken(userId) {
   return Array.isArray(rows) && rows[0] ? rows[0].refresh_token : null;
 }
 
-/// Admin-delete the auth user. Cascades apple_tokens (FK on delete cascade).
-async function deleteAuthUser(userId) {
-  await fetch(`${URL}/auth/v1/admin/users/${userId}`, {
-    method: "DELETE",
-    headers: svcHeaders(),
-  });
-}
 
-module.exports = { getUser, upsertAppleToken, getAppleToken, deleteAuthUser };
+module.exports = { getUser, upsertAppleToken, getAppleToken };

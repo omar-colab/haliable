@@ -72,7 +72,14 @@ final class ReviewStore {
                 id: requestID, user_id: userID, product_name: productName,
                 barcode: barcode, notes: notes, photo_paths: paths, status: "pending"
             )
-            try await client.from(SupabaseConfig.reviewTable).insert(payload).execute()
+            do {
+                try await client.from(SupabaseConfig.reviewTable).insert(payload).execute()
+            } catch {
+                // The server refused the row (daily limit, too-long text): don't
+                // leave the photos we just uploaded sitting in storage.
+                _ = try? await client.storage.from(SupabaseConfig.reviewPhotoBucket).remove(paths: paths)
+                throw error
+            }
             try await refresh(auth: auth)
             return requests.first { $0.id == requestID } ?? payload.asRequest()
         }

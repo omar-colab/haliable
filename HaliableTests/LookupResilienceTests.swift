@@ -36,6 +36,14 @@ final class LookupResilienceTests: XCTestCase {
 
     // MARK: - Fallback chain
 
+    func testOnlyPlainCodesReachTheLookupURL() {
+        XCTAssertTrue(ProductLookupService.isLookupable("0028400090858"))
+        XCTAssertTrue(ProductLookupService.isLookupable("ABC-123"))
+        XCTAssertFalse(ProductLookupService.isLookupable("../../cgi/search.pl?x=1"))
+        XCTAssertFalse(ProductLookupService.isLookupable("https://evil.example"))
+        XCTAssertFalse(ProductLookupService.isLookupable(""))
+    }
+
     func testUsdaSuccessUsedFirst() async throws {
         let svc = ProductLookupService(
             usda: FakeSource(result: .success(makeProduct("1", "USDA Item"))),

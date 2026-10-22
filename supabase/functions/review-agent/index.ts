@@ -101,6 +101,25 @@ async function research(req: Record<string, unknown>, photoUrls: string[]): Prom
   throw new Error("research paused too many times");
 }
 
+/** A source page is text: read at most 3 MB, so a hostile URL can't stream
+ *  gigabytes into the function (content-length can be absent or lie). */
+async function capped(r: Response, max = 3_000_000): Promise<string> {
+  const reader = r.body?.getReader();
+  if (!reader) return "";
+  const parts: Uint8Array[] = [];
+  let size = 0;
+  while (size < max) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    parts.push(value); size += value.length;
+  }
+  await reader.cancel().catch(() => {});
+  const all = new Uint8Array(size);
+  let at = 0;
+  for (const p of parts) { all.set(p, at); at += p.length; }
+  return new TextDecoder().decode(all);
+}
+
 async function verify(d: Draft): Promise<Draft> {
   await Promise.all(d.sources.map(async (s) => {
     if (!isPublicUrl(s.url)) { s.verified = false; return; }
@@ -115,7 +134,7 @@ async function verify(d: Draft): Promise<Draft> {
         url = new URL(next, url).toString(); r = undefined;
       }
       if (!r) { s.verified = false; return; }
-      s.verified = r.ok && quoteOnPage(s.quote, await r.text());
+      s.verified = r.ok && quoteOnPage(s.quote, await capped(r));
     } catch { s.verified = false; }
   }));
   return d;
@@ -140,7 +159,9 @@ async function run(id: string) {
 
   const { data: req } = await db.from("review_requests").select("*").eq("id", id).single();
   if (!req) return;
-  const signed = await Promise.all((req.photo_paths as string[]).map(async (p) =>
+  // Only the requester's own folder (0015 enforces this on insert too).
+  const own = (req.photo_paths as string[]).filter((p) => p.startsWith(`${req.user_id}/`) && !p.includes(".."));
+  const signed = await Promise.all(own.map(async (p) =>
     (await db.storage.from("review-photos").createSignedUrl(p, 7 * 24 * 3600)).data?.signedUrl));
   const photos = signed.filter(Boolean) as string[];
   const link = (d: string) => `${BASE}/functions/v1/review-decide?id=${id}&t=${token}&d=${d}`;

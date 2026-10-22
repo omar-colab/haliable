@@ -9,6 +9,11 @@ const { clientSecret } = require("./_apple");
 const { getUser, upsertAppleToken } = require("./_supabase");
 
 exports.handler = async (event) => {
+  try { return await store(event); }
+  catch (e) { console.error(e); return { statusCode: 500, body: "Store failed" }; }
+};
+
+async function store(event) {
   if (event.httpMethod !== "POST") return { statusCode: 405, body: "Method Not Allowed" };
 
   const auth = event.headers.authorization || event.headers.Authorization || "";
@@ -41,4 +46,4 @@ exports.handler = async (event) => {
 
   await upsertAppleToken(user.id, tok.refresh_token);
   return { statusCode: 204 };
-};
+}

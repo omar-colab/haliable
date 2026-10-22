@@ -1,14 +1,21 @@
-// apple-revoke.js — called LAST in the account-deletion flow.
-// Revokes the user's Apple refresh token (Apple TN3194) and admin-deletes the
-// Supabase auth user (which cascades apple_tokens). The app has already deleted
-// its public rows + Storage photos before calling this.
+// apple-revoke.js — part of the account-deletion flow.
+// Revokes the user's Apple refresh token (Apple TN3194). The app calls this
+// after delete_my_account() and BEFORE the Supabase `delete-account` Edge
+// Function, which removes photos and the auth user — the session must still be
+// valid here for getUser() to resolve it.
 //
 // POST  header: Authorization: Bearer <supabase access token>
 
 const { clientSecret } = require("./_apple");
-const { getUser, getAppleToken, deleteAuthUser } = require("./_supabase");
+const { getUser, getAppleToken } = require("./_supabase");
 
 exports.handler = async (event) => {
+  try { return await revoke(event); }
+  // Never hand a stack trace (or an env var name) to the caller.
+  catch (e) { console.error(e); return { statusCode: 500, body: "Revoke failed" }; }
+};
+
+async function revoke(event) {
   if (event.httpMethod !== "POST") return { statusCode: 405, body: "Method Not Allowed" };
 
   const auth = event.headers.authorization || event.headers.Authorization || "";
@@ -34,7 +41,5 @@ exports.handler = async (event) => {
     });
   }
 
-  // 2. Remove the account itself (cascades apple_tokens via FK).
-  await deleteAuthUser(user.id);
   return { statusCode: 204 };
-};
+}

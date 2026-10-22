@@ -414,7 +414,7 @@ struct SettingsV2: View {
             wipeLocalData()
             auth.signOut()
             accountMessage = serverFailed
-                ? "Your account is signed out and on-device data cleared. Some server records may take a moment to finish deleting."
+                ? "You're signed out and on-device data is cleared, but we couldn't finish deleting your account on our server. Email \(supportEmail) and we'll delete it by hand."
                 : "Your account and all associated data have been deleted."
         }
     }

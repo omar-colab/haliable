@@ -20,6 +20,8 @@ struct RequestReviewView: View {
 
     @State private var images: [UIImage] = []
     @State private var pickerItems: [PhotosPickerItem] = []
+    /// The server takes 1–6 photos (migration 0015); 4 keeps uploads quick.
+    static let maxPhotos = 4
     @State private var showCamera = false
     @State private var productName = ""
     @State private var barcode = ""
@@ -50,7 +52,7 @@ struct RequestReviewView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() } } }
             .sheet(isPresented: $showCamera) {
-                CameraPhotoPicker { images.append($0) }.ignoresSafeArea()
+                CameraPhotoPicker { if images.count < Self.maxPhotos { images.append($0) } }.ignoresSafeArea()
             }
             .onChange(of: pickerItems) { _, items in Task { await loadPicked(items) } }
             .onAppear {
@@ -85,9 +87,11 @@ struct RequestReviewView: View {
                 }
             }
             Button { showCamera = true } label: { Label("Take photo", systemImage: "camera") }
-            PhotosPicker(selection: $pickerItems, maxSelectionCount: 4, matching: .images) {
+                .disabled(images.count >= Self.maxPhotos)
+            PhotosPicker(selection: $pickerItems, maxSelectionCount: max(1, Self.maxPhotos - images.count), matching: .images) {
                 Label("Choose from library", systemImage: "photo.on.rectangle")
             }
+            .disabled(images.count >= Self.maxPhotos)
             Text("Tip: include a clear shot of the full ingredients list.")
                 .font(DSFont.caption).foregroundStyle(DSColor.textSecondary)
         }
@@ -117,7 +121,7 @@ struct RequestReviewView: View {
     }
 
     private func loadPicked(_ items: [PhotosPickerItem]) async {
-        for item in items {
+        for item in items where images.count < Self.maxPhotos {
             if let data = try? await item.loadTransferable(type: Data.self),
                let img = UIImage(data: data) {
                 images.append(img)

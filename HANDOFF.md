@@ -4,6 +4,33 @@ Last updated: **Oct 20, 2026 (evening)** · **Build 8 is on TestFlight** ·
 site live · review agent built · **136 tests green**
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 
+## ▶️ RESUME HERE (Oct 22) — security review, build 13
+
+Fixed and live:
+- **Account deletion now actually deletes the account.** Netlify's `apple-revoke` crashed on every
+  call (`SUPABASE_URL` is unset on Netlify), so the auth user and Apple link survived deletion
+  (App Store 5.1.1(v)). New Edge Function `delete-account` (deployed) removes the review photos and
+  the auth user with the key Supabase already has. The app now says plainly if deletion didn't finish.
+- **Migration 0015 applied live:** review photo paths must be in the caller's own folder (the agent
+  signed any path with the service key), 1–6 photos and text caps, 10 store submissions a day plus
+  length caps, TRUNCATE/TRIGGER/REFERENCES revoked from anon/authenticated, nothing at all on
+  `apple_tokens`/`review_agent_drafts`, and deleting an account recounts the store votes it cast.
+  Verified as a signed-in user in a rolled-back transaction.
+- `review-decide`: approve/reject is claimed atomically (double taps can't both act); DB errors no
+  longer echoed into the page. `review-agent`: only the requester's own photos, source pages read
+  through a 3 MB cap.
+- App: photos are removed if the server refuses the request (5/day limit), the camera can't add
+  past 4 photos, QR/Code 128 text can't reach the lookup URL (`isLookupable`, tested).
+- Netlify functions no longer return stack traces; the site sends CSP / nosniff / frame-deny headers.
+
+**Needs Omar (Netlify → Site settings → Environment variables):** `SUPABASE_URL`,
+`SUPABASE_SECRET_KEY`, `APPLE_TEAM_ID`, `APPLE_KEY_ID`, `APPLE_CLIENT_ID`, `APPLE_PRIVATE_KEY`.
+Until then no Apple refresh token is ever stored (`apple_tokens` has 0 rows), so the Sign in with
+Apple revoke on deletion can't happen. Deletion itself works without them.
+
+Known, not fixed: the SSRF guard checks hostnames, not resolved IPs (a public name pointing at a
+private IP would pass); PostGIS still lives in `public` (0008 note).
+
 ## ▶️ RESUME HERE (Oct 21)
 
 **Build 11 uploaded to TestFlight** (archived from d368ced). It adds the ThinkingOrb (liquid

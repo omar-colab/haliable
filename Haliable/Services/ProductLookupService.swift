@@ -42,6 +42,9 @@ final class ProductLookupService {
     /// Resolve a barcode through the chain, caching successes and falling back to
     /// the cache only when the network is unavailable.
     func fetchProduct(barcode: String, cache: ProductCaching? = nil) async throws -> Product {
+        // The scanner also reads QR / Code 128, which can carry any text. Only a
+        // plain code goes into the OFF URL path — "../" or "?" never does.
+        guard Self.isLookupable(barcode) else { throw OFFError.productNotFound }
         do {
             let product = try await resolveOnline(barcode: barcode)
             await cache?.store(product)
@@ -56,6 +59,10 @@ final class ProductLookupService {
             }
             throw error
         }
+    }
+
+    static func isLookupable(_ code: String) -> Bool {
+        code.range(of: #"^[0-9A-Za-z-]{1,32}$"#, options: .regularExpression) != nil
     }
 
     // MARK: - The chain
