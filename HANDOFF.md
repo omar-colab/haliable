@@ -4,6 +4,20 @@ Last updated: **Oct 20, 2026 (evening)** · **Build 8 is on TestFlight** ·
 site live · review agent built · **136 tests green**
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 
+## ▶️ RESUME HERE (Oct 22, afternoon) — on the branch, not uploaded
+
+- **Settings toggles that did nothing now work** (311cb57): Scan Sound plays a system tick on a
+  successful scan, Auto-save to History off = no History row, Search Radius sets the Find map's
+  first load + zoom. Dead `Haptics` helper removed.
+- **Faster scanning + tracking brackets:** the scanner uses the multi-camera device on phones that
+  auto-switch to macro (13 Pro+, 16+) so close labels stay sharp; others get near-range continuous
+  focus and up to 2x zoom so a barcode is framed at the lens's closest sharp distance (Apple's
+  AVCamBarcode approach). Corner brackets follow the barcode live (green accent while reading,
+  success green once locked) and fade when it leaves the frame. The detection buzz was a raw
+  vibrate that ignored the Haptics toggle — now a light tap that respects it.
+- **Not verified on a device** (the simulator has no camera). Omar: test on the iPhone 14 in the
+  next build — scan close (~8 cm), far (~40 cm), and with the torch on.
+
 ## ▶️ RESUME HERE (Oct 22, later) — build 14
 
 - **Grading bug fixed:** `IngredientRule.category` was a `let` with a default, so Swift never decoded
