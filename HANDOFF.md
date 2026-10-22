@@ -4,6 +4,29 @@ Last updated: **Oct 20, 2026 (evening)** · **Build 8 is on TestFlight** ·
 site live · review agent built · **136 tests green**
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 
+## ▶️ RESUME HERE (Oct 22, evening) — build 15
+
+- **Ask a scholar works end to end (tested live):** app request → trigger → review-agent (Haiku 5.5
+  + web search, quotes machine-checked on the page) → email to Omar with three one-tap links:
+  ✅ Approve (agent's grade) · 🟡 Questionable + sources (user reads them and decides) · ❌ Reject.
+  The tap writes the answer straight into `review_requests`; the app's review screen now lists the
+  sources with links. The old two-step HTML confirm page never worked: Supabase serves function
+  responses as sandboxed text/plain. Omar chose one tap; only the first tap counts.
+  A live TEST request ("TEST — Haribo Goldbears (US)") is in Omar's Reviews — delete when done.
+- **Migration 0016 applied live** (Security Advisor): trigger functions no longer RPC-callable,
+  sign-in-only RPCs revoked from anon, `stores_nearby` search_path pinned, RLS `(select auth.uid())`,
+  two FK indexes. rls_matrix.sql passes. Remaining advisor items are PostGIS-owned or intentional.
+- **Map:** places show only when zoomed in (~20 km view or closer) and only those in view; grey pins
+  for unverified Apple Maps results (they were green, contradicting the footer); list starts closed.
+- **Home:** the 380pt emblem pushed every Home card ~5pt from the bezel — fixed. First-run
+  "How it works" strip fills the empty space. About chips wrap instead of sliding out of the card.
+  Aurora layer behind the background orbs.
+- **Gum — Omar decision needed:** gum is Questionable because of glycerin (E422) and natural
+  flavors of unstated origin, not a gum rule. No Tier 1/2 source clears US gum glycerin (no
+  manufacturer statement found). Options: (a) a "Vegan" label on the pack resolves animal-origin
+  doubt for that product; (b) ask Mars Wrigley / Mondelez for a written glycerin-origin statement.
+- **Not done (needs scoping with Omar):** restaurant menus on the map ("halal options" places).
+
 ## ▶️ RESUME HERE (Oct 22, afternoon) — on the branch, not uploaded
 
 - **Settings toggles that did nothing now work** (311cb57): Scan Sound plays a system tick on a
