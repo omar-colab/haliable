@@ -18,9 +18,9 @@ import SwiftUI
 
 enum DSMotion {
     /// Things that move or resize. Critically damped — no overshoot.
-    static let move   = Animation.spring(response: 0.4, dampingFraction: 1.0)
+    static let move   = Animation.spring(response: 0.3, dampingFraction: 1.0)
     /// Rotation and badge arrivals. A little bounce, because they carry momentum.
-    static let arrive = Animation.spring(response: 0.4, dampingFraction: 0.8)
+    static let arrive = Animation.spring(response: 0.3, dampingFraction: 0.85)
     /// Drawers and sheets.
     static let sheet  = Animation.spring(response: 0.3, dampingFraction: 0.8)
 }
@@ -430,34 +430,25 @@ struct GuardOrbs: View {
                 let t = reduceMotion ? 0 : CGFloat(timeline.date.timeIntervalSinceReferenceDate
                                                   .truncatingRemainder(dividingBy: 10_000))
                 ZStack {
-                    // Aurora: a wide ribbon of green and gold light turning very slowly
-                    // (one lap every ~3.5 min) behind the orbs.
-                    Ellipse()
-                        .fill(AngularGradient(colors: [DSColor.accent.opacity(0.0), DSColor.accent.opacity(0.22),
-                                                       DSColor.gold.opacity(0.14), DSColor.accent.opacity(0.0),
-                                                       DSColor.accentGradientEnd.opacity(0.20), DSColor.accent.opacity(0.0)],
-                                              center: .center, angle: .radians(Double(t) * 0.03)))
-                        .frame(width: geo.size.width * 1.5, height: geo.size.height * 0.55)
-                        .rotationEffect(.radians(Double(sin(t * 0.05)) * 0.35))
-                        .offset(y: -geo.size.height * 0.12 + 30 * sin(t * 0.07))
-                        .blur(radius: 60)
                     ForEach(orbs.indices, id: \.self) { i in
                         let o = orbs[i]
                         let a = t * o.speed + o.phase
                         // breathes between dim and bright on its own beat
                         let glow = 0.5 + 0.5 * sin(a * 1.7)
+                        // No .blur: a per-frame blur on every page made swiping lag.
+                        // The radial falloff over a larger circle gives the same soft glow.
                         Circle()
-                            .fill(RadialGradient(colors: [o.color.opacity(0.20 + 0.16 * glow), o.color.opacity(0)],
-                                                 center: .center, startRadius: 0, endRadius: o.size * 0.6))
-                            .frame(width: o.size, height: o.size)
+                            .fill(RadialGradient(colors: [o.color.opacity(0.22 + 0.16 * glow), o.color.opacity(0.08 * glow), o.color.opacity(0)],
+                                                 center: .center, startRadius: 0, endRadius: o.size * 0.75))
+                            .frame(width: o.size * 1.5, height: o.size * 1.5)
                             .scaleEffect(0.9 + 0.2 * glow)
-                            .blur(radius: 36)
                             // a lazy figure-eight around its anchor
                             .offset(x: geo.size.width * o.ax + o.reach * sin(a),
                                     y: geo.size.height * o.ay + o.reach * 0.8 * sin(a * 2 + 0.5))
                     }
                 }
                 .frame(width: geo.size.width, height: geo.size.height)
+                .drawingGroup()   // one GPU pass instead of re-compositing each orb
             }
         }
         .allowsHitTesting(false)
