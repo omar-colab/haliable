@@ -25,7 +25,6 @@
 
 import SwiftUI
 import AVFoundation
-import AudioToolbox
 
 struct BarcodeScannerView: UIViewControllerRepresentable {
     /// Called with a barcode string. The parent decides what happens next.
@@ -98,6 +97,9 @@ final class ScannerViewController: UIViewController, AVCaptureMetadataOutputObje
     /// Every configure / start / stop goes through this one serial queue.
     private let sessionQueue = DispatchQueue(label: "app.haliable.scanner.session", qos: .userInitiated)
     private var previewLayer: AVCaptureVideoPreviewLayer?
+    /// Live outline that follows the barcode the camera is reading.
+    private let trackLayer = CAShapeLayer()
+    private var hideTrack: DispatchWorkItem?
     private let supportedTypes: [AVMetadataObject.ObjectType] =
         [.ean13, .ean8, .upce, .code128, .code39, .qr]
 
@@ -124,6 +126,18 @@ final class ScannerViewController: UIViewController, AVCaptureMetadataOutputObje
         preview.videoGravity = .resizeAspectFill
         view.layer.addSublayer(preview)
         previewLayer = preview
+
+        trackLayer.fillColor = UIColor(named: "Accent")?.withAlphaComponent(0.12).cgColor
+        trackLayer.strokeColor = UIColor(named: "Accent")?.cgColor
+        trackLayer.lineWidth = 4
+        trackLayer.lineCap = .round
+        trackLayer.lineJoin = .round
+        trackLayer.shadowColor = trackLayer.strokeColor
+        trackLayer.shadowRadius = 8
+        trackLayer.shadowOpacity = 0.8
+        trackLayer.shadowOffset = .zero
+        trackLayer.opacity = 0
+        view.layer.addSublayer(trackLayer)
 
         let center = NotificationCenter.default
         center.addObserver(self, selector: #selector(sessionNeedsRestart),
@@ -157,12 +171,13 @@ final class ScannerViewController: UIViewController, AVCaptureMetadataOutputObje
     /// `sessionQueue`.
     private func configureSession() {
         guard !isConfigured else { return }
-        guard let device = AVCaptureDevice.default(for: .video),
+        guard let device = Self.bestCamera(),
               let input = try? AVCaptureDeviceInput(device: device),
               session.canAddInput(input) else {
             delegate?.scanner(self, didFailWith: "No camera is available on this device.")
             return
         }
+        Self.tuneForBarcodes(device)
         session.beginConfiguration()
         session.addInput(input)
         let output = AVCaptureMetadataOutput()
@@ -178,6 +193,49 @@ final class ScannerViewController: UIViewController, AVCaptureMetadataOutputObje
 
         isConfigured = true
         updateRunning()
+    }
+
+    // MARK: Camera tuning (faster reads)
+
+    /// On phones that support it (iPhone 13 Pro and later Pros, iPhone 16+), the
+    /// multi-camera device hops to the ultra-wide's macro mode when a label is
+    /// held close, so a barcode a few cm away is still sharp. Everything else
+    /// uses the plain wide camera.
+    static func bestCamera() -> AVCaptureDevice? {
+        for type in [AVCaptureDevice.DeviceType.builtInTripleCamera, .builtInDualWideCamera] {
+            if let d = AVCaptureDevice.default(type, for: .video, position: .back),
+               d.activePrimaryConstituentDeviceSwitchingBehavior != .unsupported { return d }
+        }
+        return AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
+    }
+
+    /// Focus near, continuously, and frame a typical grocery barcode at the
+    /// lens's closest sharp distance (Apple's AVCamBarcode approach) — people
+    /// hold labels closer than the wide lens can focus, which is what makes
+    /// scanning feel slow.
+    private static func tuneForBarcodes(_ device: AVCaptureDevice) {
+        guard (try? device.lockForConfiguration()) != nil else { return }
+        defer { device.unlockForConfiguration() }
+        if device.isFocusModeSupported(.continuousAutoFocus) { device.focusMode = .continuousAutoFocus }
+        if device.isAutoFocusRangeRestrictionSupported { device.autoFocusRangeRestriction = .near }
+        if device.isExposureModeSupported(.continuousAutoExposure) { device.exposureMode = .continuousAutoExposure }
+
+        if device.isVirtualDevice {
+            // Zoom 1.0 on a multi-camera device is the ultra-wide; start on the wide ("1x").
+            if let wide = device.virtualDeviceSwitchOverVideoZoomFactors.first {
+                device.videoZoomFactor = CGFloat(truncating: wide)
+            }
+            return
+        }
+        let minFocusMm = Float(device.minimumFocusDistance)
+        guard minFocusMm > 0 else { return }
+        let halfFov = device.activeFormat.videoFieldOfView / 2 * .pi / 180
+        // A 30 mm barcode filling half the frame width.
+        let subjectMm = (30 / 0.5) / tan(halfFov)
+        if subjectMm < minFocusMm {
+            // ponytail: capped at 2x so the frame never feels cramped; raise if far scans miss.
+            device.videoZoomFactor = CGFloat(min(minFocusMm / subjectMm, 2, Float(device.activeFormat.videoMaxZoomFactor)))
+        }
     }
 
     // MARK: Running state
@@ -205,6 +263,7 @@ final class ScannerViewController: UIViewController, AVCaptureMetadataOutputObje
     private func updateRunning() {
         let shouldRun = isConfigured && wantsRunning && isOnScreen && !isShutDown
         let session = self.session
+        if !shouldRun { setTrack(nil) }
         sessionQueue.async {
             if shouldRun {
                 if !session.isRunning { session.startRunning() }
@@ -248,7 +307,47 @@ final class ScannerViewController: UIViewController, AVCaptureMetadataOutputObje
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         previewLayer?.frame = view.layer.bounds
+        trackLayer.frame = view.layer.bounds
         CATransaction.commit()
+    }
+
+    // MARK: Tracking outline
+
+    /// Draws corner brackets around the barcode's on-screen box (nil hides it).
+    /// Fades out shortly after the code leaves the frame.
+    private func setTrack(_ corners: [CGPoint]?, locked: Bool = false) {
+        hideTrack?.cancel()
+        guard let corners, corners.count >= 2 else {
+            CATransaction.begin(); CATransaction.setAnimationDuration(0.2)
+            trackLayer.opacity = 0
+            CATransaction.commit()
+            return
+        }
+        let xs = corners.map(\.x), ys = corners.map(\.y)
+        // 1D barcodes report a thin strip; pad it into a comfortable box.
+        let r = CGRect(x: xs.min()!, y: ys.min()!, width: xs.max()! - xs.min()!, height: ys.max()! - ys.min()!)
+            .insetBy(dx: -14, dy: -14)
+        let box = r.height < 60 ? r.insetBy(dx: 0, dy: (r.height - 60) / 2) : r
+        let leg = min(box.width, box.height) * 0.28
+        let p = UIBezierPath()
+        for (x, y, dx, dy) in [(box.minX, box.minY, 1.0, 1.0), (box.maxX, box.minY, -1.0, 1.0),
+                               (box.minX, box.maxY, 1.0, -1.0), (box.maxX, box.maxY, -1.0, -1.0)] {
+            p.move(to: CGPoint(x: x, y: y + dy * leg))
+            p.addLine(to: CGPoint(x: x, y: y))
+            p.addLine(to: CGPoint(x: x + dx * leg, y: y))
+        }
+        let color = UIColor(named: locked ? "Success" : "Accent")?.cgColor
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(0.08)
+        trackLayer.path = p.cgPath
+        trackLayer.strokeColor = color
+        trackLayer.shadowColor = color
+        trackLayer.opacity = 1
+        CATransaction.commit()
+
+        let work = DispatchWorkItem { [weak self] in self?.setTrack(nil) }
+        hideTrack = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35, execute: work)
     }
 
     // MARK: Metadata
@@ -257,10 +356,12 @@ final class ScannerViewController: UIViewController, AVCaptureMetadataOutputObje
                         didOutput metadataObjects: [AVMetadataObject],
                         from connection: AVCaptureConnection) {
         let now = Date()
-        let codes = metadataObjects
-            .compactMap { ($0 as? AVMetadataMachineReadableCodeObject)?.stringValue }
-            .filter { !$0.isEmpty }
-        guard let code = codes.first else { return }
+        guard let object = metadataObjects
+            .compactMap({ $0 as? AVMetadataMachineReadableCodeObject })
+            .first(where: { !($0.stringValue ?? "").isEmpty }),
+              let code = object.stringValue else { return }
+        let onScreen = previewLayer?.transformedMetadataObject(for: object) as? AVMetadataMachineReadableCodeObject
+        setTrack(onScreen?.corners, locked: !acceptsCodes)
 
         if code == lastCode {
             let wasAway = now.timeIntervalSince(lastCodeSeenAt) > reappearGap
@@ -271,7 +372,7 @@ final class ScannerViewController: UIViewController, AVCaptureMetadataOutputObje
 
         lastCode = code
         lastCodeSeenAt = now
-        AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
+        setTrack(onScreen?.corners, locked: true)
         delegate?.scanner(self, didFind: code)
     }
 }

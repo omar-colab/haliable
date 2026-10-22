@@ -43,7 +43,7 @@ struct ScanSessionView: View {
 
     private let lookup = ProductLookupService()
 
-    private var hasTorch: Bool { AVCaptureDevice.default(for: .video)?.hasTorch ?? false }
+    private var hasTorch: Bool { ScannerViewController.bestCamera()?.hasTorch ?? false }
 
     var body: some View {
         ZStack {
@@ -92,7 +92,7 @@ struct ScanSessionView: View {
                            center: UnitPoint(x: 0.5, y: 0.42), startRadius: 10, endRadius: 460)
         } else {
             BarcodeScannerView(
-                onFound: { code in Task { await handleScan(barcode: code) } },
+                onFound: { code in impactLight(); Task { await handleScan(barcode: code) } },
                 onError: { _ in withAnimation(.easeInOut(duration: 0.3)) { cameraUnavailable = true } },
                 isActive: cameraActive,
                 acceptsCodes: !isLoading,
@@ -243,7 +243,7 @@ struct ScanSessionView: View {
     }
 
     private func setTorch(_ on: Bool) {
-        guard let device = AVCaptureDevice.default(for: .video), device.hasTorch,
+        guard let device = ScannerViewController.bestCamera(), device.hasTorch,
               (try? device.lockForConfiguration()) != nil else { return }
         device.torchMode = on ? .on : .off
         device.unlockForConfiguration()
