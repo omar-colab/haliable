@@ -32,6 +32,7 @@ struct ReviewDetailView: View {
                         }
                     }
                     .cardStyle()
+                    if let sources = request.sources, !sources.isEmpty { sourcesCard(sources) }
                 } else {
                     pendingCard
                 }
@@ -50,6 +51,32 @@ struct ReviewDetailView: View {
         }
         .navigationTitle("Review")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func sourcesCard(_ sources: [ReviewSource]) -> some View {
+        VStack(alignment: .leading, spacing: DSSpacing.sm) {
+            Text("What the sources say").font(DSFont.headline).foregroundStyle(DSColor.textPrimary)
+            Text("Haliable reports what published sources say. Read them and decide for yourself.")
+                .font(DSFont.caption).foregroundStyle(DSColor.textSecondary)
+            ForEach(sources, id: \.self) { source in
+                VStack(alignment: .leading, spacing: DSSpacing.xxs) {
+                    Text("“\(source.quote)”")
+                        .font(DSFont.body).italic().foregroundStyle(DSColor.textPrimary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if let url = URL(string: source.url), url.scheme == "https" || url.scheme == "http" {
+                        Link(destination: url) {
+                            Label("\(source.name) · Tier \(source.tier)", systemImage: "arrow.up.right.square")
+                                .font(DSFont.caption)
+                        }
+                        .tint(DSColor.accentDeep)
+                    } else {
+                        Text("\(source.name) · Tier \(source.tier)").font(DSFont.caption).foregroundStyle(DSColor.textSecondary)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .cardStyle()
     }
 
     private var pendingCard: some View {

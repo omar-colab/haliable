@@ -33,6 +33,7 @@ FILES=(
   supabase/migrations/0013_review_rate_limit.up.sql
   supabase/migrations/0014_review_insert_guard.up.sql
   supabase/migrations/0015_security_review.up.sql
+  supabase/migrations/0016_advisor_hardening.up.sql
 )
 
 for f in "${FILES[@]}"; do

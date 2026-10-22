@@ -35,6 +35,8 @@ struct ReviewRequest: Identifiable, Codable, Hashable {
     var verdictReason: String?    // the written explanation returned to the user
     var createdAt: Date
     var reviewedAt: Date?
+    /// The published sources behind the answer (quotes machine-checked on their pages).
+    var sources: [ReviewSource]? = nil
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -48,7 +50,16 @@ struct ReviewRequest: Identifiable, Codable, Hashable {
         case verdictReason = "verdict_reason"
         case createdAt = "created_at"
         case reviewedAt = "reviewed_at"
+        case sources = "evidence"
     }
+}
+
+/// One source returned with a review — what it says, and where to read it yourself.
+struct ReviewSource: Codable, Hashable {
+    let name: String
+    let url: String
+    let tier: Int
+    let quote: String
 }
 
 #if DEBUG

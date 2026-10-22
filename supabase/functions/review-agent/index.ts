@@ -192,8 +192,9 @@ async function run(id: string) {
       <ul>${rows || "<li>No sources found.</li>"}</ul>
       <p>Replying to this email does nothing — tap a button.</p>
       <p><a href="${link("approve")}" style="display:inline-block;padding:14px 22px;background:#1f8a4c;color:#fff;border-radius:10px;text-decoration:none;font-weight:600">✅ Approve &amp; send to user</a>
+         &nbsp; <a href="${link("report")}" style="display:inline-block;padding:14px 22px;background:#b7791f;color:#fff;border-radius:10px;text-decoration:none;font-weight:600">🟡 Questionable + sources (user decides)</a>
          &nbsp; <a href="${link("reject")}" style="display:inline-block;padding:14px 22px;background:#b3261e;color:#fff;border-radius:10px;text-decoration:none;font-weight:600">❌ Reject</a></p>
-      <p style="font-size:12px;color:#666">If the buttons don't work, open:<br>Approve: ${link("approve")}<br>Reject: ${link("reject")}</p>`);
+      <p style="font-size:12px;color:#666">If the buttons don't work, open:<br>Approve: ${link("approve")}<br>Questionable: ${link("report")}<br>Reject: ${link("reject")}</p>`);
   } catch (e) {
     console.error(e);
     await db.from("review_agent_drafts").update({ status: "failed", draft: { error: String(e) }, updated_at: new Date().toISOString() }).eq("request_id", id);
