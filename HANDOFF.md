@@ -20,7 +20,7 @@ to be applied live.
 **After build 11 (on the branch, not uploaded yet):** the background orbs now drift in a slow
 figure-eight and breathe (glow), and they are on every AppScreen too, including Settings. The
 Theme picker is now applied to the UIKit windows, because `.preferredColorScheme` didn't
-reach the already-open Settings sheet. Ship it as build 12 with `scripts/testflight-upload.sh`.
+reach the already-open Settings sheet. Shipped in build 12 (TestFlight, Oct 21) with a glint on the scan card, sonar rings on the scan button and a verdict that assembles with a ping.
 Interview snacks checked against the rules: Lay's Classic (0028400090858) and Larabar Peanut
 Butter (021908509624) both come back with no flags.
 
