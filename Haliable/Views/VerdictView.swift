@@ -32,6 +32,7 @@ struct VerdictView: View {
             VStack(alignment: .leading, spacing: DSSpacing.sm) {
                 verdictTop
                     .padding(.top, DSSpacing.lg)
+                    .reveal()
 
                 // A draft driving cell is never shown as an authoritative ruling.
                 if live.overallNeedsReview {
@@ -41,6 +42,7 @@ struct VerdictView: View {
                 }
 
                 standardChips
+                    .reveal(0.08)
 
                 CertificationStatusView(product: live.product,
                                         standard: settings.halalStandard)
@@ -57,7 +59,9 @@ struct VerdictView: View {
                         message: "No prohibited or questionable ingredients matched our verified rules."
                     )
                 } else {
-                    ForEach(live.flagged) { flaggedRow($0) }
+                    ForEach(Array(live.flagged.enumerated()), id: \.element.id) { i, item in
+                        flaggedRow(item).reveal(0.16 + Double(min(i, 6)) * 0.05)
+                    }
                 }
 
                 if live.overall != .halal {
@@ -105,6 +109,7 @@ struct VerdictView: View {
                         checked: live.matched.count,
                         tint: live.overall.tint,
                         diameter: 66)
+                .background(PulseRings(color: live.overall.tint, diameter: 66, repeats: false))
             VStack(alignment: .leading, spacing: 2) {
                 // A draft driving cell never gets a confident headline (§A3);
                 // the PendingReviewBanner below carries the draft grade.

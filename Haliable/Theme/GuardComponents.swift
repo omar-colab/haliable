@@ -48,6 +48,71 @@ extension View {
     func reveal(_ delay: Double = 0) -> some View { modifier(RevealOnAppear(delay: delay)) }
 }
 
+/// A soft band of light that sweeps across the view every `every` seconds —
+/// the "this is the button" glint. Reduce Motion: no glint.
+struct Shimmer: ViewModifier {
+    var every: Double = 3.6
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func body(content: Content) -> some View {
+        content.overlay {
+            if !reduceMotion {
+                TimelineView(.animation(minimumInterval: 1 / 30)) { timeline in
+                    let cycle = timeline.date.timeIntervalSinceReferenceDate
+                        .truncatingRemainder(dividingBy: every) / every
+                    // the sweep takes the first 30% of each cycle, then rests
+                    let x = min(cycle / 0.3, 1)
+                    GeometryReader { geo in
+                        LinearGradient(colors: [.clear, .white.opacity(0.35), .clear],
+                                       startPoint: .leading, endPoint: .trailing)
+                            .frame(width: geo.size.width * 0.35)
+                            .rotationEffect(.degrees(18))
+                            .offset(x: -geo.size.width * 0.5 + geo.size.width * 1.9 * x)
+                            .frame(maxHeight: .infinity)
+                    }
+                }
+                .blendMode(.plusLighter)
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+            }
+        }
+    }
+}
+
+/// Rings that ripple out from a view and fade, like a sonar ping — once on
+/// appear (`repeats: false`, a verdict landing) or forever (the scan button).
+struct PulseRings: View {
+    var color: Color
+    var diameter: CGFloat
+    var repeats = true
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var start = Date()
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1 / 30, paused: reduceMotion)) { timeline in
+            let elapsed = timeline.date.timeIntervalSince(start)
+            ZStack {
+                ForEach(0..<2, id: \.self) { i in
+                    let raw = (elapsed - Double(i) * 0.6) / 1.8
+                    let p = repeats ? raw.truncatingRemainder(dividingBy: 1.4) : raw
+                    if !reduceMotion, p > 0, p < 1 {
+                        Circle()
+                            .strokeBorder(color.opacity(0.55 * (1 - p)), lineWidth: 2)
+                            .frame(width: diameter, height: diameter)
+                            .scaleEffect(1 + 0.7 * p)
+                    }
+                }
+            }
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+}
+
+extension View {
+    func shimmer(every: Double = 3.6) -> some View { modifier(Shimmer(every: every)) }
+}
+
 /// Responds on press-DOWN, not on release. Waiting for touch-up is the single
 /// thing that makes an interface feel dead.
 struct PressableStyle: ButtonStyle {
@@ -149,6 +214,8 @@ struct GuardAction: View {
             .allowsHitTesting(false)
             .accessibilityHidden(true)
         }
+        .shimmer()
+        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
         .shadow(color: DSColor.accent.opacity(0.35), radius: 18, y: 8)
     }
 }
@@ -597,6 +664,7 @@ struct DockMainBubble: View {
                 .overlay(Circle().strokeBorder(.white.opacity(0.22), lineWidth: 2))
                 .background(Circle().fill(DSColor.accent.opacity(0.12)).frame(width: 80, height: 80))
                 .shadow(color: DSColor.accent.opacity(0.5), radius: 17)
+                .background(PulseRings(color: DSColor.accent, diameter: 66))
         }
         .pressable(0.92)
         .accessibilityLabel(label)

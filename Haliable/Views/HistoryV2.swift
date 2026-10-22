@@ -75,7 +75,7 @@ struct HistoryV2: View {
                             .padding(.top, DSSpacing.xs)
                             .guardListRow()
                         ForEach(rows) { rec in
-                            row(rec).guardListRow()
+                            row(rec).reveal().guardListRow()
                         }
                         .onDelete { offsets in delete(offsets.map { rows[$0] }) }
                     }
