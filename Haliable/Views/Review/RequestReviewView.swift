@@ -28,6 +28,9 @@ struct RequestReviewView: View {
     @State private var notes = ""
     @State private var errorMessage: String?
     @State private var submitted = false
+    /// App Review 5.1.2(i): explicit permission before photos and notes go to a
+    /// third-party AI. Asked once; the switch stays visible so it can be undone.
+    @AppStorage("reviewAIConsent") private var aiConsent = false
 
     var body: some View {
         NavigationStack {
@@ -107,12 +110,18 @@ struct RequestReviewView: View {
 
     private var submitSection: some View {
         Section {
+            if store.isLive {
+                Toggle(isOn: $aiConsent) {
+                    Text("Share my photos and notes with Anthropic's Claude AI, which drafts an answer from published halal sources. A person checks it before you see a verdict.")
+                        .font(DSFont.caption)
+                }
+            }
             Button {
                 Task { await submit() }
             } label: {
                 if store.isWorking { ThinkingOrb(diameter: 28) } else { Text("Submit for review").bold() }
             }
-            .disabled(images.isEmpty || store.isWorking)
+            .disabled(images.isEmpty || store.isWorking || (store.isLive && !aiConsent))
             if !store.isLive {
                 Text("Demo mode: no backend configured, so this is stored locally only.")
                     .font(DSFont.caption).foregroundStyle(DSColor.textSecondary)

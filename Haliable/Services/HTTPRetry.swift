@@ -18,8 +18,8 @@ struct RetryPolicy {
     var baseDelay: TimeInterval = 0.5     // exponential: 0.5s, 1s, 2s …
     var maxDelay: TimeInterval = 8
 
-    static let `default` = RetryPolicy()
-    static let none = RetryPolicy(maxAttempts: 1)
+    nonisolated static let `default` = RetryPolicy()
+    nonisolated static let none = RetryPolicy(maxAttempts: 1)
 }
 
 enum HTTPRetry {

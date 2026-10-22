@@ -1,4 +1,4 @@
-import { quoteOnPage, settle } from "./verdict.ts";
+import { isPrivateIp, quoteOnPage, settle } from "./verdict.ts";
 const eq = (a: unknown, b: unknown) => { if (JSON.stringify(a) !== JSON.stringify(b)) throw new Error(`${JSON.stringify(a)} != ${JSON.stringify(b)}`); };
 
 Deno.test("quote must really be on the page", () => {
@@ -30,4 +30,11 @@ Deno.test("agent only fetches public web pages", async () => {
   for (const bad of ["http://169.254.169.254/latest", "http://localhost:54321", "http://[::1]/", "file:///etc/passwd",
                      "http://db.internal/x", "https://user:pw@example.com", "http://example.com:5432", "http://intranet/"])
     eq([bad, isPublicUrl(bad)], [bad, false]);
+});
+
+Deno.test("private and internal IPs are refused, public ones pass", () => {
+  for (const ip of ["127.0.0.1", "10.1.2.3", "172.20.0.1", "192.168.1.1", "169.254.169.254", "100.64.0.1", "0.0.0.0", "::1", "fd00::1", "fe80::1", "::ffff:127.0.0.1"]) {
+    eq([ip, isPrivateIp(ip)], [ip, true]);
+  }
+  for (const ip of ["8.8.8.8", "172.32.0.1", "2606:4700::1111"]) eq([ip, isPrivateIp(ip)], [ip, false]);
 });

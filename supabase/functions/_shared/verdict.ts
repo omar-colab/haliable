@@ -62,3 +62,18 @@ export function isPublicUrl(raw: string): boolean {
   if (/^[\d.]+$/.test(h) || h.includes(":") || h.startsWith("[")) return false; // IPv4/IPv6 literals
   return true;
 }
+
+/** True for loopback, private, link-local, CGNAT and other non-public IPs —
+ *  the second half of the SSRF guard, applied to what a hostname resolves to. */
+export function isPrivateIp(ip: string): boolean {
+  const v4 = ip.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
+  if (v4) {
+    const [a, b] = [Number(v4[1]), Number(v4[2])];
+    return a === 0 || a === 10 || a === 127 || a >= 224 ||
+      (a === 100 && b >= 64 && b <= 127) || (a === 169 && b === 254) ||
+      (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 198 && (b === 18 || b === 19));
+  }
+  const h = ip.toLowerCase();
+  if (h.startsWith("::ffff:")) return isPrivateIp(h.slice(7));
+  return h === "::" || h === "::1" || /^f[cd]/.test(h) || /^fe[89ab]/.test(h);
+}

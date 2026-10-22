@@ -64,7 +64,7 @@ final class ReviewStore {
                 // supabase-swift 2.x storage upload. Adjust to your installed SDK if needed.
                 try await client.storage
                     .from(SupabaseConfig.reviewPhotoBucket)
-                    .upload(path: path, file: data,
+                    .upload(path, data: data,
                             options: FileOptions(contentType: "image/jpeg"))
                 paths.append(path)
             }

@@ -12,7 +12,7 @@
 
 import Anthropic from "npm:@anthropic-ai/sdk@0.110.0";
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
-import { type Draft, isPublicUrl, quoteOnPage, settle } from "../_shared/verdict.ts";
+import { type Draft, isPrivateIp, isPublicUrl, quoteOnPage, settle } from "../_shared/verdict.ts";
 
 const BASE = "https://abumevloleevhoqxfnoe.supabase.co";
 const db = createClient(BASE, Deno.env.get("HALIABLE_SECRET_KEY")!, { auth: { persistSession: false } });
@@ -120,6 +120,17 @@ async function capped(r: Response, max = 3_000_000): Promise<string> {
   return new TextDecoder().decode(all);
 }
 
+/** The hostname check can't see where a name points. Resolve it and refuse a
+ *  private address. If DNS lookups aren't allowed in this runtime, the
+ *  hostname check stands alone (fetch still can't reach Supabase internals). */
+async function resolvesPublic(url: string): Promise<boolean> {
+  const host = new URL(url).hostname;
+  try {
+    const ips = (await Promise.all((["A", "AAAA"] as const).map((t) => Deno.resolveDns(host, t).catch(() => [] as string[])))).flat();
+    return !ips.some(isPrivateIp);   // no answer → fetch fails on its own
+  } catch { return true; }
+}
+
 async function verify(d: Draft): Promise<Draft> {
   await Promise.all(d.sources.map(async (s) => {
     if (!isPublicUrl(s.url)) { s.verified = false; return; }
@@ -127,7 +138,7 @@ async function verify(d: Draft): Promise<Draft> {
       // Follow redirects by hand so every hop passes the SSRF guard — a public
       // page must not bounce us to an internal one.
       let url = s.url, r: Response | undefined;
-      for (let hop = 0; hop < 4 && isPublicUrl(url); hop++) {
+      for (let hop = 0; hop < 4 && isPublicUrl(url) && await resolvesPublic(url); hop++) {
         r = await fetch(url, { redirect: "manual", headers: { "User-Agent": "Mozilla/5.0 (Haliable review agent)" }, signal: AbortSignal.timeout(10000) });
         const next = r.status >= 300 && r.status < 400 ? r.headers.get("location") : null;
         if (!next) break;

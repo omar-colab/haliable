@@ -338,7 +338,7 @@ struct SettingsV2: View {
     /// server-side records (reviews, store submissions, votes).
     private func buildExportJSON(server: ServerExport) -> String {
         struct Export: Codable {
-            let app = "Haliable"
+            var app = "Haliable"
             let exportedAt: Date
             let scanCount: Int
             let scans: [Row]

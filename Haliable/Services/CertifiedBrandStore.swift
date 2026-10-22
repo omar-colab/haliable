@@ -100,7 +100,7 @@ final class CertifiedBrandStore {
 
     /// Lowercase, strip punctuation to spaces, drop generic corporate suffixes,
     /// and collapse whitespace — so "Pik-Nik Foods, USA" and "pik nik" align.
-    static func normalize(_ raw: String) -> String {
+    nonisolated static func normalize(_ raw: String) -> String {
         let lowered = raw.lowercased()
         let cleaned = lowered.unicodeScalars.map { scalar -> Character in
             CharacterSet.alphanumerics.contains(scalar) ? Character(scalar) : " "

@@ -26,6 +26,13 @@ FILES=(
   supabase/migrations/0006_account_lifecycle.up.sql
   supabase/migrations/0007_real_stores.up.sql
   supabase/migrations/0008_security_hardening.up.sql
+  supabase/migrations/0009_review_evidence.up.sql
+  supabase/migrations/0010_campus_cafes.up.sql
+  supabase/migrations/0011_storrs_places.up.sql
+  supabase/migrations/0012_review_agent.up.sql
+  supabase/migrations/0013_review_rate_limit.up.sql
+  supabase/migrations/0014_review_insert_guard.up.sql
+  supabase/migrations/0015_security_review.up.sql
 )
 
 for f in "${FILES[@]}"; do

@@ -4,6 +4,23 @@ Last updated: **Oct 20, 2026 (evening)** · **Build 8 is on TestFlight** ·
 site live · review agent built · **136 tests green**
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 
+## ▶️ RESUME HERE (Oct 22, later) — build 14
+
+- **Grading bug fixed:** `IngredientRule.category` was a `let` with a default, so Swift never decoded
+  it and every curated category tag in rules-v1.json was ignored (the keyword fallback ran instead).
+  Now `var`. Checked every rule × standard before and after: **0 grade changes** (only the internal
+  category label differs for natural flavors, carmine, whey, vanilla extract).
+- **App Review 5.1.2(i):** review photos + notes go to Anthropic (Claude) and the draft email goes
+  through Resend; neither was disclosed. The review form now has an explicit opt-in switch (Submit
+  is disabled until it's on) and the privacy policy lists Anthropic, Resend, Netlify, MailerLite.
+  Omar: update the App Store Connect privacy labels to match (Photos + User Content, shared with a
+  third party for app functionality, not tracking).
+- Site fonts are self-hosted (site/fonts, latin subset); CSP no longer allows Google.
+- review-agent refuses source URLs whose DNS points at a private IP (`isPrivateIp`, tested).
+- Release build is warning-free except the AccentColor asset-name clash (harmless).
+- `apply-migrations.sh` now lists 0009–0015, so a fresh project gets the whole schema.
+- rls_matrix.sql passes against live after 0015.
+
 ## ▶️ RESUME HERE (Oct 22) — security review, build 13
 
 Fixed and live:

@@ -4,7 +4,7 @@
 
 An iOS app that scans a product barcode, looks it up live against Open Food Facts and USDA FoodData Central, and reports a halal verdict — with the published scholarly sources behind every flagged ingredient shown right in the UI. No black-box rulings: every grade is backed by a citation the user can tap and read.
 
-Built entirely in SwiftUI, with no UI packages: every animation is drawn natively. 142 Swift tests and 4 Deno tests. Live on TestFlight (build 11).
+Built entirely in SwiftUI, with no UI packages: every animation is drawn natively. 143 Swift tests and 4 Deno tests. Live on TestFlight (build 14).
 
 ## Screenshots
 
@@ -48,7 +48,7 @@ SwiftUI app (iOS, iPhone)
 │                                 (shared HTTPRetry: timeouts, 429/5xx backoff)
 ├── SwiftData                     scan history, local state
 └── Supabase (PostGIS)            auth, review photos, Store Atlas RPCs, RLS throughout
-    ├── Edge Functions            review-agent (Anthropic API + web search, quote-verified) · review-decide (owner approval)
+    ├── Edge Functions            review-agent (Anthropic API + web search, quote-verified) · review-decide (owner approval) · delete-account
     └── Netlify functions         Sign in with Apple token store + revoke (ES256, no deps)
 ```
 
@@ -58,7 +58,7 @@ SwiftUI app (iOS, iPhone)
 
 ## Testing
 
-142 Swift tests across the grading engine, citation gate, lookup resilience (offline, rate-limit, retry), store service, account deletion, and review flows — plus Deno tests for the review agent's verdict rules (quote verification, worst-case roll-up, SSRF guard), guard tests that fail the build on TODO markers, and screenshot UI tests that generate the App Store screenshots (1320×2868) automatically via `xcresulttool`.
+143 Swift tests across the grading engine, citation gate, lookup resilience (offline, rate-limit, retry), store service, account deletion, and review flows — plus Deno tests for the review agent's verdict rules (quote verification, worst-case roll-up, SSRF guard), guard tests that fail the build on TODO markers, and screenshot UI tests that generate the App Store screenshots (1320×2868) automatically via `xcresulttool`.
 
 ```bash
 xcodebuild test -scheme Haliable \

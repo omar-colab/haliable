@@ -47,13 +47,13 @@ final class ProductLookupService {
         guard Self.isLookupable(barcode) else { throw OFFError.productNotFound }
         do {
             let product = try await resolveOnline(barcode: barcode)
-            await cache?.store(product)
+            cache?.store(product)
             return product
         } catch let error as OFFError {
             // Connectivity failure → answer from the last-known cache if we can.
             switch error {
             case .offline, .networkFailure:
-                if let hit = await cache?.cached(barcode: barcode) { return hit }
+                if let hit = cache?.cached(barcode: barcode) { return hit }
             default:
                 break
             }
