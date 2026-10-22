@@ -42,9 +42,23 @@ struct HaliableApp: App {
                         .zIndex(1)                          // always above the app
                 }
             }
-            .preferredColorScheme(theme.colorScheme)        // honor manual Light/Dark override
+            // Set on the UIKit windows, not via .preferredColorScheme: SwiftUI doesn't
+            // push that into an already-open sheet (Settings), and going back to
+            // System left the sheet stuck on the old appearance.
+            .onChange(of: theme.theme, initial: true) { _, new in applyAppearance(new) }
         }
         // SwiftData persistence for scan history + the offline product cache.
         .modelContainer(for: [ScanRecord.self, CachedProduct.self])
+    }
+
+    private func applyAppearance(_ theme: AppTheme) {
+        let style: UIUserInterfaceStyle = switch theme {
+        case .system: .unspecified
+        case .light:  .light
+        case .dark:   .dark
+        }
+        for case let scene as UIWindowScene in UIApplication.shared.connectedScenes {
+            scene.windows.forEach { $0.overrideUserInterfaceStyle = style }
+        }
     }
 }

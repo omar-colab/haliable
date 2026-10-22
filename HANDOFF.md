@@ -17,6 +17,13 @@ same release, never a lock with no way to buy); self-host the Google Fonts in si
 add a postal address to the MailerLite footer. Migration 0014 (reviewer, 117a6e1) still needs
 to be applied live.
 
+**After build 11 (on the branch, not uploaded yet):** the background orbs now drift in a slow
+figure-eight and breathe (glow), and they are on every AppScreen too, including Settings. The
+Theme picker is now applied to the UIKit windows, because `.preferredColorScheme` didn't
+reach the already-open Settings sheet. Ship it as build 12 with `scripts/testflight-upload.sh`.
+Interview snacks checked against the rules: Lay's Classic (0028400090858) and Larabar Peanut
+Butter (021908509624) both come back with no flags.
+
 ## ▶️ RESUME HERE (Oct 20, evening)
 
 **Build 10 is live on TestFlight ("Me" group, Oct 20 10:12 PM) — it is the planned "build 9";

@@ -347,35 +347,43 @@ struct ScoreRing: View {
 /// hidden from VoiceOver, and still under Reduce Motion.
 struct GuardOrbs: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var drift = false
+
+    /// Anchor (fraction of the screen from centre), size, and how far and how fast it wanders.
+    private struct Orb { let color: Color; let size, ax, ay, reach, speed, phase: CGFloat }
+    private let orbs = [
+        Orb(color: DSColor.accent, size: 230, ax:  0.30, ay: -0.30, reach: 70, speed: 0.11, phase: 0),
+        Orb(color: DSColor.gold,   size: 190, ax: -0.34, ay:  0.22, reach: 80, speed: 0.09, phase: 2.1),
+        Orb(color: DSColor.accent, size: 160, ax:  0.36, ay:  0.06, reach: 60, speed: 0.13, phase: 4.2),
+        Orb(color: DSColor.gold,   size: 120, ax: -0.20, ay: -0.10, reach: 90, speed: 0.07, phase: 1.3),
+    ]
 
     var body: some View {
         GeometryReader { geo in
-            ZStack {
-                orb(DSColor.accent.opacity(0.26), 220)
-                    .offset(x: geo.size.width * 0.34, y: -geo.size.height * 0.30)
-                    .offset(x: drift ? -14 : 10, y: drift ? 18 : -8)
-                orb(DSColor.gold.opacity(0.18), 180)
-                    .offset(x: -geo.size.width * 0.36, y: geo.size.height * 0.24)
-                    .offset(x: drift ? 16 : -10, y: drift ? -14 : 10)
-                orb(DSColor.accent.opacity(0.16), 150)
-                    .offset(x: geo.size.width * 0.40, y: geo.size.height * 0.04)
-                    .offset(x: drift ? 10 : -12, y: drift ? -16 : 12)
+            TimelineView(.animation(minimumInterval: 1 / 30, paused: reduceMotion)) { timeline in
+                let t = reduceMotion ? 0 : CGFloat(timeline.date.timeIntervalSinceReferenceDate
+                                                  .truncatingRemainder(dividingBy: 10_000))
+                ZStack {
+                    ForEach(orbs.indices, id: \.self) { i in
+                        let o = orbs[i]
+                        let a = t * o.speed + o.phase
+                        // breathes between dim and bright on its own beat
+                        let glow = 0.5 + 0.5 * sin(a * 1.7)
+                        Circle()
+                            .fill(RadialGradient(colors: [o.color.opacity(0.20 + 0.16 * glow), o.color.opacity(0)],
+                                                 center: .center, startRadius: 0, endRadius: o.size * 0.6))
+                            .frame(width: o.size, height: o.size)
+                            .scaleEffect(0.9 + 0.2 * glow)
+                            .blur(radius: 36)
+                            // a lazy figure-eight around its anchor
+                            .offset(x: geo.size.width * o.ax + o.reach * sin(a),
+                                    y: geo.size.height * o.ay + o.reach * 0.8 * sin(a * 2 + 0.5))
+                    }
+                }
+                .frame(width: geo.size.width, height: geo.size.height)
             }
-            .animation(reduceMotion ? nil
-                       : .easeInOut(duration: 19).repeatForever(autoreverses: true),
-                       value: drift)
         }
         .allowsHitTesting(false)
         .accessibilityHidden(true)
-        .onAppear { if !reduceMotion { drift = true } }
-    }
-
-    private func orb(_ color: Color, _ size: CGFloat) -> some View {
-        Circle()
-            .fill(color)
-            .frame(width: size, height: size)
-            .blur(radius: 58)
     }
 }
 

@@ -93,6 +93,7 @@ struct AppScreen<Trailing: View, Content: View>: View {
         ZStack {
             DSColor.background.ignoresSafeArea()
             GeometryBackdrop()
+            GuardOrbs().ignoresSafeArea()
             AppAmbientGlow()
             VStack(spacing: 0) {
                 AppScreenHeader(eyebrow: eyebrow, title: title, titleAccent: titleAccent, trailing: trailing)
