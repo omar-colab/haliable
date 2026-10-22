@@ -67,7 +67,7 @@ struct VerdictView: View {
                 if live.overall != .halal {
                     GuardAction(symbol: "pencil.line",
                                 title: "Ask a scholar",
-                                subtitle: "Send the label for a human ruling.") {
+                                subtitle: "We research the label and send you the sources.") {
                         showReviewRequest = true
                     }
                     .padding(.top, DSSpacing.xxs)

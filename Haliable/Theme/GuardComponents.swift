@@ -430,6 +430,17 @@ struct GuardOrbs: View {
                 let t = reduceMotion ? 0 : CGFloat(timeline.date.timeIntervalSinceReferenceDate
                                                   .truncatingRemainder(dividingBy: 10_000))
                 ZStack {
+                    // Aurora: a wide ribbon of green and gold light turning very slowly
+                    // (one lap every ~3.5 min) behind the orbs.
+                    Ellipse()
+                        .fill(AngularGradient(colors: [DSColor.accent.opacity(0.0), DSColor.accent.opacity(0.22),
+                                                       DSColor.gold.opacity(0.14), DSColor.accent.opacity(0.0),
+                                                       DSColor.accentGradientEnd.opacity(0.20), DSColor.accent.opacity(0.0)],
+                                              center: .center, angle: .radians(Double(t) * 0.03)))
+                        .frame(width: geo.size.width * 1.5, height: geo.size.height * 0.55)
+                        .rotationEffect(.radians(Double(sin(t * 0.05)) * 0.35))
+                        .offset(y: -geo.size.height * 0.12 + 30 * sin(t * 0.07))
+                        .blur(radius: 60)
                     ForEach(orbs.indices, id: \.self) { i in
                         let o = orbs[i]
                         let a = t * o.speed + o.phase
@@ -469,6 +480,7 @@ struct RingEmblem: View {
                 .truncatingRemainder(dividingBy: 1) * Double(rings + 3) - 1
             emblem(wave: wave)
         }
+        .frame(minWidth: 0, maxWidth: .infinity)
         .frame(height: 86)
         .clipped()
         .accessibilityHidden(true)

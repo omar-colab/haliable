@@ -21,7 +21,7 @@ struct MyReviewsV2: View {
                 GuardBackground()
                 ScrollView {
                     VStack(spacing: 10) {
-                        GuardIDRow(title: "Reviews", subtitle: "Ask a human") {
+                        GuardIDRow(title: "Reviews", subtitle: "Sources for tricky labels") {
                             if auth.isSignedIn {
                                 RingButton(symbol: "pencil.line", label: "Request a review") { showRequest = true }
                             }
@@ -47,7 +47,7 @@ struct MyReviewsV2: View {
     @ViewBuilder private var signedIn: some View {
         GuardAction(symbol: "pencil.line",
                     title: "Not sure about something?",
-                    subtitle: "Photograph the label — a scholar rules on it.") {
+                    subtitle: "Photograph the label — we send back what the sources say.") {
             showRequest = true
         }
         GuardSection(title: "Your requests")
@@ -79,7 +79,7 @@ struct MyReviewsV2: View {
                 .font(DSFont.title)
                 .foregroundStyle(DSColor.textPrimary)
                 .multilineTextAlignment(.center)
-            Text("Photograph a tricky label and a person rules on it. The answer comes back to your account.")
+            Text("Photograph a tricky label. We research it and send back what published sources say, to your account.")
                 .font(.system(size: 14))
                 .foregroundStyle(DSColor.textSecondary)
                 .multilineTextAlignment(.center)

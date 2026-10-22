@@ -20,7 +20,9 @@ struct AtlasV2: View {
     @State private var selected: Store?
     @State private var showSubmit = false
     @State private var filter: ScopeFilter = .all
-    @State private var listOpen = true
+    @State private var listOpen = false
+    /// What the map is showing right now (nil until the first camera settle).
+    @State private var region: MKCoordinateRegion?
     @State private var appleSearch: Task<Void, Never>?
 
     private let fallback = CLLocationCoordinate2D.atlasFallback
@@ -38,9 +40,15 @@ struct AtlasV2: View {
         }
     }
 
+    /// Places show only once you're zoomed in to roughly a town (~20 km tall).
+    /// Zoomed out further, the map stays empty rather than guessing.
+    private static let maxSpanDegrees = 0.2
+    private var zoomedIn: Bool { (region?.span.latitudeDelta ?? 0) <= Self.maxSpanDegrees }
+
     private var visible: [Store] {
-        (stores.stores + stores.appleStores)
-            .filter { filter.admits($0.halalScope) }
+        guard zoomedIn else { return [] }
+        return (stores.stores + stores.appleStores)
+            .filter { filter.admits($0.halalScope) && inView($0.coordinate) }
             .sorted { ($0.distanceM ?? .greatestFiniteMagnitude) < ($1.distanceM ?? .greatestFiniteMagnitude) }
     }
 
@@ -90,13 +98,23 @@ struct AtlasV2: View {
         .mapStyle(.standard(pointsOfInterest: .excludingAll))
         // Wherever the map is pointed, load verified places and Apple Maps results there.
         .onMapCameraChange(frequency: .onEnd) { ctx in
+            region = ctx.region
             appleSearch?.cancel()
+            guard zoomedIn else { return }
             appleSearch = Task { await stores.loadVisible(ctx.region, user: location.coordinate) }
         }
     }
 
+    private func inView(_ c: CLLocationCoordinate2D) -> Bool {
+        guard let r = region else { return true }
+        return abs(c.latitude - r.center.latitude) <= r.span.latitudeDelta / 2
+            && abs(c.longitude - r.center.longitude) <= r.span.longitudeDelta / 2
+    }
+
     private func pin(_ store: Store) -> some View {
         let on = selected?.id == store.id
+        let fill = store.isAppleMaps ? [DSColor.textSecondary, DSColor.textSecondary]
+                                     : [DSColor.accent, DSColor.accentGradientEnd]
         return Button { selected = store } label: {
             HStack(spacing: 5) {
                 Image(systemName: store.category.symbol)
@@ -104,7 +122,7 @@ struct AtlasV2: View {
                     .foregroundStyle(.white)
                     .frame(width: 17, height: 17)
                     .background(on ? AnyShapeStyle(.white.opacity(0.26))
-                                   : AnyShapeStyle(LinearGradient(colors: [DSColor.accent, DSColor.accentGradientEnd],
+                                   : AnyShapeStyle(LinearGradient(colors: fill,
                                                                   startPoint: .topLeading, endPoint: .bottomTrailing)),
                                 in: Circle())
                 Text(store.name)
@@ -117,7 +135,7 @@ struct AtlasV2: View {
             .padding(.vertical, 5)
             .background {
                 if on {
-                    Capsule().fill(LinearGradient(colors: [DSColor.accent, DSColor.accentGradientEnd],
+                    Capsule().fill(LinearGradient(colors: fill,
                                                   startPoint: .topLeading, endPoint: .bottomTrailing))
                 } else {
                     Capsule().fill(DSColor.surface.opacity(0.95))
@@ -127,7 +145,8 @@ struct AtlasV2: View {
             .shadow(color: on ? DSColor.accent.opacity(0.45) : .black.opacity(0.18), radius: 8, y: 3)
         }
         .pressable(0.94)
-        .accessibilityLabel("\(store.name), \(store.halalScope.displayName)")
+        .accessibilityLabel(store.isAppleMaps ? "\(store.name), Apple Maps result, not verified"
+                                                : "\(store.name), \(store.halalScope.displayName)")
     }
 
     // MARK: - Chrome
@@ -143,15 +162,14 @@ struct AtlasV2: View {
     }
 
     private var areaName: String {
-        if let city = stores.stores.first?.city, !city.isEmpty {
-            return city == "Storrs" ? "UConn Storrs" : city
-        }
-        return "Near you"
+        zoomedIn ? "Halal places in view" : "Zoom in to find halal places"
     }
 
     @ViewBuilder private var statusChip: some View {
-        if stores.isLoading {
-            GuardChip(text: "Finding halal places near you…")
+        if !zoomedIn {
+            GuardChip(text: "Zoom in on an area to see halal places there")
+        } else if stores.isLoading {
+            GuardChip(text: "Finding halal places here…")
         } else if let message = stores.lastError {
             GuardChip(text: message)
         }
@@ -168,7 +186,7 @@ struct AtlasV2: View {
                                     (.meat, "Meat"), (.options, "Options")],
                           selection: $filter)
 
-            GuardSection(title: visible.count == 1 ? "1 place near you" : "\(visible.count) places near you",
+            GuardSection(title: visible.count == 1 ? "1 place in view" : "\(visible.count) places in view",
                          trailing: listOpen ? "Map" : "List") {
                 withAnimation(DSMotion.sheet) { listOpen.toggle() }
             }
@@ -217,7 +235,7 @@ struct AtlasV2: View {
 
     /// Frames the Settings search radius (1° latitude ≈ 111 km).
     private var radiusSpan: MKCoordinateSpan {
-        let deg = settings.searchRadiusKm * 2 / 111
+        let deg = min(settings.searchRadiusKm * 2 / 111, Self.maxSpanDegrees)
         return MKCoordinateSpan(latitudeDelta: deg, longitudeDelta: deg)
     }
 

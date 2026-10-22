@@ -25,7 +25,7 @@ struct ReviewDetailView: View {
                 if request.status == .completed, let verdict = request.verdict {
                     VStack(alignment: .leading, spacing: DSSpacing.xs) {
                         VerdictBadge(verdict: verdict)
-                        Text("Manually reviewed by Haliable")
+                        Text("Researched and checked by Haliable")
                             .font(DSFont.caption).foregroundStyle(DSColor.textSecondary)
                         if let reason = request.verdictReason {
                             Text(reason).font(DSFont.body).foregroundStyle(DSColor.textPrimary)
@@ -85,7 +85,7 @@ struct ReviewDetailView: View {
             VStack(alignment: .leading, spacing: DSSpacing.xxs / 2) {
                 Text(request.status.displayName)
                     .font(DSFont.headline).foregroundStyle(DSColor.textPrimary)
-                Text("We'll notify you here once a reviewer has looked at your photos.")
+                Text("Your answer and its sources will appear here once they've been checked.")
                     .font(DSFont.caption).foregroundStyle(DSColor.textSecondary)
             }
         }

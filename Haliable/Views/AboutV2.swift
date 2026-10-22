@@ -100,10 +100,10 @@ struct AboutV2: View {
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    /// A soft rail of standards-body chips.
+    /// Standards-body chips, wrapped onto as many lines as they need. (A
+    /// horizontal rail with clipping disabled let chips slide out of the card.)
     private func chips(_ items: [String]) -> some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: DSSpacing.xs) {
+        WrapLayout(spacing: DSSpacing.xs) {
                 ForEach(items, id: \.self) { item in
                     Text(item)
                         .font(DSFont.caption)
@@ -113,16 +113,51 @@ struct AboutV2: View {
                         .background(DSColor.surfaceElevated, in: Capsule())
                         .overlay(Capsule().strokeBorder(DSColor.outline, lineWidth: 1))
                 }
-            }
-            .padding(.vertical, 1)
         }
-        .scrollClipDisabled()
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var divider: some View {
         Rectangle()
             .fill(DSColor.outline.opacity(0.5))
             .frame(height: 1)
+    }
+}
+
+/// Lays children out left to right, starting a new line when the next one won't fit.
+private struct WrapLayout: Layout {
+    var spacing: CGFloat
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let rows = rows(width: proposal.width ?? .infinity, subviews)
+        let height = rows.map(\.height).reduce(0, +) + spacing * CGFloat(max(rows.count - 1, 0))
+        return CGSize(width: proposal.width ?? rows.map(\.width).max() ?? 0, height: height)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var y = bounds.minY
+        for row in rows(width: bounds.width, subviews) {
+            var x = bounds.minX
+            for i in row.items {
+                let size = subviews[i].sizeThatFits(.unspecified)
+                subviews[i].place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(size))
+                x += size.width + spacing
+            }
+            y += row.height + spacing
+        }
+    }
+
+    private func rows(width: CGFloat, _ subviews: Subviews) -> [(items: [Int], width: CGFloat, height: CGFloat)] {
+        var rows: [(items: [Int], width: CGFloat, height: CGFloat)] = []
+        for (i, view) in subviews.enumerated() {
+            let size = view.sizeThatFits(.unspecified)
+            if let last = rows.last, last.width + spacing + size.width <= width {
+                rows[rows.count - 1] = (last.items + [i], last.width + spacing + size.width, max(last.height, size.height))
+            } else {
+                rows.append(([i], size.width, size.height))
+            }
+        }
+        return rows
     }
 }
 

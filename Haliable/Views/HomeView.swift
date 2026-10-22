@@ -118,7 +118,7 @@ struct HomeView: View {
                 if awaitingCount > 0 {
                     GuardRow(symbol: "clock",
                              tint: DSColor.textPrimary,
-                             title: awaitingCount == 1 ? "1 awaiting a scholar" : "\(awaitingCount) awaiting a scholar",
+                             title: awaitingCount == 1 ? "1 awaiting an answer" : "\(awaitingCount) awaiting an answer",
                              subtitle: "Review requests in progress",
                              thinking: true,
                              action: onSeeReviews)
@@ -130,12 +130,19 @@ struct HomeView: View {
                 ForEach(history.prefix(3)) { rec in scanRow(rec) }
             }
         } else {
-            GuardRow(symbol: "sparkles",
-                     tint: DSColor.accent,
-                     title: "Nothing needs you yet",
-                     subtitle: "Scans that aren't clearly halal show up here.",
-                     showsArrow: false,
-                     thinking: true)
+            // First run: show how it works instead of empty space.
+            VStack(spacing: 10) {
+                GuardSection(title: "How it works")
+                GuardRow(symbol: "barcode.viewfinder", tint: DSColor.accent,
+                         title: "Scan the barcode",
+                         subtitle: "We read the ingredient list for you.", showsArrow: false)
+                GuardRow(symbol: "checklist", tint: DSColor.accent,
+                         title: "Every ingredient is checked",
+                         subtitle: "Against the standard you follow, with sources.", showsArrow: false)
+                GuardRow(symbol: "text.book.closed", tint: DSColor.warning,
+                         title: "Unsure? Ask for sources",
+                         subtitle: "We research the label and send back what scholars wrote.", showsArrow: false)
+            }
         }
     }
 
