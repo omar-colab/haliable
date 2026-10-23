@@ -44,6 +44,12 @@ final class USDAFoodDataService: ProductLookupSource {
         let ingredients: String?       // the full ingredient statement
     }
 
+    /// USDA pads codes inconsistently (UPC-A vs GTIN-14), so compare without leading zeros.
+    static func sameCode(_ gtin: String, _ barcode: String) -> Bool {
+        let strip = { (s: String) in s.drop { $0 == "0" } }
+        return !strip(barcode).isEmpty && strip(gtin) == strip(barcode)
+    }
+
     // Given a barcode, search USDA Branded Foods and return a Product.
     // Same async throws shape as OpenFoodFactsService, so callers
     // treat both services identically.
@@ -87,16 +93,11 @@ final class USDAFoodDataService: ProductLookupSource {
             throw OFFError.decoding(error)
         }
 
-        // USDA search can return loose matches, so find the food whose
-        // gtinUpc actually matches the barcode we scanned. If none match
-        // exactly, fall back to the first result (USDA's best guess).
-        let normalized = barcode.count == 12 ? "0" + barcode : barcode
-        let exact = decoded.foods.first { food in
-            guard let gtin = food.gtinUpc else { return false }
-            // USDA pads codes inconsistently; compare ignoring leading zeros.
-            return gtin.hasSuffix(barcode) || gtin.hasSuffix(normalized)
-        }
-        guard let food = exact ?? decoded.foods.first else {
+        // USDA search is full-text, so the top hit for a barcode with no exact
+        // match is some OTHER product. Grading its ingredients under this
+        // barcode can say "halal" for the wrong food, so an exact GTIN match is
+        // required; anything else is not-found here and the chain moves to OFF.
+        guard let food = decoded.foods.first(where: { $0.gtinUpc.map { Self.sameCode($0, barcode) } ?? false }) else {
             throw OFFError.productNotFound
         }
 
