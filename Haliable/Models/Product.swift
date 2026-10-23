@@ -20,4 +20,9 @@ struct Product: Identifiable, Hashable {
     /// detect a halal certifier and compare it to the user's standard. Defaults
     /// to empty so existing callers/tests/previews keep compiling.
     var labels: [String] = []
+
+    /// Open Food Facts `ingredients_tags` — its taxonomy reading of the label in
+    /// English ("en:pork-gelatin") whatever language the label is in. The engine
+    /// uses the "en:" ones only to fill in what the text itself doesn't name.
+    var ingredientTags: [String] = []
 }

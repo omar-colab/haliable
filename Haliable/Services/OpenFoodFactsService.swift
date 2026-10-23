@@ -56,6 +56,8 @@ struct OFFProduct: Codable {
     let productName: String?
     let brands: String?
     let ingredientsText: String?
+    let ingredientsTextEn: String?   // English text when the product has one
+    let ingredientsTags: [String]?   // OFF taxonomy, e.g. ["en:sugar", "en:pork-gelatin"]
     let additivesTags: [String]?  // e.g. ["en:e120", "en:e441"]
     let labelsTags: [String]?     // e.g. ["en:halal", "en:jakim"]
 
@@ -63,6 +65,8 @@ struct OFFProduct: Codable {
         case brands
         case productName = "product_name"
         case ingredientsText = "ingredients_text"
+        case ingredientsTextEn = "ingredients_text_en"
+        case ingredientsTags = "ingredients_tags"
         case additivesTags = "additives_tags"
         case labelsTags = "labels_tags"
     }
@@ -138,9 +142,17 @@ final class OpenFoodFactsService: ProductLookupSource {
             id: decoded.code,
             name: offProduct.productName ?? "Unknown product",
             brand: offProduct.brands,
-            rawIngredientsText: offProduct.ingredientsText,
+            rawIngredientsText: Self.preferredIngredientsText(offProduct),
             additivesENumbers: eNumbers,
-            labels: offProduct.labelsTags ?? []
+            labels: offProduct.labelsTags ?? [],
+            ingredientTags: offProduct.ingredientsTags ?? []
         )
+    }
+
+    /// English text when OFF has it, else the label's main-language text. The
+    /// engine also reads `ingredients_tags`, so a French-only label still checks.
+    static func preferredIngredientsText(_ p: OFFProduct) -> String? {
+        if let en = p.ingredientsTextEn, !en.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return en }
+        return p.ingredientsText
     }
 }

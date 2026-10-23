@@ -1,0 +1,209 @@
+//
+//  IngredientCheckerTests.swift
+//  HaliableTests
+//
+//  Real-label parsing and matching: the shapes Open Food Facts and USDA text
+//  actually arrive in. Every test here guards one of two failures — a concern
+//  the label names that we miss (false Halal), or a word that isn't the concern
+//  at all (false Haram).
+//
+
+import XCTest
+@testable import Haliable
+
+final class IngredientCheckerTests: XCTestCase {
+
+    private static let engine = RulesEngine()
+
+    private func verdict(_ text: String, eNumbers: [String] = [], tags: [String] = [],
+                         standard: HalalStandard = .general) -> ProductVerdict {
+        Self.engine.evaluate(product: Product(id: "t", name: "T", brand: nil, rawIngredientsText: text,
+                                              additivesENumbers: eNumbers, ingredientTags: tags),
+                             standard: standard)
+    }
+    private func ids(_ v: ProductVerdict) -> Set<String> { Set(v.matched.compactMap(\.matchedRule?.id)) }
+    private func item(_ v: ProductVerdict, _ id: String) -> MatchedIngredient? {
+        v.matched.first { $0.matchedRule?.id == id }
+    }
+
+    // MARK: - Normalization
+
+    func testENumberSpellingsCollapse() {
+        let n = IngredientParser.normalize("E 471, E-472e, INS 322(i), e471i, E\u{2011}120, emulsifier (476, 442)")
+        XCTAssertEqual(n, "e471, e472, e322, e471, e120, emulsifier (e476, e442)")
+        // Not an additive: quantities and vitamin E.
+        XCTAssertEqual(IngredientParser.normalize("vitamin e 400 iu, sugar 471g"), "vitamin e 400 iu, sugar 471g")
+    }
+
+    func testAccentsDashesQuotesBracketsAndOCR() {
+        XCTAssertEqual(IngredientParser.normalize("GÉLATINE [BŒUF}, confectioner’s glaze, ge1atin, c0chineal"),
+                       "gelatine (bœuf), confectioner's glaze, gelatin, cochineal")
+    }
+
+    func testParseNestsAndSplitsAllergenStatements() {
+        let items = IngredientParser.parse(IngredientParser.normalize(
+            "Chocolate (sugar, cocoa butter, soy lecithin), gelatin (beef). CONTAINS: MILK, SOY."))
+        XCTAssertEqual(items.first?.own, "chocolate")
+        XCTAssertEqual(items.first?.children.map(\.own), ["sugar", "cocoa butter", "soy lecithin"])
+        XCTAssertEqual(items[1].fullText, "gelatin (beef)")
+        XCTAssertTrue(items.contains { $0.own == "soy" })   // its own item, not gelatin's
+    }
+
+    func testUnbalancedBracketsDoNotLeakIntoDriverText() {
+        // HANDOFF sweep: the driver string read "enzymes]".
+        let v = verdict("Cheese (milk, salt, enzymes]), whey")
+        XCTAssertEqual(item(v, "rennet")?.originalText, "enzymes")
+        XCTAssertFalse(v.matched.contains { $0.originalText.contains("]") || $0.originalText.contains(")") })
+    }
+
+    // MARK: - Origin attaches to the right ingredient
+
+    /// A plant word next to gelatin in the same list item must not make the gelatin plant.
+    func testPlantWordOnlyResolvesItsOwnPhrase() {
+        let v = verdict("sugar, gelatin and soy lecithin")
+        XCTAssertEqual(item(v, "gelatin")?.resolvedOrigin, .unspecified)
+        XCTAssertNotEqual(item(v, "gelatin")?.grade, .halal)
+        XCTAssertEqual(item(v, "lecithin")?.grade, .halal)
+    }
+
+    func testAllergenStatementSoyDoesNotResolveGelatin() {
+        let v = verdict("sugar, gelatin\nCONTAINS: SOY")
+        XCTAssertNotEqual(item(v, "gelatin")?.grade, .halal)
+    }
+
+    func testParentheticalSourcesTakeTheStrictest() {
+        XCTAssertEqual(verdict("gelatin (beef, pork)").overallGrade, .haram)
+        XCTAssertEqual(verdict("gelatin (beef and/or porcine)").overallGrade, .haram)
+        XCTAssertEqual(item(verdict("gelatin (beef)"), "gelatin")?.resolvedOrigin, .animalNonZabiha)
+        // "and/or beef" may be beef: never softer than an undisclosed source.
+        XCTAssertGreaterThanOrEqual(verdict("mono- and diglycerides (from soybean and/or beef tallow)").overallGrade,
+                                    verdict("mono and diglycerides").overallGrade)
+    }
+
+    /// The same concern twice: the worse mention decides.
+    func testRepeatedIngredientKeepsTheWorstMention() {
+        XCTAssertEqual(verdict("gelatin, sugar, marshmallow (gelatin (pork))").overallGrade, .haram)
+    }
+
+    func testVeganAndPlantBasedQualifiersResolve() {
+        XCTAssertEqual(item(verdict("vegan gelatin (agar)"), "gelatin")?.grade, .halal)
+        XCTAssertEqual(item(verdict("plant-based gelatin"), "gelatin")?.grade, .halal)
+        XCTAssertEqual(item(verdict("sunflower lecithin"), "lecithin")?.grade, .halal)
+    }
+
+    // MARK: - False negatives (must flag)
+
+    func testHardHaramForms() {
+        for text in ["porcine gelatin", "pork gelatin", "PORK GELATIN", "lard", "pig skin", "bacon bits",
+                     "gélatine de porc", "manteca de cerdo", "lemak babi", "domuz jelatini",
+                     "schweinegelatine", "rum flavor", "beer batter", "whiskey", "خنزير"] {
+            XCTAssertEqual(verdict("sugar, \(text), salt").overallGrade, .haram, text)
+        }
+    }
+
+    /// Spirits are khamr like wine: pinned under every standard, lenient included.
+    func testSpiritsArePinnedUnderEveryStandard() {
+        for std in HalalStandard.allCases {
+            XCTAssertEqual(verdict("rum", standard: std).overallGrade, .haram, "\(std)")
+            XCTAssertEqual(verdict("brandy", standard: std).overallGrade, .haram, "\(std)")
+        }
+    }
+
+    func testDoubtfulFormsAreNeverHalal() {
+        for text in ["mono and diglycerides", "Mono- and Diglycerides", "mono\u{2013} and diglycerides",
+                     "monoglyceride", "mono & diglycerides", "L-cysteine", "carmine", "cochineal extract",
+                     "shellac", "confectioner’s glaze", "vanilla extract", "natural cherry flavor",
+                     "natural and artificial flavor", "glycerin", "vegetable glycerin", "beef gelatin",
+                     "enzyme", "whey", "lactosérum", "chicken broth", "beef stock", "collagen peptides",
+                     "parmesan cheese", "emulsifier (E471)", "emulsifier (471)", "INS 471", "e-120",
+                     "disodium inosinate", "bone phosphate", "gelatina", "E1105"] {
+            XCTAssertNotEqual(verdict("sugar, \(text), water").overall, .halal, text)
+        }
+    }
+
+    func testMeatSignalGradesOnTheCitedMeatRow() {
+        let chicken = verdict("chicken broth").matched.first
+        XCTAssertNil(chicken?.matchedRule)
+        XCTAssertEqual(chicken?.grade, .mashboohDisapproved)
+        XCTAssertTrue(chicken?.explanation.contains("slaughter") ?? false)
+        XCTAssertEqual(verdict("chicken broth", standard: .zabiha).overallGrade, .haram)
+    }
+
+    func testFreeTextENumbersUseTheENumberPath() {
+        let v = verdict("emulsifier: E471, colour (E120), acid (E330)")
+        XCTAssertTrue(ids(v).isSuperset(of: ["mono-diglycerides", "carmine"]))
+        XCTAssertTrue(v.matched.contains { $0.originalText == "E330 (citric acid)" && $0.verdict == .doubtful })
+    }
+
+    func testNonEnglishTextFallsBackOnEnglishTags() {
+        let v = verdict("سكر، جيلاتين بقري", tags: ["en:sugar", "en:beef-gelatin"])
+        XCTAssertTrue(ids(v).contains("gelatin"))
+        XCTAssertNotEqual(v.overall, .halal)
+    }
+
+    func testUnreadableScriptIsQuestionableNotHalal() {
+        let v = verdict("砂糖、水あめ、ゼラチン、酸味料")
+        XCTAssertEqual(v.overall, .doubtful)
+        XCTAssertTrue(v.flagged.first?.explanation.contains("script") ?? false)
+    }
+
+    func testTagsNeverOverrideWhatTheTextSays() {
+        // Text resolves the lecithin to soy; a bare tag can't undo that.
+        let v = verdict("soy lecithin", tags: ["en:lecithin"])
+        XCTAssertEqual(item(v, "lecithin")?.grade, .halal)
+    }
+
+    // MARK: - False positives (must NOT flag)
+
+    func testWordsThatOnlyLookLikeConcerns() {
+        let clean = ["graham flour", "durum wheat semolina", "colour (iron oxide pigment)", "liquorice extract",
+                     "hamburger bun (wheat flour, water, yeast)", "rump", "plantain chips", "porcini mushrooms",
+                     "sugar alcohol (erythritol)", "root beer extract", "ginger", "vinegar", "collard greens",
+                     "suitable for babies", "product of turkey", "goat's milk", "lamb's lettuce",
+                     "egg whites from chicken eggs", "blood orange juice", "coconut meat"]
+        for text in clean {
+            let v = verdict(text)
+            XCTAssertFalse(v.matched.contains { $0.grade == .haram }, text)
+            XCTAssertFalse(v.matched.contains { $0.matchedRule?.id == "wine" || $0.matchedRule?.id == "pork" }, text)
+        }
+        XCTAssertFalse(verdict("coconut meat").matched.contains { $0.categoryHint == .meat })
+    }
+
+    /// Negations can only STOP a false match — they never clear anything else.
+    func testNegationsStopFalseMatchesOnly() {
+        for text in ["alcohol-free", "non-alcoholic", "no pork", "pork-free", "gelatin-free", "free from gelatin",
+                     "sans alcool", "no added alcohol"] {
+            XCTAssertEqual(verdict("sugar, water (\(text))").overall, .halal, text)
+        }
+        // A negation elsewhere doesn't clear a real concern.
+        XCTAssertEqual(verdict("gelatin (pork-free)").overall, .doubtful)
+        XCTAssertEqual(verdict("alcohol-free, rum").overallGrade, .haram)
+        XCTAssertEqual(verdict("pork-free recipe, lard").overallGrade, .haram)
+    }
+
+    func testTurkeyBaconIsMeatNotPork() {
+        let v = verdict("turkey bacon (turkey, salt)")
+        XCTAssertNotEqual(v.overallGrade, .haram)
+        XCTAssertEqual(v.overall, .doubtful)
+    }
+
+    // MARK: - Driver determinism (HANDOFF sweep #2)
+
+    func testDriverIsStableAndInLabelOrderOnTies() {
+        let text = "Enriched corn meal, vegetable oil, cheese seasoning (whey, cheddar cheese (milk, cheese cultures, salt, enzymes), maltodextrin, natural flavor)"
+        let first = verdict(text).flagged.first?.displayName
+        for _ in 0..<25 { XCTAssertEqual(verdict(text).flagged.first?.displayName, first) }
+        let drivers = verdict(text).flagged.map(\.displayName)
+        XCTAssertEqual(drivers.first, "Whey")   // earliest on the label among the tied
+    }
+
+    // MARK: - Performance
+
+    func testLongLabelEvaluatesFast() {
+        let long = Array(repeating: "Sugar, glucose syrup, gelatin (beef), modified corn starch, citric acid, natural and artificial flavors, colour (E120, E133), carnauba wax, beeswax, soy lecithin, mono- and diglycerides (soybean oil), whey powder, salt, emulsifier (471, 322)", count: 12).joined(separator: ", ")
+        measure { _ = verdict(long, eNumbers: ["en:e120", "en:e133", "en:e322", "en:e471", "en:e901", "en:e903"]) }
+        let start = Date()
+        _ = verdict(long)
+        XCTAssertLessThan(Date().timeIntervalSince(start), 0.25)
+    }
+}

@@ -132,7 +132,8 @@ struct GradeMatrix {
     }
 
     private static func firstENumber(in text: String) -> String? {
-        guard let r = text.range(of: #"[Ee]\d{3}"#, options: .regularExpression) else { return nil }
+        // 3 or 4 digits: "E1105" must not read as "E110".
+        guard let r = text.range(of: #"[Ee]\d{3,4}(?!\d)"#, options: .regularExpression) else { return nil }
         return String(text[r]).uppercased()
     }
 

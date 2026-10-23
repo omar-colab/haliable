@@ -105,6 +105,7 @@ enum IngredientCategory: String, Codable, CaseIterable {
     static func classify(_ ingredient: MatchedIngredient) -> IngredientCategory {
         // Trust the curated rule tag when we have one.
         if let tagged = ingredient.matchedRule?.category { return tagged }
+        if let hint = ingredient.categoryHint { return hint }
 
         // Fallback heuristic for unmatched ingredients.
         let text = (ingredient.displayName + " " + ingredient.originalText).lowercased()
@@ -125,12 +126,19 @@ enum IngredientCategory: String, Codable, CaseIterable {
 
     /// Substances that are categorically prohibited and must NEVER be softened by
     /// any standard, even the lenient one.
+    /// A rule whose curated verdict is haram (pork, lard, wine and the spirits
+    /// listed with it) is pinned too, so "rum" can't grade softer than "wine".
+    /// Words match at word starts only: "pigment", "graham" and "liquorice" are
+    /// not pork or khamr.
     static func isHardHaram(_ ingredient: MatchedIngredient) -> Bool {
+        if ingredient.matchedRule?.verdict == .haram { return true }
         let text = (ingredient.displayName + " " + ingredient.originalText).lowercased()
-        return matches(text, ["pork", "swine", "bacon", "ham ", "lard", "pig",
-                              "wine", "khamr", "beer", "liquor", "ethanol",
-                              "blood", "carrion"])
+        if ENumberReference.animalOrigin(from: text) == .animalPork { return true }
+        return khamrOrProhibited.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) != nil
     }
+
+    private static let khamrOrProhibited = try! NSRegularExpression(pattern:
+        "(?<![\\p{L}\\p{N}])(?:wine|khamr|beer|liquor(?!ice)|ethanol|blood(?! orange)|carrion)")
 
     private static func matches(_ text: String, _ needles: [String]) -> Bool {
         needles.contains { text.contains($0) }

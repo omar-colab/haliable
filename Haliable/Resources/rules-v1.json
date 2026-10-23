@@ -2,7 +2,7 @@
   {
     "id": "pork",
     "ingredient": "Pork",
-    "aliases": ["pork", "pork fat", "bacon", "ham", "pork rind", "pancetta", "prosciutto"],
+    "aliases": ["pork", "pork fat", "bacon", "ham", "pork rind", "pancetta", "prosciutto", "porcine", "swine", "pig", "pigskin", "pork gelatin", "gammon", "guanciale", "porc", "jambon", "cerdo", "jamon", "tocino", "babi", "domuz", "schwein", "maiale", "suino", "varken", "porco", "خنزير"],
     "eNumber": null,
     "category": "meat",
     "verdict": "haram",
@@ -12,7 +12,7 @@
   {
     "id": "lard",
     "ingredient": "Lard",
-    "aliases": ["lard", "pork lard", "rendered pork fat"],
+    "aliases": ["lard", "pork lard", "rendered pork fat", "lardon", "saindoux", "manteca de cerdo", "strutto", "lemak babi", "domuz yagi"],
     "eNumber": null,
     "category": "meat",
     "verdict": "haram",
@@ -22,7 +22,7 @@
   {
     "id": "wine",
     "ingredient": "Wine",
-    "aliases": ["wine", "red wine", "white wine", "cooking wine", "sherry", "mirin", "rum", "brandy"],
+    "aliases": ["wine", "red wine", "white wine", "cooking wine", "sherry", "mirin", "rum", "brandy", "beer", "lager", "liqueur", "liquor", "whiskey", "whisky", "bourbon", "vodka", "gin", "sake", "champagne", "cognac", "marsala", "kirsch", "vin", "vino", "vinho", "wein", "wijn", "sarap", "arak", "biere", "cerveza", "bira", "خمر", "نبيذ"],
     "eNumber": null,
     "category": "alcohol",
     "verdict": "haram",
@@ -32,7 +32,7 @@
   {
     "id": "gelatin",
     "ingredient": "Gelatin",
-    "aliases": ["gelatin", "gelatine", "gelatin (unspecified)"],
+    "aliases": ["gelatin", "gelatine", "gelatin (unspecified)", "gelatina", "jelatin", "gelatin hydrolysate", "hydrolyzed gelatin", "جيلاتين"],
     "eNumber": "E441",
     "category": "gelatin",
     "verdict": "doubtful",
@@ -42,7 +42,7 @@
   {
     "id": "natural-flavors",
     "ingredient": "Natural flavors",
-    "aliases": ["natural flavor", "natural flavors", "natural flavouring", "natural flavoring", "natural and artificial flavors"],
+    "aliases": ["natural flavor", "natural flavors", "natural flavouring", "natural flavoring", "natural and artificial flavors", "natural flavour", "natural flavours", "natural and artificial flavor", "natural & artificial flavor", "artificial and natural flavor", "arome naturel", "aromes naturels", "aroma natural", "aromas naturales", "naturliches aroma", "naturliche aromen", "perisa asli", "dogal aroma"],
     "eNumber": null,
     "category": "additive",
     "verdict": "doubtful",
@@ -52,7 +52,7 @@
   {
     "id": "carmine",
     "ingredient": "Carmine (cochineal)",
-    "aliases": ["carmine", "cochineal", "cochineal extract", "carminic acid", "crimson lake"],
+    "aliases": ["carmine", "cochineal", "cochineal extract", "carminic acid", "crimson lake", "carmines", "carmin", "natural red 4", "ci 75470", "cochenille", "karmin"],
     "eNumber": "E120",
     "category": "additive",
     "verdict": "doubtful",
@@ -62,7 +62,7 @@
   {
     "id": "mono-diglycerides",
     "ingredient": "Mono- and diglycerides",
-    "aliases": ["mono and diglycerides", "monoglycerides", "diglycerides", "mono- and diglycerides"],
+    "aliases": ["mono and diglycerides", "monoglycerides", "diglycerides", "mono- and diglycerides", "monoglyceride", "diglyceride", "mono & diglycerides", "mono- & diglycerides", "mono-diglycerides", "mono and di-glycerides", "mono- and di-glycerides", "mono- et diglycerides", "mono et diglycerides", "mono- y digliceridos", "mono y digliceridos", "monogliceridos", "mono- und diglyceride", "mono und diglyceride", "monogliserida", "mono ve digliseritler"],
     "eNumber": "E471",
     "category": "additive",
     "verdict": "doubtful",
@@ -72,7 +72,7 @@
   {
     "id": "glycerin",
     "ingredient": "Glycerin / Glycerol",
-    "aliases": ["glycerin", "glycerine", "glycerol", "e422"],
+    "aliases": ["glycerin", "glycerine", "glycerol", "e422", "glicerina", "gliserin"],
     "eNumber": "E422",
     "category": "additive",
     "verdict": "doubtful",
@@ -82,7 +82,7 @@
   {
     "id": "l-cysteine",
     "ingredient": "L-Cysteine",
-    "aliases": ["l-cysteine", "cysteine", "l-cysteine hydrochloride"],
+    "aliases": ["l-cysteine", "cysteine", "l-cysteine hydrochloride", "l cysteine", "cysteine hydrochloride", "l-cystein", "l-cisteina", "sistein"],
     "eNumber": "E920",
     "category": "additive",
     "verdict": "doubtful",
@@ -92,7 +92,7 @@
   {
     "id": "rennet",
     "ingredient": "Rennet",
-    "aliases": ["rennet", "animal rennet", "enzymes", "microbial enzymes"],
+    "aliases": ["rennet", "animal rennet", "enzymes", "microbial enzymes", "enzyme", "presure", "cuajo", "rennin", "enzim"],
     "eNumber": null,
     "category": "enzyme",
     "verdict": "doubtful",
@@ -102,7 +102,7 @@
   {
     "id": "whey",
     "ingredient": "Whey",
-    "aliases": ["whey", "whey powder", "whey protein"],
+    "aliases": ["whey", "whey powder", "whey protein", "lactoserum", "serum de lait", "suero de leche", "lactosuero", "molke", "peynir alti suyu"],
     "eNumber": null,
     "category": "enzyme",
     "verdict": "doubtful",
@@ -112,7 +112,7 @@
   {
     "id": "shellac",
     "ingredient": "Shellac",
-    "aliases": ["shellac", "confectioner's glaze", "resinous glaze"],
+    "aliases": ["shellac", "confectioner's glaze", "resinous glaze", "confectioners glaze", "pharmaceutical glaze", "lac resin", "gomme laque", "goma laca", "schellack"],
     "eNumber": "E904",
     "category": "additive",
     "verdict": "doubtful",
@@ -122,7 +122,7 @@
   {
     "id": "alcohol",
     "ingredient": "Alcohol / Ethanol",
-    "aliases": ["alcohol", "ethanol", "ethyl alcohol", "denatured alcohol"],
+    "aliases": ["alcohol", "ethanol", "ethyl alcohol", "denatured alcohol", "alcool", "alkohol", "alkol", "etanol", "كحول"],
     "eNumber": null,
     "category": "alcohol",
     "verdict": "doubtful",
@@ -132,7 +132,7 @@
   {
     "id": "vanilla-extract",
     "ingredient": "Vanilla extract",
-    "aliases": ["vanilla extract", "pure vanilla extract"],
+    "aliases": ["vanilla extract", "pure vanilla extract", "vanilla bean extract", "extract of vanilla", "vanilla extractives", "extrait de vanille", "extracto de vainilla", "vanilleextrakt"],
     "eNumber": null,
     "category": "alcohol",
     "verdict": "doubtful",
@@ -152,7 +152,7 @@
   {
     "id": "pepsin",
     "ingredient": "Pepsin",
-    "aliases": ["pepsin"],
+    "aliases": ["pepsin", "pepsine", "pepsina"],
     "eNumber": null,
     "category": "enzyme",
     "verdict": "doubtful",
@@ -162,7 +162,7 @@
   {
     "id": "lecithin",
     "ingredient": "Lecithin",
-    "aliases": ["lecithin", "soy lecithin", "sunflower lecithin"],
+    "aliases": ["lecithin", "soy lecithin", "sunflower lecithin", "lecithine", "lecitina", "lesitin"],
     "eNumber": "E322",
     "category": "additive",
     "verdict": "halal",

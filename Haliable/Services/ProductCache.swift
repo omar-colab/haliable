@@ -32,23 +32,27 @@ final class CachedProduct {
     var rawIngredientsText: String?
     var additivesENumbers: [String]
     var labels: [String]
+    var ingredientTags: [String] = []
     var cachedAt: Date
 
     init(barcode: String, name: String, brand: String?, rawIngredientsText: String?,
-         additivesENumbers: [String], labels: [String], cachedAt: Date = .now) {
+         additivesENumbers: [String], labels: [String], ingredientTags: [String] = [],
+         cachedAt: Date = .now) {
         self.barcode = barcode
         self.name = name
         self.brand = brand
         self.rawIngredientsText = rawIngredientsText
         self.additivesENumbers = additivesENumbers
         self.labels = labels
+        self.ingredientTags = ingredientTags
         self.cachedAt = cachedAt
     }
 
     convenience init(_ p: Product) {
         self.init(barcode: p.id, name: p.name, brand: p.brand,
                   rawIngredientsText: p.rawIngredientsText,
-                  additivesENumbers: p.additivesENumbers, labels: p.labels)
+                  additivesENumbers: p.additivesENumbers, labels: p.labels,
+                  ingredientTags: p.ingredientTags)
     }
 
     func update(from p: Product) {
@@ -57,13 +61,15 @@ final class CachedProduct {
         rawIngredientsText = p.rawIngredientsText
         additivesENumbers = p.additivesENumbers
         labels = p.labels
+        ingredientTags = p.ingredientTags
         cachedAt = .now
     }
 
     func asProduct() -> Product {
         Product(id: barcode, name: name, brand: brand,
                 rawIngredientsText: rawIngredientsText,
-                additivesENumbers: additivesENumbers, labels: labels)
+                additivesENumbers: additivesENumbers, labels: labels,
+                ingredientTags: ingredientTags)
     }
 }
 
