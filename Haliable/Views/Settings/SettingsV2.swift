@@ -426,6 +426,8 @@ struct SettingsV2: View {
             for product in cached { modelContext.delete(product) }
         }
         try? modelContext.save()
+        // Consent to share review photos with the AI belongs to the deleted account.
+        UserDefaults.standard.removeObject(forKey: "reviewAIConsent")
     }
 }
 
