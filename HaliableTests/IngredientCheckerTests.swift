@@ -261,4 +261,16 @@ final class IngredientCheckerTests: XCTestCase {
         XCTAssertNotEqual(verdict("water", eNumbers: ["en:e1510"]).overall, .halal)
         XCTAssertTrue(verdict("water", eNumbers: ["en:e375"]).matched.contains { $0.displayName.contains("niacin") })
     }
+
+    /// Found on Gulf / Indonesian / US gummy labels (Oct 23).
+    func testHalalAssuranceStatementsAreNotIngredients() {
+        let v = verdict("wheat flour, sugar, soya lecithin (e322). our products do not contain any alcohol or pork based ingredients.")
+        XCTAssertNotEqual(v.overallGrade, .haram)
+        XCTAssertNotEqual(item(v, "lecithin")?.resolvedOrigin, .animalPork)
+        XCTAssertNotEqual(verdict("sugar, cocoa. contains no pork or alcohol.").overallGrade, .haram)
+        XCTAssertNotEqual(verdict("sucre, gousses de vanille bourbon").overallGrade, .haram)
+        XCTAssertEqual(item(verdict("sugar, modified corn gelatin"), "gelatin")?.resolvedOrigin, .plant)
+        // Pork outside the statement is still pork.
+        XCTAssertEqual(verdict("pork gelatin, sugar. does not contain alcohol.").overallGrade, .haram)
+    }
 }

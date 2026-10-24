@@ -345,9 +345,11 @@ final class RulesEngine {
         // German "enthält kein Schweinefett"; Turkish "hiçbir çeşidinde alkol ve domuz
         // yağı kullanılmamaktadır" (the negation opens the clause, runs to its end).
         "kein(?:e|en|er)? (?:alkohol|schweine\\p{L}*|gelatine|tierische\\p{L}*)",
+        // "Our products do not contain any alcohol or pork based ingredients."
+        "(?:do(?:es)? not|does?n.?t|never|will not) contain(?:s)?(?: any)?[^.;]*|contains? no [^.;]*",
         "h[iı]cbir[^.,;]*", "(?:alkol|domuz)[^.;]*(?:yoktur|kullan[iı]lmamaktad[iı]r|kat[iı]lmam[iı]st[iı]r|i[cç]ermez)", "huhnere[iı]\\p{L}*",
         "non-?alcoholic", "sugar alcohols?", "liquorice", "root beer", "meatless", "babies", "cheese cultures?",
-        "coconut meat", "(?:chocolate|cocoa|cacao) liquor", "bourbon vanilla", "porcini", "weinstein", "weinsaure", "weintraube", "beefsteak tomato", "lamb's lettuce",
+        "coconut meat", "(?:chocolate|cocoa|cacao) liquor", "bourbon vanilla", "vanill\\p{L}*(?: \\p{L}+)? bourbon", "porcini", "weinstein", "weinsaure", "weintraube", "beefsteak tomato", "lamb's lettuce",
         "goat'?s? (?:milk|cheese|yogh?urt|butter)", "chicken eggs?", "duck eggs?",
         "(?:product of|made in|produced in|origin:?) turkey",
         // "turkey bacon" is turkey, not pork: only the word "bacon"/"ham" is masked,
