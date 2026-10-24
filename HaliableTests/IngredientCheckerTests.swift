@@ -253,4 +253,12 @@ final class IngredientCheckerTests: XCTestCase {
         XCTAssertEqual(verdict("un, domuz yağı, seker").overallGrade, .haram)
         XCTAssertEqual(verdict("hiçbir katkı yok. domuz yağı").overallGrade, .haram)
     }
+
+    /// Codes Open Food Facts tags that had no name: E428 is gelatine and must
+    /// grade as the gelatin rule; a named additive shows its name, not a bare code.
+    func testNewlyNamedENumbers() {
+        XCTAssertEqual(item(verdict("sugar", eNumbers: ["en:e428"]), "gelatin")?.matchedRule?.id, "gelatin")
+        XCTAssertNotEqual(verdict("water", eNumbers: ["en:e1510"]).overall, .halal)
+        XCTAssertTrue(verdict("water", eNumbers: ["en:e375"]).matched.contains { $0.displayName.contains("niacin") })
+    }
 }
