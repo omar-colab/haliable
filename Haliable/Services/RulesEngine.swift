@@ -333,7 +333,7 @@ final class RulesEngine {
         return items.count < 2 && t.split(separator: " ").count > 6
     }
 
-    private static let wholeWordOnly: Set<String> = ["porc", "vino", "babi", "sake", "arak", "bira"]
+    private static let wholeWordOnly: Set<String> = ["porc", "vino", "babi", "sake", "arak", "bira", "lager"]
 
     private static let eCode = try! NSRegularExpression(pattern: "(?<![\\p{L}\\p{N}])e\\d{3,4}(?![\\p{L}\\p{N}])")
 
@@ -342,6 +342,10 @@ final class RulesEngine {
     private static let masks = try! NSRegularExpression(pattern: [
         "(?:alcohol|alcool|alkohol|pork|porcine|gelatine?|lard|animal|meat)[ -]?free",
         "(?:no|non|without|free from|sans|sin|ohne|bebas|tanpa)[ -](?:added )?(?:alcohol(?:ic)?|alcool|alkohol|pork|porcine|gelatine?|lard|animal|meat)",
+        // German "enthält kein Schweinefett"; Turkish "hiçbir çeşidinde alkol ve domuz
+        // yağı kullanılmamaktadır" (the negation opens the clause, runs to its end).
+        "kein(?:e|en|er)? (?:alkohol|schweine\\p{L}*|gelatine|tierische\\p{L}*)",
+        "h[iı]cbir[^.,;]*", "(?:alkol|domuz)[^.;]*(?:yoktur|kullan[iı]lmamaktad[iı]r|kat[iı]lmam[iı]st[iı]r|i[cç]ermez)", "huhnere[iı]\\p{L}*",
         "non-?alcoholic", "sugar alcohols?", "liquorice", "root beer", "meatless", "babies", "cheese cultures?",
         "coconut meat", "(?:chocolate|cocoa|cacao) liquor", "bourbon vanilla", "porcini", "weinstein", "weinsaure", "weintraube", "beefsteak tomato", "lamb's lettuce",
         "goat'?s? (?:milk|cheese|yogh?urt|butter)", "chicken eggs?", "duck eggs?",

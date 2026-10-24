@@ -237,4 +237,20 @@ final class IngredientCheckerTests: XCTestCase {
         XCTAssertEqual(verdict("whole grain rolled oats").overall, .halal)
         XCTAssertEqual(verdict("Italian whole peeled tomatoes, olive oil, onions, salt, garlic, basil").overall, .halal)
     }
+
+    /// Found running the engine over 301 FR/DE/TR/MY/UK/ES labels (Oct 23).
+    func testForeignLabelFalseHarams() {
+        for text in ["haferflocken, wasser, salz. trocken lagern.",
+                     "zucker, kakao. enthält kein schweinefett.",
+                     "un, seker. mamullerimizin hiçbir çeşidinde alkol ve domuz yağı kullanılmamaktadır.",
+                     "un, seker. Mamullerimizin Hiçbir Çeşidinde Alkol, Domuz Yağı ve Katkıları Yoktur.",
+                     "un. Ürünlerimizin Hiçbir Çeşidine Alkol, Domuz Yağı ve Türevleri Katılmamıştır."] {
+            XCTAssertNotEqual(verdict(text).overallGrade, .haram, text)
+        }
+        XCTAssertFalse(verdict("erbsenprotein, hühnereiweißpulver").matched.contains { $0.categoryHint == .meat })
+        // The negation only covers its own clause.
+        XCTAssertEqual(verdict("schweinefleisch, salz").overallGrade, .haram)
+        XCTAssertEqual(verdict("un, domuz yağı, seker").overallGrade, .haram)
+        XCTAssertEqual(verdict("hiçbir katkı yok. domuz yağı").overallGrade, .haram)
+    }
 }

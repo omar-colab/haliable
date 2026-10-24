@@ -96,6 +96,7 @@ enum ENumberReference {
     private static let synthetic = rx("synthetic|fermentation|fermented|microbial")
     private static let negations = try! NSRegularExpression(pattern:
         "(?:no|non|free from|without|sans|sin|ohne)[ -](?:pork|porcine|animal|beef)|(?:pork|porcine|animal|beef)[ -]free"
+        + "|kein(?:e|en|er)? schweine\\p{L}*|h[iı]cbir[^.,;]*|(?:alkol|domuz)[^.;]*(?:yoktur|kullan[iı]lmamaktad[iı]r|kat[iı]lmam[iı]st[iı]r|i[cç]ermez)"
         // "turkey bacon" is turkey; the turkey is still graded as meat.
         + "|(?<=turkey |chicken |beef )(?:bacon|ham)")
 

@@ -33,6 +33,12 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
   riboflavin E101 (39), sodium carbonates E500 (28), lactic acid E270 (24), E428, calcium phosphates
   E341, colours E129/E133, carnauba wax E903, xanthan gum E415… That's the order to approve sources
   in. The research bot will collect them once it's live; approving the top ~20 clears most labels.
+- **Foreign-label probe (301 FR/DE/TR/MY/UK/ES products):** fixed German "trocken lagern" read as
+  lager, "enthält kein Schweinefett" and Turkish "Hiçbir çeşidinde alkol, domuz yağı … yoktur"
+  (no-pork statements) read as pork, "Hühnerei" (hen's egg) flagged as meat.
+- **Omar decision:** brewer's yeast ("levadura de cerveza", "Bierhefe") grades Haram through the
+  beer alias. Many bodies accept spent brewer's yeast; I left it strict (report, don't rule) — say
+  if you want it Questionable instead (needs a citation either way).
 - **Verdict share card:** "Share this result" on the verdict screen makes a 9:16 image (grade,
   flags, standard, not-a-fatwa line); "Pending review" when the grade is a draft.
 - Merged `fix/bugs-security-oct22` (label-photo scan, USDA exact match, camera tuning, consent wipe)
