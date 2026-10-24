@@ -362,6 +362,10 @@ final class RulesEngine {
         "coconut meat", "(?:chocolate|cocoa|cacao) liquor", "bourbon vanilla", "wine grapes?", "vanill\\p{L}*(?: \\p{L}+)? bourbon", "porcini", "weinstein", "weinsaure", "weintraube", "beefsteak tomato", "lamb's lettuce",
         "goat'?s? (?:milk|cheese|yogh?urt|butter)", "chicken eggs?", "duck eggs?",
         "(?:product of|made in|produced in|origin:?) turkey",
+        // Imitation / plant-based / artificial pork wording names no pork. A plain
+        // "natural bacon flavor" is NOT masked: it can carry pork fat.
+        "(?:imitation|vegan|veggie|vegetarian|plant[- ]based|soy|meatless|faux|mock) (?:bacon|ham|pork)",
+        "(?:bacon|ham)[- ]flavou?red", "artificial (?:bacon|ham|pork) flavou?r(?:ing)?",
         // "turkey bacon" is turkey, not pork: only the word "bacon"/"ham" is masked,
         // the turkey itself is still flagged as meat.
         "(?<=turkey |chicken |beef )(?:bacon|ham)",

@@ -349,4 +349,13 @@ final class IngredientCheckerTests: XCTestCase {
         XCTAssertEqual(verdict("sugar, natural wine flavor").overallGrade, .haram)
         XCTAssertEqual(verdict("sugar, natural flavor (beer)").overallGrade, .haram)
     }
+
+    func testImitationAndArtificialBaconIsNotPork() {
+        for t in ["lettuce, imitation bacon bits (textured soy flour, canola oil, salt)", "pasta, bacon flavored bits (soy flour, salt)",
+                  "potatoes, oil, artificial bacon flavor", "beans, vegan bacon (soy, oil)"] {
+            XCTAssertNotEqual(verdict(t).overallGrade, .haram, t)
+        }
+        XCTAssertEqual(verdict("potatoes, oil, natural bacon flavor").overallGrade, .haram)
+        XCTAssertEqual(verdict("beans, bacon (cured with water, salt)").overallGrade, .haram)
+    }
 }
