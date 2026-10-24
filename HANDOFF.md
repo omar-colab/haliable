@@ -16,7 +16,7 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
   `source-scout` Edge Function as you scan. Haiku + web search, one lookup per ingredient shared by
   everyone, quotes kept only if found word-for-word on the page. The verdict screen shows them as
   "found automatically · not reviewed yet · grade unchanged"; the model's own summary is stored
-  for Omar, never shown. Caps: 50 new ingredients/day total (≈ $2/day worst case), 10 per caller, 5 per call.
+  for Omar, never shown. Caps: 50 new ingredients/day total (≈ $2/day worst case), 5 per call. Nothing about the caller is stored.
 - **Fail-closed:** if the bundled rules ever fail to load, every product is Questionable — before
   this it found nothing and said Halal.
 - **History re-grades once per app version** from the cached product (yielding between rows, so launch never freezes), so old "Halal" rows pick up rule fixes.
