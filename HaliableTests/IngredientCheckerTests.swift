@@ -282,4 +282,17 @@ final class IngredientCheckerTests: XCTestCase {
         XCTAssertEqual(item(verdict("water, mirin, soy sauce"), "wine")?.displayName, "Alcoholic drink")
         XCTAssertEqual(item(verdict("beef, red wine, salt"), "wine")?.displayName, "Wine")
     }
+
+    /// "What would make it halal" only names origins whose Halal cell is cited.
+    func testCitedHalalOriginsForGelatin() throws {
+        let gelatin = try XCTUnwrap(item(verdict("sugar, gelatin"), "gelatin"))
+        let origins = GradeMatrix.citedHalalOrigins(for: gelatin)
+        for o in origins {
+            XCTAssertNotEqual(o, .unspecified)
+            XCTAssertNotEqual(o, .animalPork)
+        }
+        let porcine = try XCTUnwrap(item(verdict("sugar, gelatin (porcine)"), "gelatin"))
+        XCTAssertTrue(GradeMatrix.citedHalalOrigins(for: porcine).isEmpty)
+        print("gelatin cited-halal origins:", origins)
+    }
 }

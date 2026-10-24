@@ -137,13 +137,13 @@ struct VerdictView: View {
                     .id(live.overall)
                     .transition(.opacity)
                 Text([live.product.name, live.product.brand].compactMap { $0 }.joined(separator: " · "))
-                    .font(.system(size: 13))
+                    .font(.footnote)
                     .foregroundStyle(DSColor.textSecondary)
                     .lineLimit(1)
                 Text(live.flagged.isEmpty
                      ? "Nothing flagged · \(settings.halalStandard.displayName)"
                      : "\(live.flagged.count) flagged · \(settings.halalStandard.displayName)")
-                    .font(.system(size: 11))
+                    .font(.caption2)
                     .foregroundStyle(DSColor.textTertiary)
                 if !live.overallNeedsReview {
                     GradeBadge(grade: live.overallGrade, pendingReview: false)
@@ -191,7 +191,7 @@ struct VerdictView: View {
                         if item.needsReview { DraftTag() }
                     }
                     Text(item.explanation)
-                        .font(.system(size: 13.5))
+                        .font(.footnote)
                         .foregroundStyle(DSColor.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                     if !item.citations.isEmpty { citationsBlock(item) }
@@ -202,6 +202,14 @@ struct VerdictView: View {
                                 .font(DSFont.caption)
                                 .foregroundStyle(DSColor.accent)
                         }
+                    }
+                    let clearOrigins = GradeMatrix.citedHalalOrigins(for: item)
+                    if !clearOrigins.isEmpty {
+                        Label("Reported Halal when the label shows it's \(clearOrigins.map { $0.displayName.lowercased() }.joined(separator: " or "))",
+                              systemImage: "checkmark.circle")
+                            .font(DSFont.caption)
+                            .foregroundStyle(DSColor.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     if let term = SourceScout.term(for: item) { researchBlock(term) }
                 }

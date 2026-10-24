@@ -21,6 +21,9 @@ struct RootTabView: View {
     @Environment(AppSettings.self) private var settings
     @Environment(RulesEngine.self) private var engine
     @Environment(\.modelContext) private var modelContext
+    @Environment(AuthManager.self) private var auth
+    @Environment(ReviewStore.self) private var reviews
+    @Environment(\.scenePhase) private var scenePhase
     @State private var tab: AppTab = .home
     @State private var scan: ScanRequest?
 
@@ -49,6 +52,12 @@ struct RootTabView: View {
         .fullScreenCover(item: $scan) { ScanSessionView(initialBarcode: $0.barcode) }
         // Old History rows pick up rule improvements (once per launch).
         .task { await HistoryRegrade.run(context: modelContext, engine: engine) }
+        // Home's "awaiting an answer" count: load on sign-in and on every return
+        // to the app, not only when the Reviews tab is opened.
+        .task(id: auth.userID) { try? await reviews.refresh(auth: auth) }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { Task { try? await reviews.refresh(auth: auth) } }
+        }
     }
 
     /// Hides the system bar and reserves room so scroll content clears the dock.

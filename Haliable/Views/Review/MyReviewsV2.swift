@@ -10,6 +10,8 @@
 import SwiftUI
 
 struct MyReviewsV2: View {
+    /// Read by Home: answers newer than this show as "review answered".
+    @AppStorage("reviewsSeenAt") private var reviewsSeenAt: Double = 0
     @Environment(AuthManager.self) private var auth
     @Environment(ReviewStore.self) private var store
     @State private var showRequest = false
@@ -41,6 +43,7 @@ struct MyReviewsV2: View {
             .navigationDestination(for: ReviewRequest.self) { ReviewDetailView(request: $0) }
             .sheet(isPresented: $showRequest) { RequestReviewView() }
             .task { await reload() }
+            .onAppear { reviewsSeenAt = Date().timeIntervalSince1970 }
         }
     }
 

@@ -424,6 +424,7 @@ struct SettingsV2: View {
         try? modelContext.save()
         // Consent to share review photos with the AI belongs to the deleted account.
         UserDefaults.standard.removeObject(forKey: "reviewAIConsent")
+        UserDefaults.standard.removeObject(forKey: "reviewsSeenAt")
     }
 }
 

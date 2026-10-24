@@ -17,7 +17,7 @@ import Anthropic from "npm:@anthropic-ai/sdk@0.110.0";
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
 import { type Source } from "../_shared/verdict.ts";
 import { verifySources } from "../_shared/page.ts";
-import { normalizeTerm } from "../_shared/term.ts";
+import { needsResearch, normalizeTerm } from "../_shared/term.ts";
 
 const DAILY_CAP = 50;   // ≈ $0.04 each (Haiku + ≤3 searches) → ≤ ~$2/day
 const CALLER_CAP = 10;
@@ -107,7 +107,7 @@ async function callerHash(r: Request): Promise<string> {
     .map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-const since = (days = 1) => new Date(Date.now() - days * 24 * 3600 * 1000).toISOString();
+const since = () => new Date(Date.now() - 24 * 3600 * 1000).toISOString();
 
 Deno.serve(async (r) => {
   if (r.method !== "POST") return new Response("POST only", { status: 405 });
@@ -121,12 +121,7 @@ Deno.serve(async (r) => {
   const byTerm = new Map((known ?? []).map((k) => [k.term, k]));
   // New terms, failures older than a day, and empty results older than a month
   // (sources get published) — a retry, not a hammer.
-  const fresh = terms.filter((t) => {
-    const k = byTerm.get(t);
-    if (!k) return true;
-    if (k.status === "failed") return k.updated_at < since();
-    return k.status === "done" && !(k.sources?.length) && k.updated_at < since(30);
-  });
+  const fresh = terms.filter((t) => needsResearch(byTerm.get(t)));
 
   let started = 0;
   if (fresh.length) {

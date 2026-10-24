@@ -54,7 +54,9 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 2. Go live with the bot: run migration `0017_ingredient_research`, then
    `supabase functions deploy source-scout --no-verify-jwt` (the app calls it with the publishable
    key, which isn't a JWT). Uses the existing ANTHROPIC_API_KEY + HALIABLE_SECRET_KEY secrets.
-   Also redeploy `review-agent` (its page-check code moved to `_shared/page.ts`, behaviour unchanged).
+   Also redeploy `review-agent` (its page-check code moved to `_shared/page.ts`, behaviour unchanged) and
+   `review-decide`: approval links now ignore taps in the first 60 s after the email, so Outlook/Defender
+   link-scanners can't approve by pre-fetching. One tap still works after that.
 3. Review what the bot finds: `ingredient_research` rows with sources, `reviewed = false`. Promote
    good ones through the citation pipeline; nothing reaches a grade without that.
 4. ~~Decide wine vinegar / vegan~~ — decided Oct 23, see below.
@@ -62,6 +64,15 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
    statuses for 31 common additives (20 listed Halal with no condition: citric acid, xanthan, ascorbic acid,
    pectin, guar, gum arabic, carrageenan, phosphates, sorbates…). Decide whether Source A (Halal Authority
    India's E-number table — publisher unverified) counts as tier 1. Nothing is wired in until you approve.
+   **Ready-made:** branch `proposal/additive-citations` (e16e0bc) stages 11 additives with two independent tier-1
+   sources (Source A plus Indonesia's KMA 1360/2021) as 44 candidates. Dry run: 44/44 clear once approved.
+   Approval steps are at the end of the proposal doc. Don't merge that branch unapproved.
+
+6. **Decide — additive consistency:** an additive written in words ("citric acid", "potassium sorbate") is not
+   flagged, but the same additive as an Open Food Facts code (E330, E202) is Questionable. So an OFF product
+   can grade stricter than the same USDA product. Risky additives (gelatin, E471, glycerin, carmine…) have
+   rules and are caught either way. Options: (a) flag named additives too (consistent, more Questionable),
+   or (b) stop flagging uncited plain additives from OFF codes. Clearing the proposal branch shrinks the gap either way.
 
 ### Decisions made while Omar was away
 - Rule 7 (no new features) set aside for the label-photo scan, the ingredient checker and the

@@ -49,4 +49,17 @@ final class LabelTextReaderTests: XCTestCase {
         let verdict = RulesEngine().evaluate(product: product)
         XCTAssertNotEqual(verdict.overall, .halal)
     }
+
+    func testFrenchLabelIsReadWithAccents() async throws {
+        let label = "INGRÉDIENTS : SUCRE, GÉLATINE DE PORC, ARÔMES"
+        let image = UIGraphicsImageRenderer(size: CGSize(width: 1500, height: 160)).image { ctx in
+            UIColor.white.setFill(); ctx.fill(CGRect(x: 0, y: 0, width: 1500, height: 160))
+            (label as NSString).draw(at: CGPoint(x: 20, y: 50),
+                                     withAttributes: [.font: UIFont.systemFont(ofSize: 44, weight: .semibold),
+                                                      .foregroundColor: UIColor.black])
+        }
+        let text = try await LabelTextReader.read(image)
+        let product = Product(id: "label-fr", name: "x", brand: nil, rawIngredientsText: text, additivesENumbers: [])
+        XCTAssertEqual(RulesEngine().evaluate(product: product).overallGrade, .haram, "read: \(text)")
+    }
 }

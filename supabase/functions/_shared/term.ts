@@ -8,3 +8,14 @@ export function normalizeTerm(raw: string): string | null {
   if (t.length < 2 || t.length > 60 || t.split(" ").length > 6) return null;
   return t;
 }
+
+type Known = { status: string; sources?: unknown[] | null; updated_at: string };
+
+/** Whether a term should be (re)searched: never seen, a failure older than a
+ *  day, or an empty result older than 30 days (sources get published). */
+export function needsResearch(k: Known | undefined, now = Date.now()): boolean {
+  if (!k) return true;
+  const age = now - Date.parse(k.updated_at);
+  if (k.status === "failed") return age > 86_400_000;
+  return k.status === "done" && !(k.sources?.length) && age > 30 * 86_400_000;
+}

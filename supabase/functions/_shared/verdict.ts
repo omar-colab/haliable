@@ -77,3 +77,10 @@ export function isPrivateIp(ip: string): boolean {
   if (h.startsWith("::ffff:")) return isPrivateIp(h.slice(7));
   return h === "::" || h === "::1" || /^f[cd]/.test(h) || /^fe[89ab]/.test(h);
 }
+
+/** A decision link tapped less than `minMs` after its email went out is
+ *  almost certainly a mail scanner's pre-fetch, not Omar. */
+export function tooSoon(draftedAt: string | null | undefined, now = Date.now(), minMs = 60_000): boolean {
+  const t = draftedAt ? Date.parse(draftedAt) : NaN;
+  return Number.isFinite(t) && now - t < minMs;
+}

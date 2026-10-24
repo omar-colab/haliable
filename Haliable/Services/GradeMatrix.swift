@@ -66,6 +66,25 @@ struct GradeMatrix {
                         subjectLabel: "rule-baseline", origin: origin, position: standard)
     }
 
+    /// "What would make it halal": the origins whose cell for this ingredient's
+    /// subject and standard is Halal AND cleared by citations. Reports the
+    /// published position only; empty for hard-haram items and uncited rows.
+    static func citedHalalOrigins(for ingredient: MatchedIngredient) -> [Origin] {
+        let current = resolveOrigin(for: ingredient)
+        guard !IngredientCategory.isHardHaram(ingredient), current != .animalPork else { return [] }
+        for subject in candidateSubjects(for: ingredient) {
+            guard let byOrigin = table[subject] else { continue }
+            return byOrigin.keys.filter { origin in
+                guard origin != current, origin != .unspecified,
+                      let bare = byOrigin[origin]?[ingredient.standard], bare.grade == .halal else { return false }
+                return enriched(grade: bare.grade, confidence: bare.confidence, source: bare.source,
+                                subjectLabel: subject.reviewLabel, origin: origin,
+                                position: ingredient.standard).isCleared
+            }.sorted { $0.rawValue < $1.rawValue }
+        }
+        return []
+    }
+
     /// Low-level lookup by explicit key — used by the fail-safe tests. Unknown
     /// subjects return the conservative non-halal fallback.
     func cell(for subject: Subject, origin: Origin, standard: HalalStandard) -> GradeCell {

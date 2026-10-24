@@ -13,6 +13,7 @@
 // is claimed atomically, so only the first tap (or link pre-fetch) ever counts.
 
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
+import { tooSoon } from "../_shared/verdict.ts";
 
 const db = createClient("https://abumevloleevhoqxfnoe.supabase.co", Deno.env.get("HALIABLE_SECRET_KEY")!, { auth: { persistSession: false } });
 const reply = (body: { message: string }, status = 200) =>
@@ -35,6 +36,13 @@ Deno.serve(async (r) => {
   const verified = (draft.sources ?? []).filter((s: { verified?: boolean }) => s.verified);
 
   if (r.method !== "GET") return reply({ message: "Use the link in the email." }, 405);
+
+  // Mail link-scanners (Outlook Safe Links, Defender) open every link within
+  // seconds of delivery; a person doesn't. Acting only after a minute keeps
+  // one-tap for Omar without letting a scanner approve.
+  if (tooSoon(row.updated_at)) {
+    return reply({ message: "This link starts working a minute after the email arrives (so email scanners can't press it). Tap it again shortly." }, 425);
+  }
 
   // Claim the decision atomically: of two taps (or approve + reject) racing,
   // only the one that flips the status acts.

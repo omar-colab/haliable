@@ -26,6 +26,8 @@ enum LabelTextReader {
             let request = VNRecognizeTextRequest()
             request.recognitionLevel = .accurate
             request.usesLanguageCorrection = true
+            // Labels come in French, German, Spanish, Turkish… (default is English only).
+            request.automaticallyDetectsLanguage = true
             try VNImageRequestHandler(cgImage: cg, orientation: orientation).perform([request])
             return (request.results ?? []).compactMap { $0.topCandidates(1).first?.string }
         }.value
