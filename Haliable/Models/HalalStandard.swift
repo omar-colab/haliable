@@ -128,6 +128,8 @@ enum IngredientCategory: String, Codable, CaseIterable {
     /// any standard, even the lenient one.
     /// A rule whose curated verdict is haram (pork, lard, wine and the spirits
     /// listed with it) is pinned too, so "rum" can't grade softer than "wine".
+    /// Plain "alcohol" / ethanol is NOT pinned: it grades on the cited
+    /// non-khamr alcohol cells (the rule's own display name says "Ethanol").
     /// Words match at word starts only: "pigment", "graham" and "liquorice" are
     /// not pork or khamr.
     static func isHardHaram(_ ingredient: MatchedIngredient) -> Bool {
@@ -138,7 +140,7 @@ enum IngredientCategory: String, Codable, CaseIterable {
     }
 
     private static let khamrOrProhibited = try! NSRegularExpression(pattern:
-        "(?<![\\p{L}\\p{N}])(?:wine|khamr|beer|(?<!chocolate |cocoa |cacao )liquor(?!ice)|ethanol|blood(?! orange)|carrion)")
+        "(?<![\\p{L}\\p{N}])(?:wine|khamr|beer|(?<!chocolate |cocoa |cacao )liquor(?!ice)|blood(?! orange)|carrion)")
 
     private static func matches(_ text: String, _ needles: [String]) -> Bool {
         needles.contains { text.contains($0) }

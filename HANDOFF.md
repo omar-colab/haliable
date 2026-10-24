@@ -83,6 +83,13 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
   research bot: Omar asked for these directly on Oct 22–23 ("make it shippable", "built into the app").
 - The bot's findings are shown to users as unreviewed leads (with source + verbatim quote) rather
   than hidden until approval, because Omar asked for sourcing "as somebody scans". Grades never move.
+- **Plain alcohol / ethanol no longer pinned Haram (needs your eyes).** Since July the always-Haram pin listed
+  "ethanol", and the alcohol rule's own name is "Alcohol / Ethanol". So every "alcohol" on a label was pinned
+  Haram, and the cited non-khamr alcohol cells (MUIS, Mathabah, Fatawa Center; 2 sources each, approved in the
+  citation marathon) were never reached. The grading table says "specific khamr tokens hit the pin", so I removed
+  "ethanol" from the pin. "Alcohol (to preserve freshness)" (e.g. halal-certified Samyang Buldak) now shows the cited
+  Questionable grade. Wine, beer, rum, liquor and the other khamr spirits stay pinned Haram (tests). Revert is one
+  word in `HalalStandard.swift` if you meant the pin.
 - **Omar decided (Oct 23):** red wine vinegar stays **haram** (pinned by
   `testRedWineVinegarStaysHaram`), and a "vegan" label counts as plant origin.
 - One test's expectation was wrong, not the code: "mono- and diglycerides (soybean and/or beef

@@ -295,4 +295,19 @@ final class IngredientCheckerTests: XCTestCase {
         XCTAssertTrue(GradeMatrix.citedHalalOrigins(for: porcine).isEmpty)
         print("gelatin cited-halal origins:", origins)
     }
+
+    /// Generic alcohol / ethanol grades on its cited cells; khamr stays pinned.
+    func testEthanolUsesTheCitedAlcoholCellsNotThePin() {
+        for text in ["water, sugar, alcohol (to preserve freshness)", "ethyl alcohol, sugar", "soybeans, alcohol vinegar"] {
+            let v = verdict(text)
+            XCTAssertNotEqual(v.overallGrade, .haram, text)
+            XCTAssertNotEqual(v.overallGrade, .halal, text)
+        }
+        let alcohol = item(verdict("ethyl alcohol, sugar"), "alcohol")
+        XCTAssertEqual(alcohol?.needsReview, false, "should land on the cited alcohol cell")
+        XCTAssertFalse(alcohol?.citations.isEmpty ?? true)
+        XCTAssertEqual(verdict("sugar, rum").overallGrade, .haram)
+        XCTAssertEqual(verdict("sugar, white wine").overallGrade, .haram)
+        XCTAssertEqual(verdict("sugar, beer").overallGrade, .haram)
+    }
 }
