@@ -90,6 +90,10 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
   "ethanol" from the pin. "Alcohol (to preserve freshness)" (e.g. halal-certified Samyang Buldak) now shows the cited
   Questionable grade. Wine, beer, rum, liquor and the other khamr spirits stay pinned Haram (tests). Revert is one
   word in `HalalStandard.swift` if you meant the pin.
+- **Two more cited cells had no label path:** "vitamin D3 / cholecalciferol" was never recognised (silently fine;
+  its cited cell, Darul Ifta Birmingham + IslamQA, says Questionable–widely accepted because it is usually from
+  lanolin). Ethanol inside a flavouring ("natural flavor (ethyl alcohol)") used the generic alcohol cell, not its
+  own cited "flavor ethanol carrier" cell (MUI, MUIS, Mufti al-Kawthari). Both are wired now, with a test.
 - **Omar decided (Oct 23):** red wine vinegar stays **haram** (pinned by
   `testRedWineVinegarStaysHaram`), and a "vegan" label counts as plant origin.
 - One test's expectation was wrong, not the code: "mono- and diglycerides (soybean and/or beef

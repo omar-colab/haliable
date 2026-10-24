@@ -141,8 +141,16 @@ struct GradeMatrix {
             case "vanilla-extract": candidates.append(.named("vanilla extract"))
             case "natural-flavors": candidates.append(.named("natural flavors"))
             case "whey":            candidates.append(.named("whey"))
+            // Ethanol named inside a flavouring is the cited "carrier" case, not
+            // generic alcohol.
+            case "alcohol" where ((ing.labelText ?? ing.originalText).lowercased().contains("flavo")):
+                candidates.append(.named("flavor ethanol carrier"))
             default: break
             }
+        }
+        if ing.categoryHint == nil, ing.matchedRule == nil,
+           ing.originalText.lowercased().range(of: #"vitamin d-?3|cholecalciferol"#, options: .regularExpression) != nil {
+            candidates.append(.named("vitamin d3"))
         }
         if let e = ing.matchedRule?.eNumber?.uppercased() { candidates.append(.eNumber(e)) }
         else if let e = firstENumber(in: ing.originalText) { candidates.append(.eNumber(e)) }

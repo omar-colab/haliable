@@ -113,7 +113,7 @@ final class RulesEngine {
             .map { $0.dropFirst(3).replacingOccurrences(of: "-", with: " ") }
             .joined(separator: ", ")
         let tagItems = IngredientParser.flatten(IngredientParser.parse(IngredientParser.normalize(tagText)))
-            .map { LabelItem(own: $0.own, children: $0.children, index: $0.index + 100_000) }
+            .map { LabelItem(own: $0.own, children: $0.children, index: $0.index + 100_000, parentText: $0.parentText) }
 
         // Candidates per concern, grouped so one concern shows once. Label text
         // outranks tags, which outrank the bare OFF additive list.
@@ -254,7 +254,7 @@ final class RulesEngine {
                 let (origin, context) = origin(of: range, in: item)
                 out.append((rule.id, MatchedIngredient(
                     originalText: context, matchedRule: rule, standard: standard,
-                    originAssumption: origin, labelText: item.fullText, labelIndex: item.index)))
+                    originAssumption: origin, labelText: item.labelText, labelIndex: item.index)))
             case .eNumber(let code):
                 out.append((key(forENumber: code), eNumberMatch(code, item: item, range: range, standard: standard)))
             case .signal(let signal):
@@ -264,7 +264,7 @@ final class RulesEngine {
                 out.append(("signal:" + signal.id, MatchedIngredient(
                     originalText: context, matchedRule: nil, standard: standard,
                     originAssumption: origin, note: signal.note,
-                    labelText: item.fullText, labelIndex: item.index, categoryHint: signal.category)))
+                    labelText: item.labelText, labelIndex: item.index, categoryHint: signal.category)))
             }
         }
         return out
@@ -301,7 +301,7 @@ final class RulesEngine {
         return MatchedIngredient(
             originalText: rule?.ingredient ?? name.map { "\(code) (\($0))" } ?? code,
             matchedRule: rule, standard: standard, originAssumption: origin,
-            note: note, labelText: item?.fullText, labelIndex: item?.index ?? Int.max)
+            note: note, labelText: item?.labelText, labelIndex: item?.index ?? Int.max)
     }
 
     /// The first label item naming `code` (as "e471" or by its additive name).
@@ -431,6 +431,8 @@ struct Signal {
             "huhn",
         ], note: "Meat or a meat-derived ingredient. It is halal only when the animal was slaughtered Islamically, and this label doesn't say how it was slaughtered.",
            category: .meat),
+        Signal(id: "vitamin-d3", terms: ["vitamin d3", "vitamin d-3", "cholecalciferol"],
+               note: "Vitamin D3 is usually made from lanolin (sheep's wool), sometimes from fish oil or lichen, and the label doesn't say which."),
         Signal(id: "collagen", terms: ["collagen", "kolagen", "collageen"],
                note: "Collagen is made from animal skin or bone, or from fish, and the label doesn't say which.",
                category: .gelatin),

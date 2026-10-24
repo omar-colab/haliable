@@ -27,6 +27,9 @@ struct LabelItem {
     let children: [LabelItem]
     /// Position in label order (depth-first), for deterministic ordering.
     let index: Int
+    /// The own words of the items this one is listed inside ("natural flavor"
+    /// for the "ethyl alcohol" in "natural flavor (ethyl alcohol)"). Set by `flatten`.
+    var parentText = ""
 
     /// Own words plus every descendant's words — the full text the label gives it.
     var fullText: String {
@@ -34,6 +37,9 @@ struct LabelItem {
     }
 
     var descendantsText: String { children.map(\.fullText).joined(separator: ", ") }
+
+    /// What the label says around this item: its parents' words, then its own.
+    var labelText: String { parentText.isEmpty ? fullText : parentText + " (" + fullText + ")" }
 }
 
 enum IngredientParser {
@@ -154,8 +160,13 @@ enum IngredientParser {
     }
 
     /// Every item, depth-first in label order.
-    static func flatten(_ items: [LabelItem]) -> [LabelItem] {
-        items.flatMap { [$0] + flatten($0.children) }.sorted { $0.index < $1.index }
+    static func flatten(_ items: [LabelItem], parentText: String = "") -> [LabelItem] {
+        items.flatMap { item -> [LabelItem] in
+            var me = item
+            me.parentText = parentText
+            let inner = parentText.isEmpty ? item.own : parentText + " " + item.own
+            return [me] + flatten(item.children, parentText: inner)
+        }.sorted { $0.index < $1.index }
     }
 
     /// The phrase of `own` that contains `range`, cut at top-level conjunctions

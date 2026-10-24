@@ -321,4 +321,15 @@ final class IngredientCheckerTests: XCTestCase {
             }
         }
     }
+
+    /// Cited cells that had no label path: vitamin D3 and ethanol as a flavour carrier.
+    func testVitaminD3AndFlavorCarrierReachTheirCitedCells() throws {
+        let d3 = try XCTUnwrap(verdict("milk, vitamin d3").matched.first { $0.originalText.contains("vitamin d3") })
+        XCTAssertEqual(GradeMatrix.subjectLabel(for: d3), "vitamin d3")
+        XCTAssertFalse(d3.needsReview)
+        let carrier = try XCTUnwrap(item(verdict("sugar, natural flavor (ethyl alcohol, water)"), "alcohol"))
+        XCTAssertEqual(GradeMatrix.subjectLabel(for: carrier), "flavor ethanol carrier")
+        let plain = try XCTUnwrap(item(verdict("water, ethyl alcohol"), "alcohol"))
+        XCTAssertEqual(GradeMatrix.subjectLabel(for: plain), "alcohol")
+    }
 }
