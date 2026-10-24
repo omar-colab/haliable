@@ -254,7 +254,10 @@ extension CertificationBody {
             (.mui,    ["mui", "lppom"]),
             (.esma,   ["esma"]),
         ]
-        for (body, keys) in tokens where keys.contains(where: { haystack.contains($0) }) {
+        // Short codes must be whole words: a free-text tag like "fr:desmarais"
+        // is not ESMA, "en:muir-glen" is not MUI.
+        let words = Set(haystack.split(whereSeparator: { !$0.isLetter && !$0.isNumber }).map(String.init))
+        for (body, keys) in tokens where keys.contains(where: { $0.contains(where: { !$0.isLetter }) ? haystack.contains($0) : words.contains($0) }) {
             return body
         }
         return nil

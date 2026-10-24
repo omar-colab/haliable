@@ -39,6 +39,11 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 - **Omar decision:** brewer's yeast ("levadura de cerveza", "Bierhefe") grades Haram through the
   beer alias. Many bodies accept spent brewer's yeast; I left it strict (report, don't rule) — say
   if you want it Questionable instead (needs a citation either way).
+- **Certifier detection** matched short codes anywhere in a tag ("fr:desmarais" → ESMA could have
+  upgraded a product to Halal). Now whole words only. Considered and **skipped**: reading a certifier
+  from a label photo. The OCR text is user-editable, and that path must never grade more leniently.
+- **Large text (accessibility XXL):** layouts hold up. The grade pill can break "Question-able" mid-word,
+  and much of the UI uses fixed font sizes that don't scale. Worth a pass before App Store review.
 - **Verdict share card:** "Share this result" on the verdict screen makes a 9:16 image (grade,
   flags, standard, not-a-fatwa line); "Pending review" when the grade is a draft.
 - Merged `fix/bugs-security-oct22` (label-photo scan, USDA exact match, camera tuning, consent wipe)
