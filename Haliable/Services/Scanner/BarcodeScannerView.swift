@@ -177,7 +177,6 @@ final class ScannerViewController: UIViewController, AVCaptureMetadataOutputObje
             delegate?.scanner(self, didFailWith: "No camera is available on this device.")
             return
         }
-        Self.tuneForBarcodes(device)
         session.beginConfiguration()
         session.addInput(input)
         let output = AVCaptureMetadataOutput()
@@ -190,6 +189,9 @@ final class ScannerViewController: UIViewController, AVCaptureMetadataOutputObje
         output.setMetadataObjectsDelegate(self, queue: .main)
         output.metadataObjectTypes = supportedTypes.filter { output.availableMetadataObjectTypes.contains($0) }
         session.commitConfiguration()
+        // After the input joins the session: the preset picks the active format,
+        // which resets zoom and sets the field of view the zoom math reads.
+        Self.tuneForBarcodes(device)
 
         isConfigured = true
         updateRunning()

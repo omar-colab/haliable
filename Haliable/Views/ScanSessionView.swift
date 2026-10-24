@@ -39,6 +39,7 @@ struct ScanSessionView: View {
     @State private var manualBarcode = ""
     @State private var showManualEntry = false
     @State private var showManualReview = false
+    @State private var showLabelScan = false
     @State private var torchOn = false
 
     private let lookup = ProductLookupService()
@@ -65,6 +66,9 @@ struct ScanSessionView: View {
         .animation(DSMotion.move, value: showManualEntry)
         .animation(DSMotion.move, value: errorMessage)
         .sheet(item: $currentVerdict) { VerdictView(verdict: $0) }
+        .sheet(isPresented: $showLabelScan) {
+            LabelScanView { text in checkLabel(text) }
+        }
         .sheet(isPresented: $showManualReview) {
             RequestReviewView(prefillBarcode: manualBarcode.isEmpty ? nil : manualBarcode)
         }
@@ -81,7 +85,7 @@ struct ScanSessionView: View {
     /// under the verdict or review sheet, and not while the app is in the
     /// background. It resumes in place when that changes — no rebuild, no freeze.
     private var cameraActive: Bool {
-        !cameraUnavailable && currentVerdict == nil && !showManualReview && scenePhase == .active
+        !cameraUnavailable && currentVerdict == nil && !showManualReview && !showLabelScan && scenePhase == .active
     }
 
     // MARK: - Camera
@@ -205,6 +209,9 @@ struct ScanSessionView: View {
                 .foregroundStyle(DSColor.danger)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
+            Button("Read the ingredient label instead") { showLabelScan = true }
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(DSColor.accent)
             Button("Request a manual review instead") { showManualReview = true }
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(DSColor.textPrimary)
@@ -287,6 +294,18 @@ struct ScanSessionView: View {
             hapticError()
             errorMessage = error.localizedDescription
         }
+    }
+
+    /// Grades ingredients the person read off the pack and confirmed. Same
+    /// engine and worst-case roll-up as a barcode; not saved to History, which
+    /// is keyed by barcode.
+    private func checkLabel(_ text: String) {
+        let product = Product(id: "label-\(UUID().uuidString)", name: "Ingredients from your photo",
+                              brand: "Read from the label, checked by you",
+                              rawIngredientsText: text, additivesENumbers: [])
+        errorMessage = nil
+        hapticSuccess()
+        currentVerdict = engine.evaluate(product: product, standard: settings.halalStandard)
     }
 
     // MARK: - Haptics (respect the Settings toggle)
