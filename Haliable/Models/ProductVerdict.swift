@@ -22,11 +22,17 @@ struct ProductVerdict: Identifiable, Hashable {
     var overall: Verdict { overallGrade.coarse }
 
     /// Only the ingredients that are a concern (haram or Questionable),
-    /// worst first. This is what the verdict screen surfaces.
+    /// worst first. This is what the verdict screen surfaces. Ties keep label
+    /// order, so the first row (the "driver") is the same on every run.
     var flagged: [MatchedIngredient] {
-        matched
-            .filter { $0.verdict != .halal }
-            .sorted { $0.verdict.severity > $1.verdict.severity }
+        matched.enumerated()
+            .filter { $0.element.verdict != .halal }
+            .sorted { a, b in
+                if a.element.grade != b.element.grade { return a.element.grade > b.element.grade }
+                if a.element.labelIndex != b.element.labelIndex { return a.element.labelIndex < b.element.labelIndex }
+                return a.offset < b.offset
+            }
+            .map(\.element)
     }
 
     /// 0–100: share of the label's ingredients that are NOT flagged. Shown in

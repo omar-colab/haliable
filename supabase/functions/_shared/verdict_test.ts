@@ -1,4 +1,4 @@
-import { isPrivateIp, quoteOnPage, settle } from "./verdict.ts";
+import { isPrivateIp, quoteOnPage, settle, tooSoon } from "./verdict.ts";
 const eq = (a: unknown, b: unknown) => { if (JSON.stringify(a) !== JSON.stringify(b)) throw new Error(`${JSON.stringify(a)} != ${JSON.stringify(b)}`); };
 
 Deno.test("quote must really be on the page", () => {
@@ -37,4 +37,11 @@ Deno.test("private and internal IPs are refused, public ones pass", () => {
     eq([ip, isPrivateIp(ip)], [ip, true]);
   }
   for (const ip of ["8.8.8.8", "172.32.0.1", "2606:4700::1111"]) eq([ip, isPrivateIp(ip)], [ip, false]);
+});
+
+Deno.test("decision links ignore taps in the first minute (mail scanners)", () => {
+  const now = Date.parse("2026-10-23T12:00:00Z");
+  eq(tooSoon("2026-10-23T11:59:50Z", now), true);
+  eq(tooSoon("2026-10-23T11:58:00Z", now), false);
+  eq(tooSoon(null, now), false);
 });

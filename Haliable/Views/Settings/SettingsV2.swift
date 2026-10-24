@@ -41,7 +41,6 @@ struct SettingsV2: View {
     private let privacyURL = URL(string: "https://haliable.netlify.app/privacy")!
     private let termsURL   = URL(string: "https://haliable.netlify.app/terms")!
     private let supportEmail = "omarmontasir876@gmail.com"
-    private let appStoreReviewURL = URL(string: "https://apps.apple.com/app/id0000000000?action=write-review")!
 
     var body: some View {
         @Bindable var settings = settings
@@ -273,9 +272,6 @@ struct SettingsV2: View {
             } label: {
                 rowLabel("Rate Haliable", "star.fill")
             }
-            Button { openURL(appStoreReviewURL) } label: {
-                rowLabel("Review on the App Store", "arrow.up.forward.app.fill")
-            }
             NavigationLink {
                 AcknowledgementsView()
             } label: {
@@ -426,6 +422,9 @@ struct SettingsV2: View {
             for product in cached { modelContext.delete(product) }
         }
         try? modelContext.save()
+        // Consent to share review photos with the AI belongs to the deleted account.
+        UserDefaults.standard.removeObject(forKey: "reviewAIConsent")
+        UserDefaults.standard.removeObject(forKey: "reviewsSeenAt")
     }
 }
 

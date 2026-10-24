@@ -105,6 +105,7 @@ enum IngredientCategory: String, Codable, CaseIterable {
     static func classify(_ ingredient: MatchedIngredient) -> IngredientCategory {
         // Trust the curated rule tag when we have one.
         if let tagged = ingredient.matchedRule?.category { return tagged }
+        if let hint = ingredient.categoryHint { return hint }
 
         // Fallback heuristic for unmatched ingredients.
         let text = (ingredient.displayName + " " + ingredient.originalText).lowercased()
@@ -125,12 +126,23 @@ enum IngredientCategory: String, Codable, CaseIterable {
 
     /// Substances that are categorically prohibited and must NEVER be softened by
     /// any standard, even the lenient one.
+    /// A rule whose curated verdict is haram (pork, lard, wine and the spirits
+    /// listed with it) is pinned too, so "rum" can't grade softer than "wine".
+    /// Plain "alcohol" / ethanol is NOT pinned: it grades on the cited
+    /// non-khamr alcohol cells (the rule's own display name says "Ethanol").
+    /// Words match at word starts only: "pigment", "graham" and "liquorice" are
+    /// not pork or khamr.
     static func isHardHaram(_ ingredient: MatchedIngredient) -> Bool {
-        let text = (ingredient.displayName + " " + ingredient.originalText).lowercased()
-        return matches(text, ["pork", "swine", "bacon", "ham ", "lard", "pig",
-                              "wine", "khamr", "beer", "liquor", "ethanol",
-                              "blood", "carrion"])
+        if ingredient.matchedRule?.verdict == .haram { return true }
+        // The matcher's exceptions apply here too: "root beer", "chocolate liquor",
+        // "no alcohol or pork" are not khamr or pork.
+        let text = RulesEngine.unmasked((ingredient.displayName + " " + ingredient.originalText).lowercased())
+        if ENumberReference.animalOrigin(from: text) == .animalPork { return true }
+        return khamrOrProhibited.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) != nil
     }
+
+    private static let khamrOrProhibited = try! NSRegularExpression(pattern:
+        "(?<![\\p{L}\\p{N}])(?:wine|khamr|beer|(?<!chocolate |cocoa |cacao )liquor(?!ice)|blood(?! orange)|carrion)")
 
     private static func matches(_ text: String, _ needles: [String]) -> Bool {
         needles.contains { text.contains($0) }
@@ -246,7 +258,10 @@ extension CertificationBody {
             (.mui,    ["mui", "lppom"]),
             (.esma,   ["esma"]),
         ]
-        for (body, keys) in tokens where keys.contains(where: { haystack.contains($0) }) {
+        // Short codes must be whole words: a free-text tag like "fr:desmarais"
+        // is not ESMA, "en:muir-glen" is not MUI.
+        let words = Set(haystack.split(whereSeparator: { !$0.isLetter && !$0.isNumber }).map(String.init))
+        for (body, keys) in tokens where keys.contains(where: { $0.contains(where: { !$0.isLetter }) ? haystack.contains($0) : words.contains($0) }) {
             return body
         }
         return nil
@@ -254,7 +269,10 @@ extension CertificationBody {
 
     /// Whether the product carries any generic "halal" label (no specific body).
     static func hasGenericHalalLabel(_ labels: [String]) -> Bool {
-        labels.contains { $0.lowercased().contains("halal") }
+        labels.contains {
+            let t = $0.lowercased()
+            return t.contains("halal") && t.range(of: #"(?:non|not|no)[- ]halal"#, options: .regularExpression) == nil
+        }
     }
 }
 

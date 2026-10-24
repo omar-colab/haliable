@@ -56,19 +56,55 @@ enum ENumberReference {
     /// Infer a concrete origin from free text when a qualifier is named on the
     /// label (e.g. "soy lecithin", "beef gelatin"). Returns nil when undisclosed,
     /// which the caller treats as `.unspecified` (never resolves below Mashbooh).
+    /// Animal sources are checked first, so a label naming both ("soy and/or
+    /// beef") takes the stricter one.
     static func inferOrigin(from text: String) -> Origin? {
-        let t = text.lowercased()
-        if t.containsAny(["pork", "swine", "bacon", "lard", "pig", "porcine"]) { return .animalPork }
-        if t.containsAny(["beef", "bovine", "cattle", "calf", "tallow"])       { return .animalNonZabiha }
-        if t.containsAny(["soy", "sunflower", "vegetable", "plant", "palm", "canola", "coconut", "rapeseed"]) { return .plant }
-        if t.containsAny(["synthetic", "fermentation", "fermented", "microbial"]) { return .synthetic }
+        animalOrigin(from: text) ?? nonAnimalOrigin(from: text)
+    }
+
+    /// Pork / land-animal qualifiers. Callers scan these pessimistically over
+    /// everything the label says about an ingredient. "pork-free" is not a source.
+    static func animalOrigin(from text: String) -> Origin? {
+        let lower = text.lowercased()
+        let t = negations.stringByReplacingMatches(
+            in: lower, range: NSRange(lower.startIndex..., in: lower), withTemplate: " ")
+        if has(pork, t) { return .animalPork }
+        if has(bovine, t) { return .animalNonZabiha }
+        if has(animal, t) { return .animal }
         return nil
     }
-}
 
-extension String {
-    /// True if any needle is a substring. Small helper used by origin inference.
-    func containsAny(_ needles: [String]) -> Bool {
-        needles.contains { contains($0) }
+    /// Plant / synthetic qualifiers. These LOWER a grade, so callers pass only the
+    /// phrase the qualifier is attached to ("gelatin and soy lecithin" must not
+    /// make the gelatin plant-based).
+    static func nonAnimalOrigin(from text: String) -> Origin? {
+        let t = text.lowercased()
+        if has(plant, t) { return .plant }
+        if has(microbial, t) { return .microbial }
+        if has(synthetic, t) { return .synthetic }
+        return nil
+    }
+
+    // Word-start anchored, so "pig" can't fire inside "pigment" or "plant" inside
+    // "plantain". Accents are already folded by IngredientParser.normalize.
+    private static func rx(_ alternatives: String) -> NSRegularExpression {
+        try! NSRegularExpression(pattern: "(?<![\\p{L}\\p{N}])(?:" + alternatives + ")")
+    }
+    private static let pork = rx("pork|porcine|swine|bacon|lard|pigs?(?![\\p{L}])|pigskin|ham(?![\\p{L}])|porc(?![\\p{L}])|cerdo|babi(?![\\p{L}])|domuz|schwein|maiale|suino|varken|porco|خنزير")
+    private static let bovine = rx("beef|bovine|cattle|calf|tallow|veal|boeuf|bœuf|vacuno|res(?![\\p{L}])|sapi(?![\\p{L}])|lembu|sigir")
+    private static let animal = rx("animal|mammal|hewan|haiwan")
+    private static let plant = rx("corn|maize|potato|tapioca|seaweed|algae|soy|sunflower|vegetable|vegetal|plant|palm|canola|coconut|rapeseed|vegan|soja|tournesol|colza|kedelai|bitkisel|nabati")
+    private static let synthetic = rx("synthetic|fermentation|fermented")
+    private static let microbial = rx("microbial|microbiological")
+    private static let negations = try! NSRegularExpression(pattern:
+        "(?:no|non|free from|without|sans|sin|ohne)[ -](?:pork|porcine|animal|beef)|(?:pork|porcine|animal|beef)[ -]free"
+        + "|(?:imitation|vegan|veggie|vegetarian|plant[- ]based|soy|meatless|faux|mock) (?:bacon|ham|pork)"
+        + "|(?:bacon|ham)[- ]flavou?red|artificial (?:bacon|ham|pork) flavou?r"
+        + "|kein(?:e|en|er)? schweine\\p{L}*|(?:do(?:es)? not|does?n.?t|never|will not) contain(?:s)?(?: any)?[^.;]*|contains? no [^.;]*|(?:لا [يت]حتوي|خال[يى]?[ةه]? من|بدون)[^.;،]*|h[iı]cbir[^.,;]*|(?:alkol|domuz)[^.;]*(?:yoktur|kullan[iı]lmamaktad[iı]r|kat[iı]lmam[iı]st[iı]r|i[cç]ermez)"
+        // "turkey bacon" is turkey; the turkey is still graded as meat.
+        + "|(?<=turkey |chicken |beef )(?:bacon|ham)")
+
+    private static func has(_ re: NSRegularExpression, _ t: String) -> Bool {
+        re.firstMatch(in: t, range: NSRange(t.startIndex..., in: t)) != nil
     }
 }

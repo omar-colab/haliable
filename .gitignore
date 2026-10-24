@@ -35,3 +35,5 @@ scripts/review-agent/.env
 scripts/review-agent/briefs/
 scripts/review-agent/drafts/
 scripts/review-agent/candidates/
+__pycache__/
+.claude/worktrees/

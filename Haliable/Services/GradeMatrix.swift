@@ -52,8 +52,8 @@ struct GradeMatrix {
         for subject in candidateSubjects(for: ingredient) {
             guard let byOrigin = table[subject] else { continue }
             // Which origin row actually answered — used to key the citation lookup.
-            let rowOrigin: Origin = byOrigin[origin] != nil ? origin : .unspecified
-            guard let byStandard = byOrigin[origin] ?? byOrigin[.unspecified] else { continue }
+            let rowOrigin = Self.rowOrigin(origin, in: byOrigin)
+            guard let byStandard = byOrigin[rowOrigin] else { continue }
             guard let bare = byStandard[standard] else { return fallback(origin: origin, standard: standard) }
             return enriched(grade: bare.grade, confidence: bare.confidence, source: bare.source,
                             subjectLabel: subject.reviewLabel, origin: rowOrigin, position: standard)
@@ -64,6 +64,36 @@ struct GradeMatrix {
         return enriched(grade: GradeLevel.lifted(from: ingredient.baseVerdict),
                         confidence: .low, source: "rule baseline (no matrix row yet)",
                         subjectLabel: "rule-baseline", origin: origin, position: standard)
+    }
+
+    /// "What would make it halal": the origins whose cell for this ingredient's
+    /// subject and standard is Halal AND cleared by citations. Reports the
+    /// published position only; empty for hard-haram items and uncited rows.
+    static func citedHalalOrigins(for ingredient: MatchedIngredient) -> [Origin] {
+        let current = resolveOrigin(for: ingredient)
+        guard !IngredientCategory.isHardHaram(ingredient), current != .animalPork else { return [] }
+        for subject in candidateSubjects(for: ingredient) {
+            guard let byOrigin = table[subject] else { continue }
+            return byOrigin.keys.filter { origin in
+                guard origin != current, origin != .unspecified,
+                      let bare = byOrigin[origin]?[ingredient.standard], bare.grade == .halal else { return false }
+                return enriched(grade: bare.grade, confidence: bare.confidence, source: bare.source,
+                                subjectLabel: subject.reviewLabel, origin: origin,
+                                position: ingredient.standard).isCleared
+            }.sorted { $0.rawValue < $1.rawValue }
+        }
+        return []
+    }
+
+    /// Which origin row answers: the exact one; else microbial and synthetic stand
+    /// in for each other (both non-animal, made by a process — "microbial
+    /// enzymes" and "fermentation-produced chymosin" are the same cited row);
+    /// else the unspecified column.
+    static func rowOrigin(_ origin: Origin, in byOrigin: [Origin: [HalalStandard: GradeCell]]) -> Origin {
+        if byOrigin[origin] != nil { return origin }
+        let twin: Origin? = origin == .microbial ? .synthetic : origin == .synthetic ? .microbial : nil
+        if let twin, byOrigin[twin] != nil { return twin }
+        return .unspecified
     }
 
     /// Low-level lookup by explicit key — used by the fail-safe tests. Unknown
@@ -122,8 +152,16 @@ struct GradeMatrix {
             case "vanilla-extract": candidates.append(.named("vanilla extract"))
             case "natural-flavors": candidates.append(.named("natural flavors"))
             case "whey":            candidates.append(.named("whey"))
+            // Ethanol named inside a flavouring is the cited "carrier" case, not
+            // generic alcohol.
+            case "alcohol" where ((ing.labelText ?? ing.originalText).lowercased().contains("flavo")):
+                candidates.append(.named("flavor ethanol carrier"))
             default: break
             }
+        }
+        if ing.categoryHint == nil, ing.matchedRule == nil,
+           ing.originalText.lowercased().range(of: #"vitamin d-?3|cholecalciferol"#, options: .regularExpression) != nil {
+            candidates.append(.named("vitamin d3"))
         }
         if let e = ing.matchedRule?.eNumber?.uppercased() { candidates.append(.eNumber(e)) }
         else if let e = firstENumber(in: ing.originalText) { candidates.append(.eNumber(e)) }
@@ -132,7 +170,8 @@ struct GradeMatrix {
     }
 
     private static func firstENumber(in text: String) -> String? {
-        guard let r = text.range(of: #"[Ee]\d{3}"#, options: .regularExpression) else { return nil }
+        // 3 or 4 digits: "E1105" must not read as "E110".
+        guard let r = text.range(of: #"[Ee]\d{3,4}(?!\d)"#, options: .regularExpression) else { return nil }
         return String(text[r]).uppercased()
     }
 

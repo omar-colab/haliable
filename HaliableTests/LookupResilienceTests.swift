@@ -44,6 +44,15 @@ final class LookupResilienceTests: XCTestCase {
         XCTAssertFalse(ProductLookupService.isLookupable(""))
     }
 
+    func testUsdaNeedsAnExactBarcodeMatch() {
+        XCTAssertTrue(USDAFoodDataService.sameCode("00041331092609", "041331092609"))
+        XCTAssertTrue(USDAFoodDataService.sameCode("041331092609", "41331092609"))
+        // A loose full-text hit is another product, never a match.
+        XCTAssertFalse(USDAFoodDataService.sameCode("9041331092609", "041331092609"))
+        XCTAssertFalse(USDAFoodDataService.sameCode("041331092601", "041331092609"))
+        XCTAssertFalse(USDAFoodDataService.sameCode("0000", "000"))
+    }
+
     func testUsdaSuccessUsedFirst() async throws {
         let svc = ProductLookupService(
             usda: FakeSource(result: .success(makeProduct("1", "USDA Item"))),

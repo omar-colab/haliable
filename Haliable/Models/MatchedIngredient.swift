@@ -23,6 +23,21 @@ struct MatchedIngredient: Identifiable, Hashable {
     /// uses this — with category + standard — to pick the GradeMatrix cell.
     var originAssumption: Origin = .unspecified
 
+    /// Why an ingredient with no rule was flagged, in plain words ("Contains
+    /// chicken; the label doesn't say how it was slaughtered"). Display only.
+    var note: String? = nil
+
+    /// The label text this was found in, exactly as the parser read it. Display only.
+    var labelText: String? = nil
+
+    /// Position on the label (lower = earlier). Breaks ties between equal grades
+    /// so the reported driver is the same on every run.
+    var labelIndex: Int = Int.max
+
+    /// Category for an ingredient with no rule, set by the engine's signal table
+    /// (meat, collagen). Grading falls back to keyword classification without it.
+    var categoryHint: IngredientCategory? = nil
+
     /// The baseline verdict before the standard is applied.
     /// An unknown ingredient is NEVER assumed halal — it falls to Questionable
     /// (`.doubtful`) so the worst-case roll-up can surface it to the user.
@@ -58,16 +73,28 @@ struct MatchedIngredient: Identifiable, Hashable {
 
     /// The human-facing ingredient name.
     var displayName: String {
-        matchedRule?.ingredient ?? originalText
+        // A label that says only "enzymes" shouldn't read back as "Rennet": the
+        // rule covers it because the enzymes may be rennet, not because it is.
+        if matchedRule?.id == "rennet", !originalText.lowercased().contains("rennet") {
+            return "Enzymes (may be rennet)"
+        }
+        // Beer, rum, mirin… are graded with wine; say what the label says.
+        if matchedRule?.id == "wine", !originalText.lowercased().contains("wine") {
+            return "Alcoholic drink"
+        }
+        return matchedRule?.ingredient ?? originalText
     }
 
     /// A written explanation that always accompanies the verdict — this is the
     /// "show your work" promise. Known ingredients use the rule's cited reason;
     /// unknown ones get an honest "we couldn't source this" note.
     var explanation: String {
-        matchedRule?.reason
+        matchedRule?.reason ?? note
             ?? "This ingredient isn't in our verified database and its source couldn't be confirmed, so it's marked Questionable until you can verify it on the label or with the manufacturer."
     }
+
+    /// The source the grade was worked out for ("Plant", "Source not disclosed").
+    var resolvedOrigin: Origin { GradeMatrix.resolveOrigin(for: self) }
 
     /// The citation behind a known verdict, if any.
     var source: Source? {

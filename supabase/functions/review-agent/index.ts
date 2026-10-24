@@ -12,7 +12,8 @@
 
 import Anthropic from "npm:@anthropic-ai/sdk@0.110.0";
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
-import { type Draft, isPrivateIp, isPublicUrl, quoteOnPage, settle } from "../_shared/verdict.ts";
+import { type Draft, settle } from "../_shared/verdict.ts";
+import { verifySources } from "../_shared/page.ts";
 
 const BASE = "https://abumevloleevhoqxfnoe.supabase.co";
 const db = createClient(BASE, Deno.env.get("HALIABLE_SECRET_KEY")!, { auth: { persistSession: false } });
@@ -101,53 +102,8 @@ async function research(req: Record<string, unknown>, photoUrls: string[]): Prom
   throw new Error("research paused too many times");
 }
 
-/** A source page is text: read at most 3 MB, so a hostile URL can't stream
- *  gigabytes into the function (content-length can be absent or lie). */
-async function capped(r: Response, max = 3_000_000): Promise<string> {
-  const reader = r.body?.getReader();
-  if (!reader) return "";
-  const parts: Uint8Array[] = [];
-  let size = 0;
-  while (size < max) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    parts.push(value); size += value.length;
-  }
-  await reader.cancel().catch(() => {});
-  const all = new Uint8Array(size);
-  let at = 0;
-  for (const p of parts) { all.set(p, at); at += p.length; }
-  return new TextDecoder().decode(all);
-}
-
-/** The hostname check can't see where a name points. Resolve it and refuse a
- *  private address. If DNS lookups aren't allowed in this runtime, the
- *  hostname check stands alone (fetch still can't reach Supabase internals). */
-async function resolvesPublic(url: string): Promise<boolean> {
-  const host = new URL(url).hostname;
-  try {
-    const ips = (await Promise.all((["A", "AAAA"] as const).map((t) => Deno.resolveDns(host, t).catch(() => [] as string[])))).flat();
-    return !ips.some(isPrivateIp);   // no answer → fetch fails on its own
-  } catch { return true; }
-}
-
 async function verify(d: Draft): Promise<Draft> {
-  await Promise.all(d.sources.map(async (s) => {
-    if (!isPublicUrl(s.url)) { s.verified = false; return; }
-    try {
-      // Follow redirects by hand so every hop passes the SSRF guard — a public
-      // page must not bounce us to an internal one.
-      let url = s.url, r: Response | undefined;
-      for (let hop = 0; hop < 4 && isPublicUrl(url) && await resolvesPublic(url); hop++) {
-        r = await fetch(url, { redirect: "manual", headers: { "User-Agent": "Mozilla/5.0 (Haliable review agent)" }, signal: AbortSignal.timeout(10000) });
-        const next = r.status >= 300 && r.status < 400 ? r.headers.get("location") : null;
-        if (!next) break;
-        url = new URL(next, url).toString(); r = undefined;
-      }
-      if (!r) { s.verified = false; return; }
-      s.verified = r.ok && quoteOnPage(s.quote, await capped(r));
-    } catch { s.verified = false; }
-  }));
+  await verifySources(d.sources);
   return d;
 }
 

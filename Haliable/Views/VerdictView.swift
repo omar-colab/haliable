@@ -13,6 +13,7 @@ struct VerdictView: View {
 
     @Environment(RulesEngine.self) private var engine
     @Environment(AppSettings.self) private var settings
+    @Environment(SourceScout.self) private var scout
 
     /// The live verdict shown — recomputed when the active standard changes so
     /// the user can see, in place, that their standard actually moves the needle.
@@ -73,6 +74,18 @@ struct VerdictView: View {
                     .padding(.top, DSSpacing.xxs)
                 }
 
+                ShareLink(item: VerdictShareImage(verdict: live, standard: settings.halalStandard),
+                          preview: SharePreview(live.product.name)) {
+                    Label("Share this result", systemImage: "square.and.arrow.up")
+                        .font(DSFont.body.weight(.semibold))
+                        .foregroundStyle(DSColor.accent)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, DSSpacing.sm)
+                        .background(DSColor.accent.opacity(0.08),
+                                    in: RoundedRectangle(cornerRadius: DSRadius.md, style: .continuous))
+                }
+                .padding(.top, DSSpacing.xxs)
+
                 // Standing disclosure (Spec §A3) — on every verdict surface.
                 standingDisclosure
                     .padding(.top, DSSpacing.xs)
@@ -85,6 +98,8 @@ struct VerdictView: View {
         .presentationDragIndicator(.visible)
         .presentationCornerRadius(30)
         .presentationBackground(DSColor.surface)
+        // Look up sources for the uncited flags while the user reads.
+        .task { await scout.research(initialVerdict.flagged) }
         .onChange(of: settings.halalStandard) { _, newStandard in
             withAnimation(.easeInOut(duration: 0.3)) {
                 live = engine.evaluate(product: initialVerdict.product, standard: newStandard)
@@ -122,13 +137,13 @@ struct VerdictView: View {
                     .id(live.overall)
                     .transition(.opacity)
                 Text([live.product.name, live.product.brand].compactMap { $0 }.joined(separator: " · "))
-                    .font(.system(size: 13))
+                    .font(.footnote)
                     .foregroundStyle(DSColor.textSecondary)
                     .lineLimit(1)
                 Text(live.flagged.isEmpty
                      ? "Nothing flagged · \(settings.halalStandard.displayName)"
                      : "\(live.flagged.count) flagged · \(settings.halalStandard.displayName)")
-                    .font(.system(size: 11))
+                    .font(.caption2)
                     .foregroundStyle(DSColor.textTertiary)
                 if !live.overallNeedsReview {
                     GradeBadge(grade: live.overallGrade, pendingReview: false)
@@ -150,6 +165,8 @@ struct VerdictView: View {
             base = "\(c.sourceName) · \(c.date.prefix(4))"
         } else if let src = item.source {
             base = "\(src.body) · \(src.year)"
+        } else if let term = SourceScout.term(for: item), let found = scout.results[term], !found.sources.isEmpty {
+            base = found.sources.count == 1 ? "1 source found · not reviewed" : "\(found.sources.count) sources found · not reviewed"
         } else {
             base = "awaiting citation"
         }
@@ -174,24 +191,82 @@ struct VerdictView: View {
                         if item.needsReview { DraftTag() }
                     }
                     Text(item.explanation)
-                        .font(.system(size: 13.5))
+                        .font(.footnote)
                         .foregroundStyle(DSColor.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                     if !item.citations.isEmpty { citationsBlock(item) }
                     if let source = item.source {
                         Link(destination: URL(string: source.url) ?? URL(string: "https://haliable.netlify.app")!) {
-                            Label("\(source.body) · \(source.title) (\(source.year))",
+                            Label("\(source.body) · \(source.title) (\(String(source.year)))",
                                   systemImage: "book.closed")
                                 .font(DSFont.caption)
                                 .foregroundStyle(DSColor.accent)
                         }
                     }
+                    let clearOrigins = GradeMatrix.citedHalalOrigins(for: item)
+                    if !clearOrigins.isEmpty {
+                        Label("Reported Halal when the label shows it's \(clearOrigins.map { $0.displayName.lowercased() }.joined(separator: " or "))",
+                              systemImage: "checkmark.circle")
+                            .font(DSFont.caption)
+                            .foregroundStyle(DSColor.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    if let term = SourceScout.term(for: item) { researchBlock(term) }
                 }
                 .padding(DSSpacing.sm)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(DSColor.surfaceElevated, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
+        }
+    }
+
+    /// What the research bot found for an uncited ingredient. Shown as a lead,
+    /// never as a ruling: the grade above is unchanged until Omar reviews it.
+    @ViewBuilder private func researchBlock(_ term: String) -> some View {
+        let found = scout.results[term]
+        if let found, found.status == "done", !found.sources.isEmpty {
+            VStack(alignment: .leading, spacing: DSSpacing.xs) {
+                Label("Found automatically · not reviewed yet · grade unchanged", systemImage: "sparkle.magnifyingglass")
+                    .font(DSFont.caption.weight(.semibold))
+                    .foregroundStyle(DSColor.textSecondary)
+                ForEach(found.sources, id: \.self) { s in
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(spacing: DSSpacing.xxs) {
+                            StatusBadge(text: "Tier \(s.tier)", tint: DSColor.textSecondary)
+                            Text(s.name)
+                                .font(DSFont.caption.weight(.semibold))
+                                .foregroundStyle(DSColor.textPrimary)
+                                .lineLimit(2)
+                        }
+                        Text("“\(s.quote)”")
+                            .font(DSFont.caption)
+                            .foregroundStyle(DSColor.textSecondary)
+                            .lineLimit(6)
+                            .fixedSize(horizontal: false, vertical: true)
+                        if let url = URL(string: s.url), url.scheme == "https" || url.scheme == "http", let host = url.host() {
+                            Link(host, destination: url)
+                                .font(DSFont.caption)
+                                .foregroundStyle(DSColor.accent)
+                        }
+                    }
+                }
+            }
+            .padding(DSSpacing.sm)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(DSColor.textSecondary.opacity(0.06),
+                        in: RoundedRectangle(cornerRadius: DSRadius.md, style: .continuous))
+        } else if scout.pending.contains(term) && found?.status != "done" && found?.status != "failed" {
+            HStack(spacing: DSSpacing.xs) {
+                ProgressView().controlSize(.small)
+                Text("Looking for published sources…")
+                    .font(DSFont.caption)
+                    .foregroundStyle(DSColor.textSecondary)
+            }
+        } else if found != nil {
+            Text("No published source found for this one yet.")
+                .font(DSFont.caption)
+                .foregroundStyle(DSColor.textSecondary)
         }
     }
 
@@ -321,4 +396,5 @@ struct VerdictView: View {
     return VerdictView(verdict: ProductVerdict(product: fakeProduct, matched: fakeMatched, overallGrade: .mashboohContested))
         .environment(RulesEngine())
         .environment(AppSettings())
+        .environment(SourceScout())
 }
