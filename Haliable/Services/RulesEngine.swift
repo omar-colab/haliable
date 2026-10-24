@@ -46,6 +46,13 @@ final class RulesEngine {
         }
     }
 
+    /// Given rules instead of the bundled ones (tests: a failed load is `[]`).
+    init(rules: [IngredientRule], eNumberMap: [String: String] = [:]) {
+        self.rules = rules
+        self.eNumberMap = eNumberMap
+        if !rules.isEmpty { buildIndex() }
+    }
+
     private func buildIndex() {
         for rule in rules {
             aliasIndex[rule.ingredient.lowercased()] = rule
@@ -150,6 +157,15 @@ final class RulesEngine {
                 matchedRule: nil, standard: standard,
                 note: "The ingredients are written in a script we can't check yet, so we couldn't confirm anything on this label. Check an English label or ask the manufacturer.",
                 labelText: String(raw.prefix(120))))
+        }
+
+        // STEP 2b: rules that failed to load can't check anything — never let
+        // that read as a clean label.
+        if rules.isEmpty || latinTerms == nil {
+            matched.append(MatchedIngredient(
+                originalText: "Ingredient rules unavailable",
+                matchedRule: nil, standard: standard,
+                note: "Haliable's ingredient rules didn't load, so nothing on this label could be checked. Restart the app; if this stays, reinstall it."))
         }
 
         // STEP 3: SAFETY NET — if we had nothing to inspect, we cannot claim halal.

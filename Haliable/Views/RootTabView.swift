@@ -11,6 +11,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 enum AppTab: Hashable {
     case home, find, about, reviews, history
@@ -18,6 +19,8 @@ enum AppTab: Hashable {
 
 struct RootTabView: View {
     @Environment(AppSettings.self) private var settings
+    @Environment(RulesEngine.self) private var engine
+    @Environment(\.modelContext) private var modelContext
     @State private var tab: AppTab = .home
     @State private var scan: ScanRequest?
 
@@ -44,6 +47,8 @@ struct RootTabView: View {
                 .ignoresSafeArea(.keyboard)
         }
         .fullScreenCover(item: $scan) { ScanSessionView(initialBarcode: $0.barcode) }
+        // Old History rows pick up rule improvements (once per launch).
+        .task { HistoryRegrade.run(context: modelContext, engine: engine) }
     }
 
     /// Hides the system bar and reserves room so scroll content clears the dock.

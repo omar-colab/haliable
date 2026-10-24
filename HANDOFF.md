@@ -1,8 +1,46 @@
 # HANDOFF — Haliable → TestFlight
 
-Last updated: **Oct 20, 2026 (evening)** · **Build 8 is on TestFlight** ·
+Last updated: **Oct 23, 2026** · **Build 8 is on TestFlight** ·
 site live · review agent built · **136 tests green**
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
+
+## ▶️ RESUME HERE (Oct 23) — branch `feat/ingredient-checker-ship`, not merged, not uploaded
+
+- **Ingredient checker rebuilt** (3da95a0): real label parser (nested brackets, allergen
+  statements), word-start matching (pigment / graham / vinegar / ginger / coconut meat no longer
+  flag), FR/ES/DE/MY/TR/AR spellings as *aliases only* — no verdict changed, negations
+  ("pork-free") can only stop a match, meat/collagen/cheese flagged when there's no rule, OFF English
+  text + ingredient tags so non-English labels still check, stable "driver" ingredient on ties.
+  Fixed an exclusivity crash in `evaluate()` that crashed the test host (the "quit unexpectedly" pop-ups).
+- **In-app research bot** (c2c9c17): a flagged ingredient with no citation is sent to the new
+  `source-scout` Edge Function as you scan. Haiku + web search, one lookup per ingredient shared by
+  everyone, quotes kept only if found word-for-word on the page. The verdict screen shows them as
+  "found automatically · not reviewed yet · grade unchanged"; the model's own summary is stored
+  for Omar, never shown. Caps: 50 new ingredients/day total (≈ $2/day worst case), 10 per caller, 5 per call.
+- **Fail-closed:** if the bundled rules ever fail to load, every product is Questionable — before
+  this it found nothing and said Halal.
+- **History re-grades on launch** from the cached product, so old "Halal" rows pick up rule fixes.
+- **Removed** the "Review on the App Store" row: it pointed at placeholder app id0000000000.
+  Put it back once the App Store id exists ("Rate Haliable" still works).
+
+### Needs Omar (nothing below is live)
+1. Merge the branch (tests green, 160+).
+2. Go live with the bot: run migration `0017_ingredient_research`, then
+   `supabase functions deploy source-scout --no-verify-jwt` (the app calls it with the publishable
+   key, which isn't a JWT). Uses the existing ANTHROPIC_API_KEY + HALIABLE_SECRET_KEY secrets.
+   Also redeploy `review-agent` (its page-check code moved to `_shared/page.ts`, behaviour unchanged).
+3. Review what the bot finds: `ingredient_research` rows with sources, `reviewed = false`. Promote
+   good ones through the citation pipeline; nothing reaches a grade without that.
+4. Decide: "red wine vinegar" is still haram via the "red wine" alias (many scholars treat vinegar
+   as transformed/halal — needs a citation before changing). And should a "vegan" qualifier count as plant origin (it does now)?
+
+### Decisions made while Omar was away
+- Rule 7 (no new features) set aside for the label-photo scan, the ingredient checker and the
+  research bot: Omar asked for these directly on Oct 22–23 ("make it shippable", "built into the app").
+- The bot's findings are shown to users as unreviewed leads (with source + verbatim quote) rather
+  than hidden until approval, because Omar asked for sourcing "as somebody scans". Grades never move.
+- One test's expectation was wrong, not the code: "mono- and diglycerides (soybean and/or beef
+  tallow)" grades *stricter* than an undisclosed source (worst case), so the test now says ≥.
 
 ## ▶️ RESUME HERE (Oct 22, evening) — build 15
 

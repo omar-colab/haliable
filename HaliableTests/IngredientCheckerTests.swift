@@ -206,4 +206,10 @@ final class IngredientCheckerTests: XCTestCase {
         _ = verdict(long)
         XCTAssertLessThan(Date().timeIntervalSince(start), 0.25)
     }
+
+    func testRulesThatFailedToLoadNeverReadAsHalal() {
+        let v = RulesEngine(rules: []).evaluate(product: Product(id: "t", name: "T", brand: nil,
+            rawIngredientsText: "sugar, pork gelatin", additivesENumbers: []))
+        XCTAssertNotEqual(v.overall, .halal)
+    }
 }
