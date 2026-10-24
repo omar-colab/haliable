@@ -127,3 +127,8 @@ Disagreements to rule on: **E306 tocopherols** (A: haram if from pork fat; C: ex
 (A: conditional on a mineral source; C: exempt), **E101 riboflavin** (A: Mushbooh; B: Halaal).
 
 Still missing a second source: E330 citric acid (64 products), E415, E300, E331, E412, E420, E202, E270, E101.
+
+**Note on citric acid & friends:** E330, E300, E415, E270, E420 and E101 are *absent* from KMA 1360's exempt list,
+whose only fermentation category is unprocessed traditional foods (tape, oncom, tempe). Indonesia therefore treats
+these fermentation-made additives as **critical** (the growth medium and processing aids must be checked).
+That argues for keeping them Questionable (widely accepted, grade 2), not Halal, unless a second Halal source appears.
