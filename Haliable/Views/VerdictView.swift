@@ -195,7 +195,7 @@ struct VerdictView: View {
                     if !item.citations.isEmpty { citationsBlock(item) }
                     if let source = item.source {
                         Link(destination: URL(string: source.url) ?? URL(string: "https://haliable.netlify.app")!) {
-                            Label("\(source.body) · \(source.title) (\(source.year))",
+                            Label("\(source.body) · \(source.title) (\(String(source.year)))",
                                   systemImage: "book.closed")
                                 .font(DSFont.caption)
                                 .foregroundStyle(DSColor.accent)
