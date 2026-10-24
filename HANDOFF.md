@@ -31,14 +31,15 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
    Also redeploy `review-agent` (its page-check code moved to `_shared/page.ts`, behaviour unchanged).
 3. Review what the bot finds: `ingredient_research` rows with sources, `reviewed = false`. Promote
    good ones through the citation pipeline; nothing reaches a grade without that.
-4. Decide: "red wine vinegar" is still haram via the "red wine" alias (many scholars treat vinegar
-   as transformed/halal — needs a citation before changing). And should a "vegan" qualifier count as plant origin (it does now)?
+4. ~~Decide wine vinegar / vegan~~ — decided Oct 23, see below.
 
 ### Decisions made while Omar was away
 - Rule 7 (no new features) set aside for the label-photo scan, the ingredient checker and the
   research bot: Omar asked for these directly on Oct 22–23 ("make it shippable", "built into the app").
 - The bot's findings are shown to users as unreviewed leads (with source + verbatim quote) rather
   than hidden until approval, because Omar asked for sourcing "as somebody scans". Grades never move.
+- **Omar decided (Oct 23):** red wine vinegar stays **haram** (pinned by
+  `testRedWineVinegarStaysHaram`), and a "vegan" label counts as plant origin.
 - One test's expectation was wrong, not the code: "mono- and diglycerides (soybean and/or beef
   tallow)" grades *stricter* than an undisclosed source (worst case), so the test now says ≥.
 

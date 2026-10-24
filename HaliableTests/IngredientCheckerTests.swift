@@ -212,4 +212,10 @@ final class IngredientCheckerTests: XCTestCase {
             rawIngredientsText: "sugar, pork gelatin", additivesENumbers: []))
         XCTAssertNotEqual(v.overall, .halal)
     }
+
+    /// Omar's ruling, Oct 23: wine vinegar stays haram (the wine is named on the label).
+    func testRedWineVinegarStaysHaram() {
+        XCTAssertEqual(verdict("red wine vinegar, salt").overallGrade, .haram)
+        XCTAssertNotEqual(verdict("vinegar, salt").overallGrade, .haram)
+    }
 }
