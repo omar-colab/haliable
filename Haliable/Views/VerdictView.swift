@@ -165,6 +165,8 @@ struct VerdictView: View {
             base = "\(c.sourceName) · \(c.date.prefix(4))"
         } else if let src = item.source {
             base = "\(src.body) · \(src.year)"
+        } else if let term = SourceScout.term(for: item), let found = scout.results[term], !found.sources.isEmpty {
+            base = found.sources.count == 1 ? "1 source found · not reviewed" : "\(found.sources.count) sources found · not reviewed"
         } else {
             base = "awaiting citation"
         }
