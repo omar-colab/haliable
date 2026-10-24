@@ -34,6 +34,13 @@ struct HomeView: View {
     private var awaitingCount: Int {
         reviews.requests.filter { $0.status != .completed }.count
     }
+    /// When the Reviews tab was last opened; answers newer than that are news.
+    @AppStorage("reviewsSeenAt") private var reviewsSeenAt: Double = 0
+    private var answeredCount: Int {
+        reviews.requests.filter {
+            $0.status == .completed && ($0.reviewedAt?.timeIntervalSince1970 ?? 0) > reviewsSeenAt
+        }.count
+    }
 
     var body: some View {
         @Bindable var settings = settings
@@ -111,9 +118,16 @@ struct HomeView: View {
     }
 
     @ViewBuilder private var attention: some View {
-        if !needsAttention.isEmpty || awaitingCount > 0 {
+        if !needsAttention.isEmpty || awaitingCount > 0 || answeredCount > 0 {
             VStack(spacing: 10) {
                 GuardSection(title: "Needs attention", trailing: "See all", action: onSeeHistory)
+                if answeredCount > 0 {
+                    GuardRow(symbol: "checkmark.bubble",
+                             tint: DSColor.accent,
+                             title: answeredCount == 1 ? "1 review answered" : "\(answeredCount) reviews answered",
+                             subtitle: "Tap to read the sources",
+                             action: onSeeReviews)
+                }
                 ForEach(needsAttention) { rec in scanRow(rec) }
                 if awaitingCount > 0 {
                     GuardRow(symbol: "clock",
