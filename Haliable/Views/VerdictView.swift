@@ -137,13 +137,13 @@ struct VerdictView: View {
                     .id(live.overall)
                     .transition(.opacity)
                 Text([live.product.name, live.product.brand].compactMap { $0 }.joined(separator: " · "))
-                    .font(.system(size: 13))
+                    .font(.footnote)
                     .foregroundStyle(DSColor.textSecondary)
                     .lineLimit(1)
                 Text(live.flagged.isEmpty
                      ? "Nothing flagged · \(settings.halalStandard.displayName)"
                      : "\(live.flagged.count) flagged · \(settings.halalStandard.displayName)")
-                    .font(.system(size: 11))
+                    .font(.caption2)
                     .foregroundStyle(DSColor.textTertiary)
                 if !live.overallNeedsReview {
                     GradeBadge(grade: live.overallGrade, pendingReview: false)
@@ -191,7 +191,7 @@ struct VerdictView: View {
                         if item.needsReview { DraftTag() }
                     }
                     Text(item.explanation)
-                        .font(.system(size: 13.5))
+                        .font(.footnote)
                         .foregroundStyle(DSColor.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                     if !item.citations.isEmpty { citationsBlock(item) }
