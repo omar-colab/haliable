@@ -67,3 +67,63 @@ these codes ("In probe" = products in the probe containing it).
    E110 and E440, so most codes need a second source before they can clear.
 3. Disagreements to rule on: E101 riboflavin (A: Mushbooh unless plant; B: Halaal, microbial/synthetic)
    and E440 pectin (A: Halal; B: Halaal, but check it is not from cider making).
+
+## Source C (tier 1, government): Indonesia KMA 1360/2021
+
+- **Keputusan Menteri Agama No. 1360 Tahun 2021 tentang Bahan yang Dikecualikan dari Kewajiban Bersertifikat Halal**
+  (Minister of Religious Affairs decree: materials exempt from mandatory halal certification), issued under
+  Law 33/2014 and PP 39/2021, published by BPJPH:
+  <https://cmsbl.halal.go.id/uploads/KMA_1360_tahun_2021_tentang_Bahan_yang_dikecualikan_dari_kewajiban_bersertifikat_Halal_5a41b7b4e1.pdf>
+- Entries below are in Annex section "c. Bahan Kimia yang Tidak Tergolong Berbahaya dan Tidak Mengandung…",
+  list "2. Bahan Kimia Hasil Sintesis Anorganik dan Organik" (synthetic chemicals), except E414/E406 (list 1, plant
+  materials without processing). The decree's basis: the material is "dikategorikan tidak berisiko mengandung Bahan
+  yang diharamkan" (categorised as not at risk of containing haram material).
+- Caveat: an exemption from certification is a risk classification, not a fatwa on every product. It is still the
+  halal authority's own published position.
+
+## Combined view
+
+| Code | In probe | A (Halal Authority India) | B (Malawi HD) | C (KMA 1360/2021) |
+|---|---|---|---|---|
+| E330 | 64 | Halal | — | — |
+| E375 | 45 | — | — | listed, p.180: "E375 Nicotinic Acid" |
+| E101 | 39 | conditional | Halaal | — |
+| E500 | 28 | — | — | listed, p.155: "Natrium Karbonat (Sodium Carbonate)" |
+| E270 | 24 | conditional | — | — |
+| E341 | 18 | conditional | — | listed, p.180: "E341 Calcium Phosphate" |
+| E160 | 16 | conditional | — | — |
+| E170 | 16 | conditional | — | listed, p.18: "Kalsium Karbonat (Calcium Carbonate)" |
+| E415 | 15 | Halal | — | — |
+| E200 | 15 | Halal | — | listed, p.11: "Asam Sorbat (Sorbic Acid)" |
+| E306 | 15 | conditional | — | listed, p.180: "E306 Natural Extracts Rich in Tocopherol" |
+| E102 | 14 | conditional | Halaal | — |
+| E300 | 14 | Halal | — | — |
+| E331 | 11 | Halal | — | — |
+| E450 | 11 | — | — | listed, p.181: "E450a,b,c Sodium and Potassium Phosphates and Polyphosphates" |
+| E296 | 11 | — | — | listed, p.121: "Malic Acid" |
+| E110 | 10 | conditional | Halaal | — |
+| E440 | 10 | Halal | Halaal (check not cider-making) | — |
+| E412 | 10 | Halal | — | — |
+| E282 | 10 | conditional | — | — |
+| E301 | 9 | Halal | — | listed, p.180: "E301 Sodium-L-Ascorbate" |
+| E414 | 8 | Halal | — | listed, p.6: "Gom Akasia Murni (Pure Acacia Gum)" |
+| E340 | 8 | Halal | — | listed, p.180: "E340a Potassium Dihydrogen Orthophosphate" |
+| E407 | 7 | Halal | — | listed, p.181: "E407 Carrageenan" |
+| E250 | 6 | Halal | — | listed, p.132: "Sodium Nitrite" |
+| E339 | 6 | Halal | — | listed, p.180: "E339a Sodium Dihydrogen Orthophosphate" |
+| E202 | 6 | Halal | — | — |
+| E508 | 4 | — | — | listed, p.17: "Kalium Klorida (Potassium Chloride)" |
+| E516 | 4 | — | — | listed, p.18: "Kalsium Sulfat (Calcium Sulphate)" |
+| E260 | 4 | Halal | — | listed, p.11: "Asam Cuka (Acetic Acid)" |
+| E461 | 4 | Halal | — | listed, p.25: "Metilselulosa (Methylcellulose)" |
+| E460 | 4 | Halal | — | listed, p.181: "E460 Microcrystalline/Powdered Cellulose" |
+| E406 | 4 | Halal | — | listed, p.6: "Serbuk Agar (Pulvis Agar)" |
+| E420 | 4 | Halal | — | — |
+| E262 | 3 | Halal | — | listed, p.180: "E262 Potassium Hydrogen Diacetate" |
+
+**Two independent sources saying not-haram (13):** E200, E440, E301, E414, E340, E407, E250, E339, E260, E461, E460, E406, E262.
+
+Disagreements to rule on: **E306 tocopherols** (A: haram if from pork fat; C: exempt), **E341 / E170**
+(A: conditional on a mineral source; C: exempt), **E101 riboflavin** (A: Mushbooh; B: Halaal).
+
+Still missing a second source: E330 citric acid (64 products), E415, E300, E331, E412, E420, E202, E270, E101.
