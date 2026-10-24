@@ -81,11 +81,14 @@ final class SourceScout {
         } catch {
             // Offline or capped: still read what's already known.
         }
-        for _ in 0..<18 {
+        for poll in 0..<18 {
             if let rows: [Research] = try? await client.from("ingredient_research")
                 .select("term,status,sources").in("term", values: Array(terms)).execute().value {
                 for r in rows { results[r.term] = r }
             }
+            // The function claims a row before it answers, so a term still
+            // missing now was held back (daily cap, offline): stop waiting on it.
+            if poll == 0 { pending.subtract(terms.filter { results[$0] == nil }) }
             if terms.allSatisfy({ results[$0].map { $0.status != "researching" } ?? false }) { return }
             do { try await Task.sleep(for: .seconds(5)) } catch { return }
         }
