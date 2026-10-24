@@ -73,7 +73,12 @@ struct MatchedIngredient: Identifiable, Hashable {
 
     /// The human-facing ingredient name.
     var displayName: String {
-        matchedRule?.ingredient ?? originalText
+        // A label that says only "enzymes" shouldn't read back as "Rennet": the
+        // rule covers it because the enzymes may be rennet, not because it is.
+        if matchedRule?.id == "rennet", !originalText.lowercased().contains("rennet") {
+            return "Enzymes (may be rennet)"
+        }
+        return matchedRule?.ingredient ?? originalText
     }
 
     /// A written explanation that always accompanies the verdict — this is the

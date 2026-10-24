@@ -275,4 +275,9 @@ final class IngredientCheckerTests: XCTestCase {
         // Pork outside the statement is still pork.
         XCTAssertEqual(verdict("pork gelatin, sugar. does not contain alcohol.").overallGrade, .haram)
     }
+
+    func testBareEnzymesAreNotCalledRennet() {
+        XCTAssertEqual(item(verdict("milk, salt, enzymes"), "rennet")?.displayName, "Enzymes (may be rennet)")
+        XCTAssertEqual(item(verdict("milk, salt, animal rennet"), "rennet")?.displayName, "Rennet")
+    }
 }
