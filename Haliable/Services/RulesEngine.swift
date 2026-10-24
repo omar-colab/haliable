@@ -336,7 +336,7 @@ final class RulesEngine {
     /// ponytail: keyword heuristic; OCR'd panels in other languages slip past.
     static func looksIncomplete(_ raw: String) -> Bool {
         let t = raw.lowercased()
-        if t.range(of: "calories|daily value|valor diario|serving size|nutrition facts|per serving|amount per",
+        if t.range(of: #"calories|daily value|valor diario|serving size|nutrition facts|per serving|amount per|sat\.? fat|saturated fat|total fat|total carb|\bkcal\b"#,
                    options: .regularExpression) != nil { return true }
         let items = t.split(whereSeparator: { ",;".contains($0) }).filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
         return items.count < 2 && t.split(separator: " ").count > 6
@@ -359,9 +359,13 @@ final class RulesEngine {
         "(?:لا [يت]حتوي|خال[يى]?[ةه]? من|بدون)[^.;،]*",   // Arabic "doesn't contain / free of / without"
         "h[iı]cbir[^.,;]*", "(?:alkol|domuz)[^.;]*(?:yoktur|kullan[iı]lmamaktad[iı]r|kat[iı]lmam[iı]st[iı]r|i[cç]ermez)", "huhnere[iı]\\p{L}*",
         "non-?alcoholic", "sugar alcohols?", "liquorice", "root beer", "meatless", "babies", "cheese cultures?",
-        "coconut meat", "(?:chocolate|cocoa|cacao) liquor", "bourbon vanilla", "vanill\\p{L}*(?: \\p{L}+)? bourbon", "porcini", "weinstein", "weinsaure", "weintraube", "beefsteak tomato", "lamb's lettuce",
+        "coconut meat", "(?:chocolate|cocoa|cacao) liquor", "bourbon vanilla", "wine grapes?", "vanill\\p{L}*(?: \\p{L}+)? bourbon", "porcini", "weinstein", "weinsaure", "weintraube", "beefsteak tomato", "lamb's lettuce",
         "goat'?s? (?:milk|cheese|yogh?urt|butter)", "chicken eggs?", "duck eggs?",
         "(?:product of|made in|produced in|origin:?) turkey",
+        // Imitation / plant-based / artificial pork wording names no pork. A plain
+        // "natural bacon flavor" is NOT masked: it can carry pork fat.
+        "(?:imitation|vegan|veggie|vegetarian|plant[- ]based|soy|meatless|faux|mock) (?:bacon|ham|pork)",
+        "(?:bacon|ham)[- ]flavou?red", "artificial (?:bacon|ham|pork) flavou?r(?:ing)?",
         // "turkey bacon" is turkey, not pork: only the word "bacon"/"ham" is masked,
         // the turkey itself is still flagged as meat.
         "(?<=turkey |chicken |beef )(?:bacon|ham)",
@@ -369,6 +373,13 @@ final class RulesEngine {
 
     private static func maskedRanges(in text: String) -> [Range<String.Index>] {
         masks.matches(in: text, range: NSRange(text.startIndex..., in: text)).compactMap { Range($0.range, in: text) }
+    }
+
+    /// `text` with the masked wording blanked out ("natural root beer flavor" →
+    /// "natural           flavor"), for scans outside the matcher (the hard-haram
+    /// pin) that must honour the same exceptions.
+    static func unmasked(_ text: String) -> String {
+        masks.stringByReplacingMatches(in: text, range: NSRange(text.startIndex..., in: text), withTemplate: " ")
     }
 
     /// Wording that can't be a fixed alias: "natural cherry flavor", "natural

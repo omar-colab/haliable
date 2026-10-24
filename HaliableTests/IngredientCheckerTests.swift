@@ -234,6 +234,7 @@ final class IngredientCheckerTests: XCTestCase {
     func testNutritionPanelOrMarketingTextIsNotClean() {
         XCTAssertNotEqual(verdict("Contains A BIOENGINEERED FOOD INGREDIENT MADE IN MEXICO").overall, .halal)
         XCTAssertNotEqual(verdict("Nutrition Facts 3 servings per container, Calories 140").overall, .halal)
+        XCTAssertNotEqual(verdict("milk chocolate party & m&m chocolate candies mm 403.5, 20mg sodium 18 1980 sat fat 10%").overall, .halal)
         XCTAssertEqual(verdict("whole grain rolled oats").overall, .halal)
         XCTAssertEqual(verdict("Italian whole peeled tomatoes, olive oil, onions, salt, garlic, basil").overall, .halal)
     }
@@ -339,5 +340,23 @@ final class IngredientCheckerTests: XCTestCase {
         let names = try JSONDecoder().decode([String: String].self, from: Data(contentsOf: url))
         let dupes = Dictionary(grouping: names, by: { $0.value.lowercased() }).filter { $0.value.count > 1 }
         XCTAssertTrue(dupes.isEmpty, "\(dupes.mapValues { $0.map(\.key).sorted() })")
+    }
+
+    /// The hard-haram pin honours the matcher's exceptions in surrounding text.
+    func testPinIgnoresMaskedWordingAroundAnIngredient() {
+        XCTAssertNotEqual(verdict("water, sugar, natural root beer flavor").overallGrade, .haram)
+        XCTAssertNotEqual(verdict("beef, salt, natural flavors (contains root beer extract)").overallGrade, .haram)
+        XCTAssertNotEqual(verdict("sugar, natural flavor (from wine grapes)").overallGrade, .haram)
+        XCTAssertEqual(verdict("sugar, natural wine flavor").overallGrade, .haram)
+        XCTAssertEqual(verdict("sugar, natural flavor (beer)").overallGrade, .haram)
+    }
+
+    func testImitationAndArtificialBaconIsNotPork() {
+        for t in ["lettuce, imitation bacon bits (textured soy flour, canola oil, salt)", "pasta, bacon flavored bits (soy flour, salt)",
+                  "potatoes, oil, artificial bacon flavor", "beans, vegan bacon (soy, oil)"] {
+            XCTAssertNotEqual(verdict(t).overallGrade, .haram, t)
+        }
+        XCTAssertEqual(verdict("potatoes, oil, natural bacon flavor").overallGrade, .haram)
+        XCTAssertEqual(verdict("beans, bacon (cured with water, salt)").overallGrade, .haram)
     }
 }

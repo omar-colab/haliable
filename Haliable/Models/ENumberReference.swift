@@ -127,6 +127,8 @@ enum ENumberReference {
     private static let microbial = rx("microbial|microbiological")
     private static let negations = try! NSRegularExpression(pattern:
         "(?:no|non|free from|without|sans|sin|ohne)[ -](?:pork|porcine|animal|beef)|(?:pork|porcine|animal|beef)[ -]free"
+        + "|(?:imitation|vegan|veggie|vegetarian|plant[- ]based|soy|meatless|faux|mock) (?:bacon|ham|pork)"
+        + "|(?:bacon|ham)[- ]flavou?red|artificial (?:bacon|ham|pork) flavou?r"
         + "|kein(?:e|en|er)? schweine\\p{L}*|(?:do(?:es)? not|does?n.?t|never|will not) contain(?:s)?(?: any)?[^.;]*|contains? no [^.;]*|(?:لا [يت]حتوي|خال[يى]?[ةه]? من|بدون)[^.;،]*|h[iı]cbir[^.,;]*|(?:alkol|domuz)[^.;]*(?:yoktur|kullan[iı]lmamaktad[iı]r|kat[iı]lmam[iı]st[iı]r|i[cç]ermez)"
         // "turkey bacon" is turkey; the turkey is still graded as meat.
         + "|(?<=turkey |chicken |beef )(?:bacon|ham)")

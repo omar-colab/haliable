@@ -17,4 +17,10 @@ final class CertifierDetectTests: XCTestCase {
     func testCodesInsideOtherWordsDoNot() {
         XCTAssertNil(CertificationBody.detect(in: ["fr:desmarais", "en:muir-glen", "en:shahfarm"]))
     }
+
+    func testNegativeHalalTagsAreNotAHalalLabel() {
+        XCTAssertTrue(CertificationBody.hasGenericHalalLabel(["en:halal"]))
+        XCTAssertFalse(CertificationBody.hasGenericHalalLabel(["en:non-halal"]))
+        XCTAssertFalse(CertificationBody.hasGenericHalalLabel(["en:not-halal", "en:organic"]))
+    }
 }

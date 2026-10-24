@@ -134,7 +134,9 @@ enum IngredientCategory: String, Codable, CaseIterable {
     /// not pork or khamr.
     static func isHardHaram(_ ingredient: MatchedIngredient) -> Bool {
         if ingredient.matchedRule?.verdict == .haram { return true }
-        let text = (ingredient.displayName + " " + ingredient.originalText).lowercased()
+        // The matcher's exceptions apply here too: "root beer", "chocolate liquor",
+        // "no alcohol or pork" are not khamr or pork.
+        let text = RulesEngine.unmasked((ingredient.displayName + " " + ingredient.originalText).lowercased())
         if ENumberReference.animalOrigin(from: text) == .animalPork { return true }
         return khamrOrProhibited.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) != nil
     }
@@ -267,7 +269,10 @@ extension CertificationBody {
 
     /// Whether the product carries any generic "halal" label (no specific body).
     static func hasGenericHalalLabel(_ labels: [String]) -> Bool {
-        labels.contains { $0.lowercased().contains("halal") }
+        labels.contains {
+            let t = $0.lowercased()
+            return t.contains("halal") && t.range(of: #"(?:non|not|no)[- ]halal"#, options: .regularExpression) == nil
+        }
     }
 }
 
