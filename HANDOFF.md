@@ -66,6 +66,12 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
    sources (Source A plus Indonesia's KMA 1360/2021) as 44 candidates. Dry run: 44/44 clear once approved.
    Approval steps are at the end of the proposal doc. Don't merge that branch unapproved.
 
+6. **Decide — additive consistency:** an additive written in words ("citric acid", "potassium sorbate") is not
+   flagged, but the same additive as an Open Food Facts code (E330, E202) is Questionable. So an OFF product
+   can grade stricter than the same USDA product. Risky additives (gelatin, E471, glycerin, carmine…) have
+   rules and are caught either way. Options: (a) flag named additives too (consistent, more Questionable),
+   or (b) stop flagging uncited plain additives from OFF codes. Clearing the proposal branch shrinks the gap either way.
+
 ### Decisions made while Omar was away
 - Rule 7 (no new features) set aside for the label-photo scan, the ingredient checker and the
   research bot: Omar asked for these directly on Oct 22–23 ("make it shippable", "built into the app").
