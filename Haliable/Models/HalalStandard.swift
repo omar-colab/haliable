@@ -269,7 +269,10 @@ extension CertificationBody {
 
     /// Whether the product carries any generic "halal" label (no specific body).
     static func hasGenericHalalLabel(_ labels: [String]) -> Bool {
-        labels.contains { $0.lowercased().contains("halal") }
+        labels.contains {
+            let t = $0.lowercased()
+            return t.contains("halal") && t.range(of: #"(?:non|not|no)[- ]halal"#, options: .regularExpression) == nil
+        }
     }
 }
 
