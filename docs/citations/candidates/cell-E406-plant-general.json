@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E406",
+    "origin": "plant",
+    "position": "general"
+  },
+  "proposed": [
+    {
+      "sourceName": "Halal Authority India — Food Ingredient Numbers (E-numbers) halal status table",
+      "reference": "https://www.halalauthorityindia.com/pages/ecodes/6198ecodes.pdf",
+      "date": "2011-08-26",
+      "tier": 1,
+      "paraphrase": "Lists E406 (agar) with halal status: \"E406 Agar Emulsifiers and Stabilizers - other plant gums Halal\". (Undated document; date is the PDF creation date in its metadata.)"
+    },
+    {
+      "sourceName": "Indonesia Minister of Religious Affairs Decree KMA 1360/2021 (BPJPH) — materials exempt from mandatory halal certification",
+      "reference": "https://cmsbl.halal.go.id/uploads/KMA_1360_tahun_2021_tentang_Bahan_yang_dikecualikan_dari_kewajiban_bersertifikat_Halal_5a41b7b4e1.pdf (annex p.6)",
+      "date": "2021-12-27",
+      "tier": 1,
+      "paraphrase": "Annex lists \"Serbuk Agar (Pulvis Agar)\" among materials exempted from halal certification as not at risk of containing haram material (synthetic chemicals / unprocessed plant materials)."
+    }
+  ],
+  "researcherNote": "E406 (agar) proposed new seeded row keyed on origin \"plant\" (single-origin additive, added to ENumberReference.origins), draft grade 1 (halal) at all positions. Two independent tier-1 sources. PENDING owner approval (Oct 23). Caveat: Source A publisher identity unverified; KMA 1360 is an exemption-from-certification list.",
+  "decision": "staged"
+}

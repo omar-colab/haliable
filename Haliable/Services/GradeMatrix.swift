@@ -264,6 +264,21 @@ struct GradeMatrix {
         ]
         t[.eNumber("E542")] = [.unspecified: row(5, 4, 4, 4, "Spec §1: bone phosphate (E542)")]
         t[.eNumber("E153")] = [.unspecified: row(4, 3, 3, 3, "Spec §1: vegetable/bone carbon (E153)")]
+
+        // — Proposed Oct 23, 2026 (branch proposal/additive-citations): synthetic,
+        //   mineral or plant additives with two independent tier-1 sources staged in
+        //   docs/citations/candidates/ (decision: pending). Draft until approved. —
+        t[.eNumber("E200")] = [.synthetic: row(1, 1, 1, 1, "Proposed: sorbic acid (E200)")]
+        t[.eNumber("E301")] = [.synthetic: row(1, 1, 1, 1, "Proposed: sodium ascorbate (E301)")]
+        t[.eNumber("E339")] = [.synthetic: row(1, 1, 1, 1, "Proposed: sodium phosphates (E339)")]
+        t[.eNumber("E340")] = [.synthetic: row(1, 1, 1, 1, "Proposed: potassium phosphates (E340)")]
+        t[.eNumber("E250")] = [.synthetic: row(1, 1, 1, 1, "Proposed: sodium nitrite (E250)")]
+        t[.eNumber("E406")] = [.plant: row(1, 1, 1, 1, "Proposed: agar (E406)")]
+        t[.eNumber("E407")] = [.plant: row(1, 1, 1, 1, "Proposed: carrageenan (E407)")]
+        t[.eNumber("E414")] = [.plant: row(1, 1, 1, 1, "Proposed: gum arabic (E414)")]
+        t[.eNumber("E440")] = [.plant: row(1, 1, 1, 1, "Proposed: pectin (E440)")]
+        t[.eNumber("E460")] = [.plant: row(1, 1, 1, 1, "Proposed: cellulose (E460)")]
+        t[.eNumber("E461")] = [.plant: row(1, 1, 1, 1, "Proposed: methyl cellulose (E461)")]
         t[.named("vitamin d3")] = [
             .unspecified: row(2, 2, 2, 2, "Spec §1: vitamin D3 / cholecalciferol (lanolin)"),
         ]

@@ -36,6 +36,18 @@ enum ENumberReference {
         "E920":  [.animal, .synthetic],              // L-cysteine
         "E153":  [.plant, .animalNonZabiha],         // vegetable/bone carbon
         "E1105": [.animal, .microbial],              // lysozyme (often egg)
+        // Proposed Oct 23 (pending approval): one possible origin each.
+        "E200":  [.synthetic],                   // sorbic acid
+        "E250":  [.synthetic],                   // sodium nitrite
+        "E301":  [.synthetic],                   // sodium ascorbate
+        "E339":  [.synthetic],                   // sodium phosphates
+        "E340":  [.synthetic],                   // potassium phosphates
+        "E406":  [.plant],                       // agar (seaweed)
+        "E407":  [.plant],                       // carrageenan (seaweed)
+        "E414":  [.plant],                       // gum arabic (acacia)
+        "E440":  [.plant],                       // pectin (fruit)
+        "E460":  [.plant],                       // cellulose
+        "E461":  [.plant],                       // methyl cellulose
     ]
 
     /// Recognized US ingredient names → E-number (for the USDA text path).

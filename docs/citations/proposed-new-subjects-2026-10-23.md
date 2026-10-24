@@ -132,3 +132,18 @@ Still missing a second source: E330 citric acid (64 products), E415, E300, E331,
 whose only fermentation category is unprocessed traditional foods (tape, oncom, tempe). Indonesia therefore treats
 these fermentation-made additives as **critical** (the growth medium and processing aids must be checked).
 That argues for keeping them Questionable (widely accepted, grade 2), not Halal, unless a second Halal source appears.
+
+## Ready-to-approve package (branch `proposal/additive-citations`)
+
+The 11 two-source additives are staged as 44 candidates (`docs/citations/candidates/cell-E{200,250,301,339,340,406,407,414,440,460,461}-*.json`,
+`"decision": "staged"`). Each is keyed on its single known origin (synthetic or plant), because §8.4 forbids clearing an
+*unspecified*-origin cell to Halal. E260/E262 were dropped: acetic acid can come from (wine) vinegar, so it has no single origin.
+A dry run through `CitationCommitter` shows **44/44 would clear** once approved.
+
+To approve:
+1. Flip `"staged"` to `"approved"` in the files you accept (or `"rejected"` / `"needsBetterSource"`).
+2. Write Citations.json through the gate, never by hand:
+   `TEST_RUNNER_HALIABLE_COMMIT=1 TEST_RUNNER_HALIABLE_CANDIDATES_DIR=$PWD/docs/citations/candidates TEST_RUNNER_HALIABLE_CITATIONS_JSON=$PWD/Haliable/Resources/Citations.json xcodebuild test … -only-testing:HaliableTests/CitationPipelineTests`
+3. Regenerate the ledger (`TEST_RUNNER_HALIABLE_WRITE_CITATIONS=1 …`), run the full suite, then merge the branch.
+
+Until then, this branch shows these 11 additives as **draft Halal (pending review)**. Don't merge it unapproved.
