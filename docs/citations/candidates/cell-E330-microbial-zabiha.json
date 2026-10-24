@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E330",
+    "origin": "microbial",
+    "position": "zabiha"
+  },
+  "proposed": [
+    {
+      "sourceName": "South African National Halaal Authority (SANHA) — E-number guide",
+      "reference": "https://sanha.org.za/2009/12/15/e330-citric-acid/",
+      "date": "2009-12-15",
+      "tier": 1,
+      "paraphrase": "E330 (citric acid): \"Status: Halaal Source: microbiological fermentation; citrus fruits; pineapple waste\""
+    },
+    {
+      "sourceName": "Halal Authority India — Food Ingredient Numbers (E-numbers) halal status table",
+      "reference": "https://www.halalauthorityindia.com/pages/ecodes/6198ecodes.pdf",
+      "date": "2011-08-26",
+      "tier": 1,
+      "paraphrase": "Lists \"E330 Citric Acid Miscellaneous - Citric Acid and its Salts Halal\". (Undated document; date is the PDF creation date in its metadata.)"
+    }
+  ],
+  "researcherNote": "E330 (citric acid): proposed seeded row keyed on origin \"microbial\" (its one commercial origin; added to ENumberReference.origins), draft grade 1 at all positions. 2 tier-1 source(s). Staged Oct 23 — owner approval needed. KMA 1360 does NOT exempt citric acid (fermentation media are a critical point in Indonesia); SANHA lists citrus/pineapple too, so \"microbial\" is the dominant, not the only, origin.",
+  "decision": "staged"
+}

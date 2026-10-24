@@ -1,0 +1,19 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E129",
+    "origin": "synthetic",
+    "position": "hanafiStrict"
+  },
+  "proposed": [
+    {
+      "sourceName": "South African National Halaal Authority (SANHA) — E-number guide",
+      "reference": "https://sanha.org.za/2009/12/17/e129-allura-red-ac/",
+      "date": "2009-12-17",
+      "tier": 1,
+      "paraphrase": "E129 (allura red): \"Status: Halaal Source: synthetic chemical\""
+    }
+  ],
+  "researcherNote": "E129 (allura red): proposed seeded row keyed on origin \"synthetic\" (its one commercial origin; added to ENumberReference.origins), draft grade 1 at all positions. 1 tier-1 source(s). Staged Oct 23 — owner approval needed. Halal Authority India: halal as dry colour, Mushbooh in a liquid with a non-halal solvent — not counted as support.",
+  "decision": "staged"
+}

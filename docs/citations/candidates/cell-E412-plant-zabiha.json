@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E412",
+    "origin": "plant",
+    "position": "zabiha"
+  },
+  "proposed": [
+    {
+      "sourceName": "South African National Halaal Authority (SANHA) — E-number guide",
+      "reference": "https://sanha.org.za/2009/12/14/e412-guar-gum/",
+      "date": "2009-12-14",
+      "tier": 1,
+      "paraphrase": "E412 (guar gum): \"Status: Halaal Source: pea extract\""
+    },
+    {
+      "sourceName": "Halal Authority India — Food Ingredient Numbers (E-numbers) halal status table",
+      "reference": "https://www.halalauthorityindia.com/pages/ecodes/6198ecodes.pdf",
+      "date": "2011-08-26",
+      "tier": 1,
+      "paraphrase": "Lists \"E412 Guar Gum Emulsifiers and Stabilizers - other plant gums Halal\". (Undated document; date is the PDF creation date in its metadata.)"
+    }
+  ],
+  "researcherNote": "E412 (guar gum): proposed seeded row keyed on origin \"plant\" (its one commercial origin; added to ENumberReference.origins), draft grade 1 at all positions. 2 tier-1 source(s). Staged Oct 23 — owner approval needed.",
+  "decision": "staged"
+}

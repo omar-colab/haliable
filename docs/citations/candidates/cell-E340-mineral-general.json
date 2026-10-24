@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E340",
+    "origin": "mineral",
+    "position": "general"
+  },
+  "proposed": [
+    {
+      "sourceName": "Halal Authority India — Food Ingredient Numbers (E-numbers) halal status table",
+      "reference": "https://www.halalauthorityindia.com/pages/ecodes/6198ecodes.pdf",
+      "date": "2011-08-26",
+      "tier": 1,
+      "paraphrase": "Lists \"E340 Potassium Phosphates Miscellaneous - Phosphoric Acid and its Salts Halal\". (Undated document; date is the PDF creation date in its metadata.)"
+    },
+    {
+      "sourceName": "Indonesia Minister of Religious Affairs Decree KMA 1360/2021 (BPJPH) — materials exempt from mandatory halal certification",
+      "reference": "https://cmsbl.halal.go.id/uploads/KMA_1360_tahun_2021_tentang_Bahan_yang_dikecualikan_dari_kewajiban_bersertifikat_Halal_5a41b7b4e1.pdf (annex p.180)",
+      "date": "2021-12-27",
+      "tier": 1,
+      "paraphrase": "Annex lists \"E340a Potassium Dihydrogen Orthophosphate\" among materials exempted from halal certification as not at risk of containing haram material."
+    }
+  ],
+  "researcherNote": "E340 (potassium phosphates): proposed seeded row keyed on origin \"mineral\" (its one commercial origin; added to ENumberReference.origins), draft grade 1 at all positions. 2 tier-1 source(s). Staged Oct 23 — owner approval needed.",
+  "decision": "staged"
+}

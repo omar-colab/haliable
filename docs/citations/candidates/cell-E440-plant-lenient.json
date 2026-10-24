@@ -7,20 +7,20 @@
   },
   "proposed": [
     {
+      "sourceName": "South African National Halaal Authority (SANHA) — E-number guide",
+      "reference": "https://sanha.org.za/2009/12/17/e440a-pectin/",
+      "date": "2009-12-17",
+      "tier": 1,
+      "paraphrase": "E440 (pectin): \"Status: Halaal Source: Apple residues from cider making & orange pith. Check that source is not from cider making.\""
+    },
+    {
       "sourceName": "Halal Authority India — Food Ingredient Numbers (E-numbers) halal status table",
       "reference": "https://www.halalauthorityindia.com/pages/ecodes/6198ecodes.pdf",
       "date": "2011-08-26",
       "tier": 1,
-      "paraphrase": "Lists E440 (pectin) with halal status: \"E440a Pectin Emulsifiers and Stabilizers - Pectin and derivatives Halal\". (Undated document; date is the PDF creation date in its metadata.)"
-    },
-    {
-      "sourceName": "The Halaal Department (Malawi) — E440(a) Pectin",
-      "reference": "https://halaalmalawi.org/halaal-e-numbers/e440a-pectin/",
-      "date": "2026-10-23",
-      "tier": 1,
-      "paraphrase": "Status Halaal; source apple residues from cider making and orange pith — \"Check that source is not from cider making\". (Page undated; date is when it was accessed.)"
+      "paraphrase": "Lists \"E440a Pectin Emulsifiers and Stabilizers - Pectin and derivatives Halal\". (Undated document; date is the PDF creation date in its metadata.)"
     }
   ],
-  "researcherNote": "E440 (pectin) proposed new seeded row keyed on origin \"plant\" (single-origin additive, added to ENumberReference.origins), draft grade 1 (halal) at all positions. Two independent tier-1 sources. PENDING owner approval (Oct 23). Caveat: Source A publisher identity unverified; Source B adds a cider-making caution.",
+  "researcherNote": "E440 (pectin): proposed seeded row keyed on origin \"plant\" (its one commercial origin; added to ENumberReference.origins), draft grade 1 at all positions. 2 tier-1 source(s). Staged Oct 23 — owner approval needed. SANHA cautions: check the source is not from cider making.",
   "decision": "staged"
 }

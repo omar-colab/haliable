@@ -135,15 +135,34 @@ That argues for keeping them Questionable (widely accepted, grade 2), not Halal,
 
 ## Ready-to-approve package (branch `proposal/additive-citations`)
 
-The 11 two-source additives are staged as 44 candidates (`docs/citations/candidates/cell-E{200,250,301,339,340,406,407,414,440,460,461}-*.json`,
-`"decision": "staged"`). Each is keyed on its single known origin (synthetic or plant), because §8.4 forbids clearing an
-*unspecified*-origin cell to Halal. E260/E262 were dropped: acetic acid can come from (wine) vinegar, so it has no single origin.
-A dry run through `CitationCommitter` shows **44/44 would clear** once approved.
+**Sources used, all tier 1:**
+- **SANHA** (South African National Halaal Authority) E-number guide pages: "Status: Halaal" plus the source, per code.
+  This is the strongest source here.
+- Halal Authority India's table, counted only where it says Halal with no condition.
+- Indonesia's KMA 1360/2021.
+- The Malawi Halaal Department pages repeat SANHA word for word, so they are **not** counted as independent.
 
-To approve:
-1. Flip `"staged"` to `"approved"` in the files you accept (or `"rejected"` / `"needsBetterSource"`).
-2. Write Citations.json through the gate, never by hand:
-   `TEST_RUNNER_HALIABLE_COMMIT=1 TEST_RUNNER_HALIABLE_CANDIDATES_DIR=$PWD/docs/citations/candidates TEST_RUNNER_HALIABLE_CITATIONS_JSON=$PWD/Haliable/Resources/Citations.json xcodebuild test … -only-testing:HaliableTests/CitationPipelineTests`
-3. Regenerate the ledger (`TEST_RUNNER_HALIABLE_WRITE_CITATIONS=1 …`), run the full suite, then merge the branch.
+**What is staged:** 28 additives become 112 candidates (`"decision": "staged"`). Each is keyed on its one commercial origin
+(synthetic, mineral, plant or microbial), because §8.4 forbids clearing an *unspecified*-origin cell to Halal. A new
+`Origin.mineral` covers chalk, salts and phosphates.
 
-Until then, this branch shows these 11 additives as **draft Halal (pending review)**. Don't merge it unapproved.
+**Dry run through CitationCommitter: 107/112 would clear.** The 5 rejects are the single-source codes (E102, E110,
+E129, E133, E903) at the lenient position, which needs two independent sources.
+
+**Left out for an owner ruling:**
+- E306 tocopherols: SANHA says vegetable; A says haram if from pork fat.
+- E101 riboflavin: SANHA says Halaal; A says Mushbooh.
+- E282 calcium propionate: A says Mushbooh if the calcium comes from bones.
+- E270 lactic acid: can be from whey.
+- E260 / E262 acetic acid: can come from wine vinegar, which conflicts with your vinegar ruling.
+
+**Real impact (measured on the 314-product US probe): Halal goes from 57 to 67.** The rest of the Questionable results
+are mostly *correct*: natural flavors (90 products), enzymes that may be rennet (42) and whey (33) are cited and
+genuinely contested. The largest remaining lever is **E101 riboflavin (39 products, in enriched flour)**.
+
+**To approve:**
+1. Flip `"staged"` to `"approved"` in the files you accept.
+2. Run `TEST_RUNNER_HALIABLE_COMMIT=1 TEST_RUNNER_HALIABLE_CANDIDATES_DIR=$PWD/docs/citations/candidates TEST_RUNNER_HALIABLE_CITATIONS_JSON=$PWD/Haliable/Resources/Citations.json xcodebuild test … -only-testing:HaliableTests/CitationPipelineTests`
+3. Regenerate the ledger (`TEST_RUNNER_HALIABLE_WRITE_CITATIONS=1 …`), run the full suite, then merge.
+
+Until then this branch shows these additives as **draft Halal (pending review)**. Don't merge it unapproved.

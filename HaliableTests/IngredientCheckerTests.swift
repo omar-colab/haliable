@@ -130,9 +130,9 @@ final class IngredientCheckerTests: XCTestCase {
     }
 
     func testFreeTextENumbersUseTheENumberPath() {
-        let v = verdict("emulsifier: E471, colour (E120), acid (E330)")
+        let v = verdict("emulsifier: E471, colour (E120), flavour enhancer (E621)")
         XCTAssertTrue(ids(v).isSuperset(of: ["mono-diglycerides", "carmine"]))
-        XCTAssertTrue(v.matched.contains { $0.originalText == "E330 (citric acid)" && $0.verdict == .doubtful })
+        XCTAssertTrue(v.matched.contains { $0.originalText == "E621 (monosodium glutamate)" && $0.verdict == .doubtful })
     }
 
     func testNonEnglishTextFallsBackOnEnglishTags() {

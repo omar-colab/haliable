@@ -1,0 +1,26 @@
+{
+  "target": {
+    "kind": "cell",
+    "subject": "E296",
+    "origin": "synthetic",
+    "position": "general"
+  },
+  "proposed": [
+    {
+      "sourceName": "South African National Halaal Authority (SANHA) — E-number guide",
+      "reference": "https://sanha.org.za/2009/12/15/e296-malic-acid/",
+      "date": "2009-12-15",
+      "tier": 1,
+      "paraphrase": "E296 (malic acid): \"Status: Halaal Source: synthetic; microbiological.\""
+    },
+    {
+      "sourceName": "Indonesia Minister of Religious Affairs Decree KMA 1360/2021 (BPJPH) — materials exempt from mandatory halal certification",
+      "reference": "https://cmsbl.halal.go.id/uploads/KMA_1360_tahun_2021_tentang_Bahan_yang_dikecualikan_dari_kewajiban_bersertifikat_Halal_5a41b7b4e1.pdf (annex p.121)",
+      "date": "2021-12-27",
+      "tier": 1,
+      "paraphrase": "Annex lists \"Malic Acid\" among materials exempted from halal certification as not at risk of containing haram material."
+    }
+  ],
+  "researcherNote": "E296 (malic acid): proposed seeded row keyed on origin \"synthetic\" (its one commercial origin; added to ENumberReference.origins), draft grade 1 at all positions. 2 tier-1 source(s). Staged Oct 23 — owner approval needed.",
+  "decision": "staged"
+}

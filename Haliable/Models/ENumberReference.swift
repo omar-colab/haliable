@@ -36,18 +36,35 @@ enum ENumberReference {
         "E920":  [.animal, .synthetic],              // L-cysteine
         "E153":  [.plant, .animalNonZabiha],         // vegetable/bone carbon
         "E1105": [.animal, .microbial],              // lysozyme (often egg)
-        // Proposed Oct 23 (pending approval): one possible origin each.
+        // Proposed Oct 23 (pending approval): one commercial origin each.
         "E200":  [.synthetic],                   // sorbic acid
         "E250":  [.synthetic],                   // sodium nitrite
         "E301":  [.synthetic],                   // sodium ascorbate
-        "E339":  [.synthetic],                   // sodium phosphates
-        "E340":  [.synthetic],                   // potassium phosphates
-        "E406":  [.plant],                       // agar (seaweed)
-        "E407":  [.plant],                       // carrageenan (seaweed)
-        "E414":  [.plant],                       // gum arabic (acacia)
-        "E440":  [.plant],                       // pectin (fruit)
+        "E339":  [.mineral],                     // sodium phosphates
+        "E340":  [.mineral],                     // potassium phosphates
+        "E406":  [.plant],                       // agar
+        "E407":  [.plant],                       // carrageenan
+        "E414":  [.plant],                       // gum arabic
+        "E440":  [.plant],                       // pectin
         "E460":  [.plant],                       // cellulose
         "E461":  [.plant],                       // methyl cellulose
+        "E330":  [.microbial],                   // citric acid
+        "E331":  [.synthetic],                   // sodium citrates
+        "E415":  [.microbial],                   // xanthan gum
+        "E300":  [.synthetic],                   // ascorbic acid
+        "E412":  [.plant],                       // guar gum
+        "E202":  [.synthetic],                   // potassium sorbate
+        "E500":  [.mineral],                     // sodium carbonates
+        "E375":  [.synthetic],                   // niacin
+        "E170":  [.mineral],                     // calcium carbonate
+        "E102":  [.synthetic],                   // tartrazine
+        "E110":  [.synthetic],                   // sunset yellow
+        "E129":  [.synthetic],                   // allura red
+        "E133":  [.synthetic],                   // brilliant blue
+        "E903":  [.plant],                       // carnauba wax
+        "E296":  [.synthetic],                   // malic acid
+        "E508":  [.mineral],                     // potassium chloride
+        "E516":  [.mineral],                     // calcium sulphate
     ]
 
     /// Recognized US ingredient names → E-number (for the USDA text path).

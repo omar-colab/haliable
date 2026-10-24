@@ -286,18 +286,35 @@ struct GradeMatrix {
 
         // — Proposed Oct 23, 2026 (branch proposal/additive-citations): synthetic,
         //   mineral or plant additives with two independent tier-1 sources staged in
-        //   docs/citations/candidates/ (decision: pending). Draft until approved. —
+        //   docs/citations/candidates/ (decision: staged). Draft until approved. —
         t[.eNumber("E200")] = [.synthetic: row(1, 1, 1, 1, "Proposed: sorbic acid (E200)")]
-        t[.eNumber("E301")] = [.synthetic: row(1, 1, 1, 1, "Proposed: sodium ascorbate (E301)")]
-        t[.eNumber("E339")] = [.synthetic: row(1, 1, 1, 1, "Proposed: sodium phosphates (E339)")]
-        t[.eNumber("E340")] = [.synthetic: row(1, 1, 1, 1, "Proposed: potassium phosphates (E340)")]
         t[.eNumber("E250")] = [.synthetic: row(1, 1, 1, 1, "Proposed: sodium nitrite (E250)")]
+        t[.eNumber("E301")] = [.synthetic: row(1, 1, 1, 1, "Proposed: sodium ascorbate (E301)")]
+        t[.eNumber("E339")] = [.mineral: row(1, 1, 1, 1, "Proposed: sodium phosphates (E339)")]
+        t[.eNumber("E340")] = [.mineral: row(1, 1, 1, 1, "Proposed: potassium phosphates (E340)")]
         t[.eNumber("E406")] = [.plant: row(1, 1, 1, 1, "Proposed: agar (E406)")]
         t[.eNumber("E407")] = [.plant: row(1, 1, 1, 1, "Proposed: carrageenan (E407)")]
         t[.eNumber("E414")] = [.plant: row(1, 1, 1, 1, "Proposed: gum arabic (E414)")]
         t[.eNumber("E440")] = [.plant: row(1, 1, 1, 1, "Proposed: pectin (E440)")]
         t[.eNumber("E460")] = [.plant: row(1, 1, 1, 1, "Proposed: cellulose (E460)")]
         t[.eNumber("E461")] = [.plant: row(1, 1, 1, 1, "Proposed: methyl cellulose (E461)")]
+        t[.eNumber("E330")] = [.microbial: row(1, 1, 1, 1, "Proposed: citric acid (E330)")]
+        t[.eNumber("E331")] = [.synthetic: row(1, 1, 1, 1, "Proposed: sodium citrates (E331)")]
+        t[.eNumber("E415")] = [.microbial: row(1, 1, 1, 1, "Proposed: xanthan gum (E415)")]
+        t[.eNumber("E300")] = [.synthetic: row(1, 1, 1, 1, "Proposed: ascorbic acid (E300)")]
+        t[.eNumber("E412")] = [.plant: row(1, 1, 1, 1, "Proposed: guar gum (E412)")]
+        t[.eNumber("E202")] = [.synthetic: row(1, 1, 1, 1, "Proposed: potassium sorbate (E202)")]
+        t[.eNumber("E500")] = [.mineral: row(1, 1, 1, 1, "Proposed: sodium carbonates (E500)")]
+        t[.eNumber("E375")] = [.synthetic: row(1, 1, 1, 1, "Proposed: niacin (E375)")]
+        t[.eNumber("E170")] = [.mineral: row(1, 1, 1, 1, "Proposed: calcium carbonate (E170)")]
+        t[.eNumber("E102")] = [.synthetic: row(1, 1, 1, 1, "Proposed: tartrazine (E102)")]
+        t[.eNumber("E110")] = [.synthetic: row(1, 1, 1, 1, "Proposed: sunset yellow (E110)")]
+        t[.eNumber("E129")] = [.synthetic: row(1, 1, 1, 1, "Proposed: allura red (E129)")]
+        t[.eNumber("E133")] = [.synthetic: row(1, 1, 1, 1, "Proposed: brilliant blue (E133)")]
+        t[.eNumber("E903")] = [.plant: row(1, 1, 1, 1, "Proposed: carnauba wax (E903)")]
+        t[.eNumber("E296")] = [.synthetic: row(1, 1, 1, 1, "Proposed: malic acid (E296)")]
+        t[.eNumber("E508")] = [.mineral: row(1, 1, 1, 1, "Proposed: potassium chloride (E508)")]
+        t[.eNumber("E516")] = [.mineral: row(1, 1, 1, 1, "Proposed: calcium sulphate (E516)")]
         t[.named("vitamin d3")] = [
             .unspecified: row(2, 2, 2, 2, "Spec §1: vitamin D3 / cholecalciferol (lanolin)"),
         ]

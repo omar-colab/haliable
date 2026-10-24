@@ -21,6 +21,7 @@ enum Origin: String, Codable, CaseIterable, Hashable {
     case animalNonZabiha    // land animal, not verified zabiha
     case insect
     case synthetic
+    case mineral            // mined / inorganic salts (chalk, phosphates)
     case microbial          // e.g. microbial rennet / FPC
     case unspecified        // the common scanned-label case
 
@@ -32,6 +33,7 @@ enum Origin: String, Codable, CaseIterable, Hashable {
         case .animalNonZabiha: return "Animal (non-zabiha)"
         case .insect:          return "Insect-derived"
         case .synthetic:       return "Synthetic"
+        case .mineral:         return "Mineral"
         case .microbial:       return "Microbial / fermentation"
         case .unspecified:     return "Source not disclosed"
         }
