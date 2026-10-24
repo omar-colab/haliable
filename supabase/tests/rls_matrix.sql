@@ -127,6 +127,27 @@ do $$ begin
   end if;
 end $$;
 
+-- ── TEST 7: research bot table (0017) — public read, no public writes, caller hash hidden ──
+do $$ begin
+  if to_regclass('public.ingredient_research') is null then
+    raise notice 'skip 7: 0017 not applied';
+    return;
+  end if;
+  if has_table_privilege('anon', 'public.ingredient_research', 'INSERT')
+     or has_table_privilege('anon', 'public.ingredient_research', 'UPDATE')
+     or has_table_privilege('authenticated', 'public.ingredient_research', 'INSERT')
+     or has_table_privilege('authenticated', 'public.ingredient_research', 'UPDATE')
+     or has_table_privilege('authenticated', 'public.ingredient_research', 'DELETE') then
+    raise exception 'FAIL 7a: the app can write ingredient_research (only the Edge Function may)';
+  end if;
+  if has_column_privilege('anon', 'public.ingredient_research', 'requested_by', 'SELECT') then
+    raise exception 'FAIL 7b: anon can read the caller hash';
+  end if;
+  if not has_column_privilege('anon', 'public.ingredient_research', 'sources', 'SELECT') then
+    raise exception 'FAIL 7c: anon cannot read research results (the app needs them)';
+  end if;
+end $$;
+
 do $$ begin raise notice '✅ ALL RLS TESTS PASSED'; end $$;
 
 rollback;
