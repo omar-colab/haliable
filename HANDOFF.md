@@ -59,6 +59,8 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
    Also redeploy `review-agent` (its page-check code moved to `_shared/page.ts`, behaviour unchanged) and
    `review-decide`: approval links now ignore taps in the first 60 s after the email, so Outlook/Defender
    link-scanners can't approve by pre-fetching. One tap still works after that.
+   Then **deploy the site**: `site/privacy` now discloses the ingredient-name lookups. Deploy it in the same step
+   as `source-scout`, not before and not after.
 3. Review what the bot finds: `ingredient_research` rows with sources, `reviewed = false`. Promote
    good ones through the citation pipeline; nothing reaches a grade without that.
 4. ~~Decide wine vinegar / vegan~~ — decided Oct 23, see below.

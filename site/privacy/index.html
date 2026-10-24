@@ -17,7 +17,7 @@
 </head>
 <body>
 <h1>Haliable — Privacy Policy</h1>
-<p class="muted">Last updated: October 22, 2026</p>
+<p class="muted">Last updated: October 23, 2026</p>
 
 <p>Haliable is a halal-food barcode scanner. We built it to need as little of your
 data as possible. This policy explains exactly what the app touches.</p>
@@ -29,6 +29,11 @@ product, the app sends just the <strong>barcode number</strong> (not your identi
 to two public food databases: <a href="https://world.openfoodfacts.org">Open Food
 Facts</a> and the <a href="https://fdc.nal.usda.gov">USDA FoodData Central</a>. We
 do not retain those lookups.</p>
+<p>When a product contains an ingredient our sources don't cover yet, the app sends
+just that <strong>ingredient's name</strong> (for example "E1105 lysozyme"). It never
+sends the barcode, the product or anything about you. Our server looks up what
+published halal sources say about it and keeps the result, which is shared with
+everyone who scans that ingredient. Nothing about who asked is stored.</p>
 
 <h2>What we collect (only if you choose to contribute)</h2>
 <p>Browsing and scanning never require an account. You only sign in — with
@@ -53,7 +58,8 @@ other apps or websites. There are no third-party advertising or analytics SDKs.<
   for a manual review, searches published halal sources, and drafts an answer. The
   app asks your permission before the first time it sends them. A person checks
   every draft before you see a verdict. Anthropic does not use this data to train
-  its models.</li>
+  its models. It also researches the ingredient names described above, which
+  contain nothing about you.</li>
   <li><strong>Resend</strong> delivers the email that tells us a review request
   arrived (product name, barcode, your notes and links to the photos).</li>
   <li><strong>Netlify</strong> hosts this website, and <strong>MailerLite</strong>
