@@ -134,7 +134,9 @@ enum IngredientCategory: String, Codable, CaseIterable {
     /// not pork or khamr.
     static func isHardHaram(_ ingredient: MatchedIngredient) -> Bool {
         if ingredient.matchedRule?.verdict == .haram { return true }
-        let text = (ingredient.displayName + " " + ingredient.originalText).lowercased()
+        // The matcher's exceptions apply here too: "root beer", "chocolate liquor",
+        // "no alcohol or pork" are not khamr or pork.
+        let text = RulesEngine.unmasked((ingredient.displayName + " " + ingredient.originalText).lowercased())
         if ENumberReference.animalOrigin(from: text) == .animalPork { return true }
         return khamrOrProhibited.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) != nil
     }

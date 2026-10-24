@@ -340,4 +340,13 @@ final class IngredientCheckerTests: XCTestCase {
         let dupes = Dictionary(grouping: names, by: { $0.value.lowercased() }).filter { $0.value.count > 1 }
         XCTAssertTrue(dupes.isEmpty, "\(dupes.mapValues { $0.map(\.key).sorted() })")
     }
+
+    /// The hard-haram pin honours the matcher's exceptions in surrounding text.
+    func testPinIgnoresMaskedWordingAroundAnIngredient() {
+        XCTAssertNotEqual(verdict("water, sugar, natural root beer flavor").overallGrade, .haram)
+        XCTAssertNotEqual(verdict("beef, salt, natural flavors (contains root beer extract)").overallGrade, .haram)
+        XCTAssertNotEqual(verdict("sugar, natural flavor (from wine grapes)").overallGrade, .haram)
+        XCTAssertEqual(verdict("sugar, natural wine flavor").overallGrade, .haram)
+        XCTAssertEqual(verdict("sugar, natural flavor (beer)").overallGrade, .haram)
+    }
 }

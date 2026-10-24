@@ -359,7 +359,7 @@ final class RulesEngine {
         "(?:لا [يت]حتوي|خال[يى]?[ةه]? من|بدون)[^.;،]*",   // Arabic "doesn't contain / free of / without"
         "h[iı]cbir[^.,;]*", "(?:alkol|domuz)[^.;]*(?:yoktur|kullan[iı]lmamaktad[iı]r|kat[iı]lmam[iı]st[iı]r|i[cç]ermez)", "huhnere[iı]\\p{L}*",
         "non-?alcoholic", "sugar alcohols?", "liquorice", "root beer", "meatless", "babies", "cheese cultures?",
-        "coconut meat", "(?:chocolate|cocoa|cacao) liquor", "bourbon vanilla", "vanill\\p{L}*(?: \\p{L}+)? bourbon", "porcini", "weinstein", "weinsaure", "weintraube", "beefsteak tomato", "lamb's lettuce",
+        "coconut meat", "(?:chocolate|cocoa|cacao) liquor", "bourbon vanilla", "wine grapes?", "vanill\\p{L}*(?: \\p{L}+)? bourbon", "porcini", "weinstein", "weinsaure", "weintraube", "beefsteak tomato", "lamb's lettuce",
         "goat'?s? (?:milk|cheese|yogh?urt|butter)", "chicken eggs?", "duck eggs?",
         "(?:product of|made in|produced in|origin:?) turkey",
         // "turkey bacon" is turkey, not pork: only the word "bacon"/"ham" is masked,
@@ -369,6 +369,13 @@ final class RulesEngine {
 
     private static func maskedRanges(in text: String) -> [Range<String.Index>] {
         masks.matches(in: text, range: NSRange(text.startIndex..., in: text)).compactMap { Range($0.range, in: text) }
+    }
+
+    /// `text` with the masked wording blanked out ("natural root beer flavor" →
+    /// "natural           flavor"), for scans outside the matcher (the hard-haram
+    /// pin) that must honour the same exceptions.
+    static func unmasked(_ text: String) -> String {
+        masks.stringByReplacingMatches(in: text, range: NSRange(text.startIndex..., in: text), withTemplate: " ")
     }
 
     /// Wording that can't be a fixed alias: "natural cherry flavor", "natural
