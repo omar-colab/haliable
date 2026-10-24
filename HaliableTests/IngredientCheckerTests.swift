@@ -234,6 +234,7 @@ final class IngredientCheckerTests: XCTestCase {
     func testNutritionPanelOrMarketingTextIsNotClean() {
         XCTAssertNotEqual(verdict("Contains A BIOENGINEERED FOOD INGREDIENT MADE IN MEXICO").overall, .halal)
         XCTAssertNotEqual(verdict("Nutrition Facts 3 servings per container, Calories 140").overall, .halal)
+        XCTAssertNotEqual(verdict("milk chocolate party & m&m chocolate candies mm 403.5, 20mg sodium 18 1980 sat fat 10%").overall, .halal)
         XCTAssertEqual(verdict("whole grain rolled oats").overall, .halal)
         XCTAssertEqual(verdict("Italian whole peeled tomatoes, olive oil, onions, salt, garlic, basil").overall, .halal)
     }

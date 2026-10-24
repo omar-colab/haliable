@@ -336,7 +336,7 @@ final class RulesEngine {
     /// ponytail: keyword heuristic; OCR'd panels in other languages slip past.
     static func looksIncomplete(_ raw: String) -> Bool {
         let t = raw.lowercased()
-        if t.range(of: "calories|daily value|valor diario|serving size|nutrition facts|per serving|amount per",
+        if t.range(of: #"calories|daily value|valor diario|serving size|nutrition facts|per serving|amount per|sat\.? fat|saturated fat|total fat|total carb|\bkcal\b"#,
                    options: .regularExpression) != nil { return true }
         let items = t.split(whereSeparator: { ",;".contains($0) }).filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
         return items.count < 2 && t.split(separator: " ").count > 6
