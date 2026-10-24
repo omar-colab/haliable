@@ -16,6 +16,7 @@ struct HaliableApp: App {
     @State private var reviewStore = ReviewStore()    // manual-review requests
     @State private var theme = ThemeManager()         // appearance preference
     @State private var settings = AppSettings()       // scanning/location/data prefs
+    @State private var scout = SourceScout()          // in-app research bot
 
     /// Drives the brief warm intro overlay. The real UI lives behind it from the
     /// first frame, so dismissing this never gates any work — it only reveals.
@@ -35,6 +36,7 @@ struct HaliableApp: App {
                     .environment(reviewStore)
                     .environment(theme)
                     .environment(settings)
+                    .environment(scout)
                     .tint(DSColor.accent)                   // global accent (tab bar, controls)
 
                 if showLaunchIntro {
