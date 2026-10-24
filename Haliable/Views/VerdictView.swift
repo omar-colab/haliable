@@ -203,6 +203,14 @@ struct VerdictView: View {
                                 .foregroundStyle(DSColor.accent)
                         }
                     }
+                    let clearOrigins = GradeMatrix.citedHalalOrigins(for: item)
+                    if !clearOrigins.isEmpty {
+                        Label("Reported Halal when the label shows it's \(clearOrigins.map { $0.displayName.lowercased() }.joined(separator: " or "))",
+                              systemImage: "checkmark.circle")
+                            .font(DSFont.caption)
+                            .foregroundStyle(DSColor.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                     if let term = SourceScout.term(for: item) { researchBlock(term) }
                 }
                 .padding(DSSpacing.sm)
