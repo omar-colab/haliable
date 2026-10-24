@@ -32,7 +32,9 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
   plain additives have no cited source yet: citric acid E330 (64 products), E375 niacin (45),
   riboflavin E101 (39), sodium carbonates E500 (28), lactic acid E270 (24), E428, calcium phosphates
   E341, colours E129/E133, carnauba wax E903, xanthan gum E415… That's the order to approve sources
-  in. The research bot will collect them once it's live; approving the top ~20 clears most labels.
+  in. Measured since: approving the 28 staged additives moves only 57 → 67 of 314 to Halal. Most Questionable
+  results are correct (natural flavors 90, enzymes 42, whey 33 are cited and contested). The biggest open lever is
+  **E101 riboflavin** (39 products, in enriched flour): SANHA says Halaal, Halal Authority India says Mushbooh.
 - **Foreign-label probe (301 FR/DE/TR/MY/UK/ES products):** fixed German "trocken lagern" read as
   lager, "enthält kein Schweinefett" and Turkish "Hiçbir çeşidinde alkol, domuz yağı … yoktur"
   (no-pork statements) read as pork, "Hühnerei" (hen's egg) flagged as meat.
@@ -64,8 +66,8 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
    statuses for 31 common additives (20 listed Halal with no condition: citric acid, xanthan, ascorbic acid,
    pectin, guar, gum arabic, carrageenan, phosphates, sorbates…). Decide whether Source A (Halal Authority
    India's E-number table — publisher unverified) counts as tier 1. Nothing is wired in until you approve.
-   **Ready-made:** branch `proposal/additive-citations` (e16e0bc) stages 11 additives with two independent tier-1
-   sources (Source A plus Indonesia's KMA 1360/2021) as 44 candidates. Dry run: 44/44 clear once approved.
+   **Ready-made:** branch `proposal/additive-citations` (4983491) stages 28 additives, mostly from **SANHA**
+   (+ Halal Authority India, Indonesia KMA 1360/2021), as 112 candidates. Dry run: 107/112 clear once approved.
    Approval steps are at the end of the proposal doc. Don't merge that branch unapproved.
 
 6. **Decide — additive consistency:** an additive written in words ("citric acid", "potassium sorbate") is not
