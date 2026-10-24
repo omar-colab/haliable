@@ -107,7 +107,7 @@ async function callerHash(r: Request): Promise<string> {
     .map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-const since = () => new Date(Date.now() - 24 * 3600 * 1000).toISOString();
+const since = (days = 1) => new Date(Date.now() - days * 24 * 3600 * 1000).toISOString();
 
 Deno.serve(async (r) => {
   if (r.method !== "POST") return new Response("POST only", { status: 405 });
@@ -117,12 +117,15 @@ Deno.serve(async (r) => {
     .filter((t: string | null): t is string => !!t))].slice(0, PER_CALL) as string[];
   if (!terms.length) return new Response("no terms", { status: 400 });
 
-  const { data: known } = await db.from("ingredient_research").select("term, status, updated_at").in("term", terms);
+  const { data: known } = await db.from("ingredient_research").select("term, status, sources, updated_at").in("term", terms);
   const byTerm = new Map((known ?? []).map((k) => [k.term, k]));
-  // New terms, plus failures older than a day (a retry, not a hammer).
+  // New terms, failures older than a day, and empty results older than a month
+  // (sources get published) — a retry, not a hammer.
   const fresh = terms.filter((t) => {
     const k = byTerm.get(t);
-    return !k || (k.status === "failed" && k.updated_at < since());
+    if (!k) return true;
+    if (k.status === "failed") return k.updated_at < since();
+    return k.status === "done" && !(k.sources?.length) && k.updated_at < since(30);
   });
 
   let started = 0;
@@ -135,10 +138,10 @@ Deno.serve(async (r) => {
     const room = Math.max(0, Math.min(DAILY_CAP - (today ?? 0), CALLER_CAP - (mine ?? 0)));
     for (const term of fresh.slice(0, room)) {
       // Claim it. The primary key makes a second caller's insert a no-op, and a
-      // failed row is only reclaimed while it is still failed.
+      // retried row is only reclaimed while it is unchanged since we read it.
       const claim = byTerm.has(term)
         ? await db.from("ingredient_research").update({ status: "researching", updated_at: new Date().toISOString() })
-            .eq("term", term).eq("status", "failed").select("term")
+            .eq("term", term).eq("updated_at", byTerm.get(term)!.updated_at).select("term")
         : await db.from("ingredient_research").upsert({ term, requested_by: caller }, { onConflict: "term", ignoreDuplicates: true }).select("term");
       if (!claim.data?.length) continue;
       started++;
