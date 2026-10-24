@@ -309,12 +309,15 @@ final class RulesEngine {
         var names = [code.lowercased()]
         if let n = eNumberMap[code] { names.append(IngredientParser.normalize(n)) }
         if let rule = eNumIndex[code] { names += rule.aliases.map(IngredientParser.normalize) }
+        // One pattern per code, compiled once (not once per name × item).
+        guard let re = try? NSRegularExpression(pattern: "(?<![\\p{L}\\p{N}])(?:"
+            + names.filter { !$0.isEmpty }.sorted { $0.count > $1.count }
+                .map(NSRegularExpression.escapedPattern(for:)).joined(separator: "|") + ")")
+        else { return nil }
         for item in items {
-            for n in names {
-                if let r = item.own.range(of: "(?<![\\p{L}\\p{N}])" + NSRegularExpression.escapedPattern(for: n),
-                                          options: .regularExpression) {
-                    return (item, r)
-                }
+            if let m = re.firstMatch(in: item.own, range: NSRange(item.own.startIndex..., in: item.own)),
+               let r = Range(m.range, in: item.own) {
+                return (item, r)
             }
         }
         return nil

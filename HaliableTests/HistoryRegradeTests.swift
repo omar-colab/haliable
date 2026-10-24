@@ -10,7 +10,7 @@ import SwiftData
 
 @MainActor
 final class HistoryRegradeTests: XCTestCase {
-    func testStaleHalalRowIsRegraded() throws {
+    func testStaleHalalRowIsRegraded() async throws {
         let container = try ModelContainer(for: ScanRecord.self, CachedProduct.self,
                                            configurations: ModelConfiguration(isStoredInMemoryOnly: true))
         let context = container.mainContext
@@ -20,9 +20,16 @@ final class HistoryRegradeTests: XCTestCase {
         let row = ScanRecord(barcode: "123", productName: "Gummies", overallVerdict: .halal, standard: .general, score: 100)
         context.insert(row)
 
-        HistoryRegrade.run(context: context, engine: RulesEngine())
+        let defaults = UserDefaults(suiteName: "HistoryRegradeTests")!
+        defaults.removePersistentDomain(forName: "HistoryRegradeTests")
+        await HistoryRegrade.run(context: context, engine: RulesEngine(), stamp: "v2", defaults: defaults)
 
         XCTAssertEqual(row.overallVerdict, .haram)
         XCTAssertLessThan(row.score ?? 100, 100)
+
+        // Same version again: nothing re-runs.
+        row.overallVerdict = .halal
+        await HistoryRegrade.run(context: context, engine: RulesEngine(), stamp: "v2", defaults: defaults)
+        XCTAssertEqual(row.overallVerdict, .halal)
     }
 }

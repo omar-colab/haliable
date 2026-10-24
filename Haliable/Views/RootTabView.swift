@@ -48,7 +48,7 @@ struct RootTabView: View {
         }
         .fullScreenCover(item: $scan) { ScanSessionView(initialBarcode: $0.barcode) }
         // Old History rows pick up rule improvements (once per launch).
-        .task { HistoryRegrade.run(context: modelContext, engine: engine) }
+        .task { await HistoryRegrade.run(context: modelContext, engine: engine) }
     }
 
     /// Hides the system bar and reserves room so scroll content clears the dock.

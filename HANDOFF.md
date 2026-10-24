@@ -19,7 +19,7 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
   for Omar, never shown. Caps: 50 new ingredients/day total (≈ $2/day worst case), 10 per caller, 5 per call.
 - **Fail-closed:** if the bundled rules ever fail to load, every product is Questionable — before
   this it found nothing and said Halal.
-- **History re-grades on launch** from the cached product, so old "Halal" rows pick up rule fixes.
+- **History re-grades once per app version** from the cached product (yielding between rows, so launch never freezes), so old "Halal" rows pick up rule fixes.
 - **Removed** the "Review on the App Store" row: it pointed at placeholder app id0000000000.
   Put it back once the App Store id exists ("Rate Haliable" still works).
 
