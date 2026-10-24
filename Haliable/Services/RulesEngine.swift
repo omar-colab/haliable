@@ -285,14 +285,20 @@ final class RulesEngine {
     }
 
     private func key(forENumber code: String) -> String {
-        if let rule = eNumIndex[code] ?? aliasIndex[(eNumberMap[code] ?? "").lowercased()] { return rule.id }
-        return code
+        rule(forENumber: code)?.id ?? code
+    }
+
+    /// The rule for a code: its own, else one whose alias is the code's name
+    /// (E428 "gelatine" is the gelatin rule). Names in e-numbers.json must be
+    /// specific: E472 is "esters of …", not E471's name.
+    private func rule(forENumber code: String) -> IngredientRule? {
+        eNumIndex[code] ?? aliasIndex[(eNumberMap[code] ?? "").lowercased()]
     }
 
     private func eNumberMatch(_ code: String, item: LabelItem?, range: Range<String.Index>?,
                               standard: HalalStandard) -> MatchedIngredient {
         let name = eNumberMap[code]
-        let rule = eNumIndex[code] ?? name.flatMap { aliasIndex[$0.lowercased()] }
+        let rule = rule(forENumber: code)
         var origin = Origin.unspecified
         if let item, let range { origin = self.origin(of: range, in: item).0 }
         let note: String? = rule != nil ? nil : name.map {

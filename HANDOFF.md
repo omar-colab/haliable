@@ -94,6 +94,13 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
   its cited cell, Darul Ifta Birmingham + IslamQA, says Questionable–widely accepted because it is usually from
   lanolin). Ethanol inside a flavouring ("natural flavor (ethyl alcohol)") used the generic alcohol cell, not its
   own cited "flavor ethanol carrier" cell (MUI, MUIS, Mufti al-Kawthari). Both are wired now, with a test.
+- **Reachability test for every cited cell** (`CitedCellReachabilityTests`) found three more dead cells, now fixed:
+  - E472 had E471's name in e-numbers.json, so it graded as E471.
+  - "microbial enzymes" and "microbial gelatin" read as *synthetic*, so they missed the cited microbial rows
+    (microbial rennet / FPC = Halal) and fell back to contested.
+
+  Microbial and synthetic rows now stand in for each other when only one exists (both non-animal, made by a
+  process). A guard test keeps E-number names unique.
 - **Omar decided (Oct 23):** red wine vinegar stays **haram** (pinned by
   `testRedWineVinegarStaysHaram`), and a "vegan" label counts as plant origin.
 - One test's expectation was wrong, not the code: "mono- and diglycerides (soybean and/or beef

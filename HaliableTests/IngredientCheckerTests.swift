@@ -332,4 +332,12 @@ final class IngredientCheckerTests: XCTestCase {
         let plain = try XCTUnwrap(item(verdict("water, ethyl alcohol"), "alcohol"))
         XCTAssertEqual(GradeMatrix.subjectLabel(for: plain), "alcohol")
     }
+
+    /// Two E-numbers can't share a name, or one silently grades as the other.
+    func testENumberNamesAreUnique() throws {
+        let url = try XCTUnwrap(Bundle.main.url(forResource: "e-numbers", withExtension: "json"))
+        let names = try JSONDecoder().decode([String: String].self, from: Data(contentsOf: url))
+        let dupes = Dictionary(grouping: names, by: { $0.value.lowercased() }).filter { $0.value.count > 1 }
+        XCTAssertTrue(dupes.isEmpty, "\(dupes.mapValues { $0.map(\.key).sorted() })")
+    }
 }
