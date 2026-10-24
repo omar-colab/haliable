@@ -54,7 +54,9 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 2. Go live with the bot: run migration `0017_ingredient_research`, then
    `supabase functions deploy source-scout --no-verify-jwt` (the app calls it with the publishable
    key, which isn't a JWT). Uses the existing ANTHROPIC_API_KEY + HALIABLE_SECRET_KEY secrets.
-   Also redeploy `review-agent` (its page-check code moved to `_shared/page.ts`, behaviour unchanged).
+   Also redeploy `review-agent` (its page-check code moved to `_shared/page.ts`, behaviour unchanged) and
+   `review-decide`: approval links now ignore taps in the first 60 s after the email, so Outlook/Defender
+   link-scanners can't approve by pre-fetching. One tap still works after that.
 3. Review what the bot finds: `ingredient_research` rows with sources, `reviewed = false`. Promote
    good ones through the citation pipeline; nothing reaches a grade without that.
 4. ~~Decide wine vinegar / vegan~~ — decided Oct 23, see below.
