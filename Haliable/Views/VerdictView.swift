@@ -74,6 +74,18 @@ struct VerdictView: View {
                     .padding(.top, DSSpacing.xxs)
                 }
 
+                ShareLink(item: VerdictShareImage(verdict: live, standard: settings.halalStandard),
+                          preview: SharePreview(live.product.name)) {
+                    Label("Share this result", systemImage: "square.and.arrow.up")
+                        .font(DSFont.body.weight(.semibold))
+                        .foregroundStyle(DSColor.accent)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, DSSpacing.sm)
+                        .background(DSColor.accent.opacity(0.08),
+                                    in: RoundedRectangle(cornerRadius: DSRadius.md, style: .continuous))
+                }
+                .padding(.top, DSSpacing.xxs)
+
                 // Standing disclosure (Spec §A3) — on every verdict surface.
                 standingDisclosure
                     .padding(.top, DSSpacing.xs)
