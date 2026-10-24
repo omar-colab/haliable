@@ -132,3 +132,17 @@ Still missing a second source: E330 citric acid (64 products), E415, E300, E331,
 whose only fermentation category is unprocessed traditional foods (tape, oncom, tempe). Indonesia therefore treats
 these fermentation-made additives as **critical** (the growth medium and processing aids must be checked).
 That argues for keeping them Questionable (widely accepted, grade 2), not Halal, unless a second Halal source appears.
+
+
+## Decision brief: E101 riboflavin (39 of 314 probe products, mostly enriched flour)
+
+- **SANHA** <https://sanha.org.za/2009/12/17/e101-riboflavin/>: "Status: Halaal Source: Microbiological; Synthetic".
+- **Halal Authority India**: "Mushbooh (Haraam if from pork liver & Kidney, Halal if 100% plant material".
+- **Manufacturer, BASF** <https://nutrition.basf.com/global/en/human-nutrition/portfolio/vitamins/vitamin-b2>: made by
+  fermentation of the fungus *Ashbya gossypii*; Riboflavin Fine Powder described as kosher, halal and vegetarian.
+  This is one maker's product, not all riboflavin.
+- No JAKIM, MUI or IFANCA ruling found (searched Oct 23).
+
+**Options:**
+- (a) Stage E101 as microbial, draft Halal: SANHA alone at three positions; lenient needs a second source.
+- (b) Keep it Questionable until a second tier-1 source appears.
