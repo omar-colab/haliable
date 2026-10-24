@@ -53,6 +53,10 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 3. Review what the bot finds: `ingredient_research` rows with sources, `reviewed = false`. Promote
    good ones through the citation pipeline; nothing reaches a grade without that.
 4. ~~Decide wine vinegar / vegan~~ — decided Oct 23, see below.
+5. **Clear the Questionable flood:** `docs/citations/proposed-new-subjects-2026-10-23.md` stages verbatim
+   statuses for 31 common additives (20 listed Halal with no condition: citric acid, xanthan, ascorbic acid,
+   pectin, guar, gum arabic, carrageenan, phosphates, sorbates…). Decide whether Source A (Halal Authority
+   India's E-number table — publisher unverified) counts as tier 1. Nothing is wired in until you approve.
 
 ### Decisions made while Omar was away
 - Rule 7 (no new features) set aside for the label-photo scan, the ingredient checker and the
