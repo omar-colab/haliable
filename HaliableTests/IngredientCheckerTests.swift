@@ -279,5 +279,7 @@ final class IngredientCheckerTests: XCTestCase {
     func testBareEnzymesAreNotCalledRennet() {
         XCTAssertEqual(item(verdict("milk, salt, enzymes"), "rennet")?.displayName, "Enzymes (may be rennet)")
         XCTAssertEqual(item(verdict("milk, salt, animal rennet"), "rennet")?.displayName, "Rennet")
+        XCTAssertEqual(item(verdict("water, mirin, soy sauce"), "wine")?.displayName, "Alcoholic drink")
+        XCTAssertEqual(item(verdict("beef, red wine, salt"), "wine")?.displayName, "Wine")
     }
 }

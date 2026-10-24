@@ -78,6 +78,10 @@ struct MatchedIngredient: Identifiable, Hashable {
         if matchedRule?.id == "rennet", !originalText.lowercased().contains("rennet") {
             return "Enzymes (may be rennet)"
         }
+        // Beer, rum, mirin… are graded with wine; say what the label says.
+        if matchedRule?.id == "wine", !originalText.lowercased().contains("wine") {
+            return "Alcoholic drink"
+        }
         return matchedRule?.ingredient ?? originalText
     }
 
