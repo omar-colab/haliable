@@ -35,11 +35,16 @@ enum LabelTextReader {
     }
 
     /// Labels carry nutrition panels, addresses and marketing too. Keep the text
-    /// from the word "ingredients" on, when the photo has it; otherwise all of it.
-    /// Lines are joined into one statement, as USDA/OFF give it.
+    /// from the word "ingredients" on, when the photo has it; otherwise all of it,
+    /// and stop where the panel or the maker's address starts. Lines are joined
+    /// into one statement, as USDA/OFF give it.
     static func ingredientsSection(of text: String) -> String {
         var body = text
         if let r = body.range(of: "ingredients", options: .caseInsensitive) { body = String(body[r.lowerBound...]) }
+        if let end = body.range(of: #"nutrition facts|serving size|amount per serving|calories|(?:distributed|manufactured|made|packed) (?:by|for)|best before|keep refrigerated"#,
+                                options: [.regularExpression, .caseInsensitive]) {
+            body = String(body[..<end.lowerBound])
+        }
         return body.components(separatedBy: .newlines)
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }

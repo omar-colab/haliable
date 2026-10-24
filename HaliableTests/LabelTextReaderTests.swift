@@ -15,6 +15,12 @@ final class LabelTextReaderTests: XCTestCase {
         XCTAssertEqual(LabelTextReader.ingredientsSection(of: ocr), "INGREDIENTS: SUGAR, CORN SYRUP, GELATIN, CITRIC ACID")
     }
 
+    func testStopsWhereThePanelOrAddressStarts() {
+        let ocr = "INGREDIENTS: SUGAR, GELATIN, CITRIC ACID.\nDistributed by Acme Inc, Chicago IL\nNutrition Facts\nCalories 90"
+        XCTAssertEqual(LabelTextReader.ingredientsSection(of: ocr), "INGREDIENTS: SUGAR, GELATIN, CITRIC ACID.")
+        XCTAssertFalse(RulesEngine.looksIncomplete(LabelTextReader.ingredientsSection(of: ocr)))
+    }
+
     func testWithoutTheWordKeepsEverything() {
         XCTAssertEqual(LabelTextReader.ingredientsSection(of: "sugar, gelatin\ncitric acid"), "sugar, gelatin citric acid")
     }
