@@ -310,4 +310,15 @@ final class IngredientCheckerTests: XCTestCase {
         XCTAssertEqual(verdict("sugar, white wine").overallGrade, .haram)
         XCTAssertEqual(verdict("sugar, beer").overallGrade, .haram)
     }
+
+    /// A rule that isn't haram must never be pinned Haram by its own name or
+    /// aliases (the "Alcohol / Ethanol" bug): its cited cells must be reachable.
+    func testNoNonHaramRuleIsPinnedByItsOwnWords() {
+        for rule in Self.engine.rules where rule.verdict != .haram {
+            for word in [rule.ingredient] + rule.aliases {
+                let m = MatchedIngredient(originalText: word, matchedRule: rule)
+                XCTAssertFalse(IngredientCategory.isHardHaram(m), "\(rule.id): \(word)")
+            }
+        }
+    }
 }
