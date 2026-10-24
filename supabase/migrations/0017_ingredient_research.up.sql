@@ -20,17 +20,17 @@ create table if not exists public.ingredient_research (
   summary      text,
   sources      jsonb not null default '[]'::jsonb,
   reviewed     boolean not null default false,
-  requested_by text,            -- salted hash of the caller's IP, for the per-caller cap
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now()
 );
 create index if not exists ingredient_research_created_at on public.ingredient_research (created_at);
 
--- Anyone may READ results (they are about ingredients, not people). Writes are
--- the service role's only; the caller hash is never readable.
+-- Anyone may READ results (they are about ingredients, not people; nothing about
+-- who asked is stored), except the model's own summary, which is Omar's only.
+-- Writes are the service role's only.
 alter table public.ingredient_research enable row level security;
 revoke all on public.ingredient_research from anon, authenticated;
-grant select (term, status, summary, sources, reviewed, updated_at)
+grant select (term, status, sources, reviewed, updated_at)
   on public.ingredient_research to anon, authenticated;
 drop policy if exists ingredient_research_read on public.ingredient_research;
 create policy ingredient_research_read on public.ingredient_research

@@ -109,6 +109,7 @@ enum ENumberReference {
     static func nonAnimalOrigin(from text: String) -> Origin? {
         let t = text.lowercased()
         if has(plant, t) { return .plant }
+        if has(microbial, t) { return .microbial }
         if has(synthetic, t) { return .synthetic }
         return nil
     }
@@ -122,7 +123,8 @@ enum ENumberReference {
     private static let bovine = rx("beef|bovine|cattle|calf|tallow|veal|boeuf|bœuf|vacuno|res(?![\\p{L}])|sapi(?![\\p{L}])|lembu|sigir")
     private static let animal = rx("animal|mammal|hewan|haiwan")
     private static let plant = rx("corn|maize|potato|tapioca|seaweed|algae|soy|sunflower|vegetable|vegetal|plant|palm|canola|coconut|rapeseed|vegan|soja|tournesol|colza|kedelai|bitkisel|nabati")
-    private static let synthetic = rx("synthetic|fermentation|fermented|microbial")
+    private static let synthetic = rx("synthetic|fermentation|fermented")
+    private static let microbial = rx("microbial|microbiological")
     private static let negations = try! NSRegularExpression(pattern:
         "(?:no|non|free from|without|sans|sin|ohne)[ -](?:pork|porcine|animal|beef)|(?:pork|porcine|animal|beef)[ -]free"
         + "|kein(?:e|en|er)? schweine\\p{L}*|(?:do(?:es)? not|does?n.?t|never|will not) contain(?:s)?(?: any)?[^.;]*|contains? no [^.;]*|(?:لا [يت]حتوي|خال[يى]?[ةه]? من|بدون)[^.;،]*|h[iı]cbir[^.,;]*|(?:alkol|domuz)[^.;]*(?:yoktur|kullan[iı]lmamaktad[iı]r|kat[iı]lmam[iı]st[iı]r|i[cç]ermez)"

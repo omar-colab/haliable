@@ -295,4 +295,49 @@ final class IngredientCheckerTests: XCTestCase {
         XCTAssertTrue(GradeMatrix.citedHalalOrigins(for: porcine).isEmpty)
         print("gelatin cited-halal origins:", origins)
     }
+
+    /// Generic alcohol / ethanol grades on its cited cells; khamr stays pinned.
+    func testEthanolUsesTheCitedAlcoholCellsNotThePin() {
+        for text in ["water, sugar, alcohol (to preserve freshness)", "ethyl alcohol, sugar", "soybeans, alcohol vinegar"] {
+            let v = verdict(text)
+            XCTAssertNotEqual(v.overallGrade, .haram, text)
+            XCTAssertNotEqual(v.overallGrade, .halal, text)
+        }
+        let alcohol = item(verdict("ethyl alcohol, sugar"), "alcohol")
+        XCTAssertEqual(alcohol?.needsReview, false, "should land on the cited alcohol cell")
+        XCTAssertFalse(alcohol?.citations.isEmpty ?? true)
+        XCTAssertEqual(verdict("sugar, rum").overallGrade, .haram)
+        XCTAssertEqual(verdict("sugar, white wine").overallGrade, .haram)
+        XCTAssertEqual(verdict("sugar, beer").overallGrade, .haram)
+    }
+
+    /// A rule that isn't haram must never be pinned Haram by its own name or
+    /// aliases (the "Alcohol / Ethanol" bug): its cited cells must be reachable.
+    func testNoNonHaramRuleIsPinnedByItsOwnWords() {
+        for rule in Self.engine.rules where rule.verdict != .haram {
+            for word in [rule.ingredient] + rule.aliases {
+                let m = MatchedIngredient(originalText: word, matchedRule: rule)
+                XCTAssertFalse(IngredientCategory.isHardHaram(m), "\(rule.id): \(word)")
+            }
+        }
+    }
+
+    /// Cited cells that had no label path: vitamin D3 and ethanol as a flavour carrier.
+    func testVitaminD3AndFlavorCarrierReachTheirCitedCells() throws {
+        let d3 = try XCTUnwrap(verdict("milk, vitamin d3").matched.first { $0.originalText.contains("vitamin d3") })
+        XCTAssertEqual(GradeMatrix.subjectLabel(for: d3), "vitamin d3")
+        XCTAssertFalse(d3.needsReview)
+        let carrier = try XCTUnwrap(item(verdict("sugar, natural flavor (ethyl alcohol, water)"), "alcohol"))
+        XCTAssertEqual(GradeMatrix.subjectLabel(for: carrier), "flavor ethanol carrier")
+        let plain = try XCTUnwrap(item(verdict("water, ethyl alcohol"), "alcohol"))
+        XCTAssertEqual(GradeMatrix.subjectLabel(for: plain), "alcohol")
+    }
+
+    /// Two E-numbers can't share a name, or one silently grades as the other.
+    func testENumberNamesAreUnique() throws {
+        let url = try XCTUnwrap(Bundle.main.url(forResource: "e-numbers", withExtension: "json"))
+        let names = try JSONDecoder().decode([String: String].self, from: Data(contentsOf: url))
+        let dupes = Dictionary(grouping: names, by: { $0.value.lowercased() }).filter { $0.value.count > 1 }
+        XCTAssertTrue(dupes.isEmpty, "\(dupes.mapValues { $0.map(\.key).sorted() })")
+    }
 }

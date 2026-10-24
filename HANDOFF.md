@@ -16,7 +16,7 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
   `source-scout` Edge Function as you scan. Haiku + web search, one lookup per ingredient shared by
   everyone, quotes kept only if found word-for-word on the page. The verdict screen shows them as
   "found automatically · not reviewed yet · grade unchanged"; the model's own summary is stored
-  for Omar, never shown. Caps: 50 new ingredients/day total (≈ $2/day worst case), 10 per caller, 5 per call.
+  for Omar, never shown. Caps: 50 new ingredients/day total (≈ $2/day worst case), 5 per call. Nothing about the caller is stored.
 - **Fail-closed:** if the bundled rules ever fail to load, every product is Questionable — before
   this it found nothing and said Halal.
 - **History re-grades once per app version** from the cached product (yielding between rows, so launch never freezes), so old "Halal" rows pick up rule fixes.
@@ -32,7 +32,9 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
   plain additives have no cited source yet: citric acid E330 (64 products), E375 niacin (45),
   riboflavin E101 (39), sodium carbonates E500 (28), lactic acid E270 (24), E428, calcium phosphates
   E341, colours E129/E133, carnauba wax E903, xanthan gum E415… That's the order to approve sources
-  in. The research bot will collect them once it's live; approving the top ~20 clears most labels.
+  in. Measured since: approving the 28 staged additives moves only 57 → 67 of 314 to Halal. Most Questionable
+  results are correct (natural flavors 90, enzymes 42, whey 33 are cited and contested). The biggest open lever is
+  **E101 riboflavin** (39 products, in enriched flour): SANHA says Halaal, Halal Authority India says Mushbooh.
 - **Foreign-label probe (301 FR/DE/TR/MY/UK/ES products):** fixed German "trocken lagern" read as
   lager, "enthält kein Schweinefett" and Turkish "Hiçbir çeşidinde alkol, domuz yağı … yoktur"
   (no-pork statements) read as pork, "Hühnerei" (hen's egg) flagged as meat.
@@ -57,6 +59,8 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
    Also redeploy `review-agent` (its page-check code moved to `_shared/page.ts`, behaviour unchanged) and
    `review-decide`: approval links now ignore taps in the first 60 s after the email, so Outlook/Defender
    link-scanners can't approve by pre-fetching. One tap still works after that.
+   Then **deploy the site**: `site/privacy` now discloses the ingredient-name lookups. Deploy it in the same step
+   as `source-scout`, not before and not after.
 3. Review what the bot finds: `ingredient_research` rows with sources, `reviewed = false`. Promote
    good ones through the citation pipeline; nothing reaches a grade without that.
 4. ~~Decide wine vinegar / vegan~~ — decided Oct 23, see below.
@@ -64,8 +68,8 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
    statuses for 31 common additives (20 listed Halal with no condition: citric acid, xanthan, ascorbic acid,
    pectin, guar, gum arabic, carrageenan, phosphates, sorbates…). Decide whether Source A (Halal Authority
    India's E-number table — publisher unverified) counts as tier 1. Nothing is wired in until you approve.
-   **Ready-made:** branch `proposal/additive-citations` (e16e0bc) stages 11 additives with two independent tier-1
-   sources (Source A plus Indonesia's KMA 1360/2021) as 44 candidates. Dry run: 44/44 clear once approved.
+   **Ready-made:** branch `proposal/additive-citations` (4983491) stages 28 additives, mostly from **SANHA**
+   (+ Halal Authority India, Indonesia KMA 1360/2021), as 112 candidates. Dry run: 107/112 clear once approved.
    Approval steps are at the end of the proposal doc. Don't merge that branch unapproved.
 
 6. **Decide — additive consistency:** an additive written in words ("citric acid", "potassium sorbate") is not
@@ -79,6 +83,24 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
   research bot: Omar asked for these directly on Oct 22–23 ("make it shippable", "built into the app").
 - The bot's findings are shown to users as unreviewed leads (with source + verbatim quote) rather
   than hidden until approval, because Omar asked for sourcing "as somebody scans". Grades never move.
+- **Plain alcohol / ethanol no longer pinned Haram (needs your eyes).** Since July the always-Haram pin listed
+  "ethanol", and the alcohol rule's own name is "Alcohol / Ethanol". So every "alcohol" on a label was pinned
+  Haram, and the cited non-khamr alcohol cells (MUIS, Mathabah, Fatawa Center; 2 sources each, approved in the
+  citation marathon) were never reached. The grading table says "specific khamr tokens hit the pin", so I removed
+  "ethanol" from the pin. "Alcohol (to preserve freshness)" (e.g. halal-certified Samyang Buldak) now shows the cited
+  Questionable grade. Wine, beer, rum, liquor and the other khamr spirits stay pinned Haram (tests). Revert is one
+  word in `HalalStandard.swift` if you meant the pin.
+- **Two more cited cells had no label path:** "vitamin D3 / cholecalciferol" was never recognised (silently fine;
+  its cited cell, Darul Ifta Birmingham + IslamQA, says Questionable–widely accepted because it is usually from
+  lanolin). Ethanol inside a flavouring ("natural flavor (ethyl alcohol)") used the generic alcohol cell, not its
+  own cited "flavor ethanol carrier" cell (MUI, MUIS, Mufti al-Kawthari). Both are wired now, with a test.
+- **Reachability test for every cited cell** (`CitedCellReachabilityTests`) found three more dead cells, now fixed:
+  - E472 had E471's name in e-numbers.json, so it graded as E471.
+  - "microbial enzymes" and "microbial gelatin" read as *synthetic*, so they missed the cited microbial rows
+    (microbial rennet / FPC = Halal) and fell back to contested.
+
+  Microbial and synthetic rows now stand in for each other when only one exists (both non-animal, made by a
+  process). A guard test keeps E-number names unique.
 - **Omar decided (Oct 23):** red wine vinegar stays **haram** (pinned by
   `testRedWineVinegarStaysHaram`), and a "vegan" label counts as plant origin.
 - One test's expectation was wrong, not the code: "mono- and diglycerides (soybean and/or beef

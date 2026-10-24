@@ -9,9 +9,9 @@
 //
 // POST {terms: string[]}   (anyone may call — scanning needs no account)
 // Cost is capped where the client can't skip it: each term is researched once,
-// at most DAILY_CAP new terms a day overall and CALLER_CAP per caller.
+// at most DAILY_CAP new terms a day overall. Nothing about the caller is stored.
 //
-// Secrets: ANTHROPIC_API_KEY, HALIABLE_SECRET_KEY (also salts the caller hash).
+// Secrets: ANTHROPIC_API_KEY, HALIABLE_SECRET_KEY.
 
 import Anthropic from "npm:@anthropic-ai/sdk@0.110.0";
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
@@ -20,7 +20,6 @@ import { verifySources } from "../_shared/page.ts";
 import { needsResearch, normalizeTerm } from "../_shared/term.ts";
 
 const DAILY_CAP = 50;   // ≈ $0.04 each (Haiku + ≤3 searches) → ≤ ~$2/day
-const CALLER_CAP = 10;
 const PER_CALL = 5;
 
 const db = createClient("https://abumevloleevhoqxfnoe.supabase.co", Deno.env.get("HALIABLE_SECRET_KEY")!, { auth: { persistSession: false } });
@@ -99,14 +98,6 @@ async function run(term: string) {
   }
 }
 
-async function callerHash(r: Request): Promise<string> {
-  // ponytail: an IP cap is soft (spoofable / shared NAT); DAILY_CAP is the hard limit.
-  const ip = r.headers.get("cf-connecting-ip") ?? ((r.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown");
-  const bytes = new TextEncoder().encode(`scout:${Deno.env.get("HALIABLE_SECRET_KEY")}:${ip}`);
-  return Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)).slice(0, 12))
-    .map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
 const since = () => new Date(Date.now() - 24 * 3600 * 1000).toISOString();
 
 Deno.serve(async (r) => {
@@ -125,19 +116,18 @@ Deno.serve(async (r) => {
 
   let started = 0;
   if (fresh.length) {
-    const caller = await callerHash(r);
-    const [{ count: today }, { count: mine }] = await Promise.all([
-      db.from("ingredient_research").select("term", { count: "exact", head: true }).gte("created_at", since()),
-      db.from("ingredient_research").select("term", { count: "exact", head: true }).gte("created_at", since()).eq("requested_by", caller),
-    ]);
-    const room = Math.max(0, Math.min(DAILY_CAP - (today ?? 0), CALLER_CAP - (mine ?? 0)));
+    // ponytail: one global daily cap, no per-caller limit, so nothing about the
+    // caller is stored. Add a per-caller cap if one client ever drains the day.
+    const { count: today } = await db.from("ingredient_research")
+      .select("term", { count: "exact", head: true }).gte("created_at", since());
+    const room = Math.max(0, DAILY_CAP - (today ?? 0));
     for (const term of fresh.slice(0, room)) {
       // Claim it. The primary key makes a second caller's insert a no-op, and a
       // retried row is only reclaimed while it is unchanged since we read it.
       const claim = byTerm.has(term)
         ? await db.from("ingredient_research").update({ status: "researching", updated_at: new Date().toISOString() })
             .eq("term", term).eq("updated_at", byTerm.get(term)!.updated_at).select("term")
-        : await db.from("ingredient_research").upsert({ term, requested_by: caller }, { onConflict: "term", ignoreDuplicates: true }).select("term");
+        : await db.from("ingredient_research").upsert({ term }, { onConflict: "term", ignoreDuplicates: true }).select("term");
       if (!claim.data?.length) continue;
       started++;
       // @ts-ignore EdgeRuntime is a Supabase global
