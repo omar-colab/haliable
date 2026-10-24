@@ -138,7 +138,7 @@ enum IngredientCategory: String, Codable, CaseIterable {
     }
 
     private static let khamrOrProhibited = try! NSRegularExpression(pattern:
-        "(?<![\\p{L}\\p{N}])(?:wine|khamr|beer|liquor(?!ice)|ethanol|blood(?! orange)|carrion)")
+        "(?<![\\p{L}\\p{N}])(?:wine|khamr|beer|(?<!chocolate |cocoa |cacao )liquor(?!ice)|ethanol|blood(?! orange)|carrion)")
 
     private static func matches(_ text: String, _ needles: [String]) -> Bool {
         needles.contains { text.contains($0) }

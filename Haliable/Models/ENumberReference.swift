@@ -89,7 +89,7 @@ enum ENumberReference {
     private static func rx(_ alternatives: String) -> NSRegularExpression {
         try! NSRegularExpression(pattern: "(?<![\\p{L}\\p{N}])(?:" + alternatives + ")")
     }
-    private static let pork = rx("pork|porcine|swine|bacon|lard|pigs?(?![\\p{L}])|pigskin|ham(?![\\p{L}])|porc(?!ini|elain)|cerdo|babi(?![\\p{L}])|domuz|schwein|maiale|suino|varken|porco|خنزير")
+    private static let pork = rx("pork|porcine|swine|bacon|lard|pigs?(?![\\p{L}])|pigskin|ham(?![\\p{L}])|porc(?![\\p{L}])|cerdo|babi(?![\\p{L}])|domuz|schwein|maiale|suino|varken|porco|خنزير")
     private static let bovine = rx("beef|bovine|cattle|calf|tallow|veal|boeuf|bœuf|vacuno|res(?![\\p{L}])|sapi(?![\\p{L}])|lembu|sigir")
     private static let animal = rx("animal|mammal|hewan|haiwan")
     private static let plant = rx("soy|sunflower|vegetable|vegetal|plant|palm|canola|coconut|rapeseed|vegan|soja|tournesol|colza|kedelai|bitkisel|nabati")

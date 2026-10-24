@@ -23,6 +23,21 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 - **Removed** the "Review on the App Store" row: it pointed at placeholder app id0000000000.
   Put it back once the App Store id exists ("Rate Haliable" still works).
 
+- **Real-label probe (314 US products from Open Food Facts):** found and fixed false Harams:
+  "chocolate liquor" (cocoa mass, 5 products), "Madagascar bourbon vanilla" (8), Spanish
+  "porción" read as pork. Every remaining Haram is real (pork casing, pork gelatin, wine, mirin).
+  Labels where OFF stored a nutrition panel or a marketing line instead of the list (e.g. Ritz:
+  "Contains a bioengineered food ingredient made in Mexico") used to grade Halal — now Questionable.
+- **Biggest UX issue left — not a code fix:** 195 of 314 products grade Questionable, mostly because
+  plain additives have no cited source yet: citric acid E330 (64 products), E375 niacin (45),
+  riboflavin E101 (39), sodium carbonates E500 (28), lactic acid E270 (24), E428, calcium phosphates
+  E341, colours E129/E133, carnauba wax E903, xanthan gum E415… That's the order to approve sources
+  in. The research bot will collect them once it's live; approving the top ~20 clears most labels.
+- **Verdict share card:** "Share this result" on the verdict screen makes a 9:16 image (grade,
+  flags, standard, not-a-fatwa line); "Pending review" when the grade is a draft.
+- Merged `fix/bugs-security-oct22` (label-photo scan, USDA exact match, camera tuning, consent wipe)
+  into this branch, so there is one branch to review.
+
 ### Needs Omar (nothing below is live)
 1. Merge the branch (tests green, 160+).
 2. Go live with the bot: run migration `0017_ingredient_research`, then

@@ -218,4 +218,23 @@ final class IngredientCheckerTests: XCTestCase {
         XCTAssertEqual(verdict("red wine vinegar, salt").overallGrade, .haram)
         XCTAssertNotEqual(verdict("vinegar, salt").overallGrade, .haram)
     }
+
+    /// Found running the engine over 314 real Open Food Facts labels (Oct 23).
+    func testRealLabelFalseHarams() {
+        for text in ["sugar, chocolate liquor, cocoa butter, soy lecithin",
+                     "milk, madagascar bourbon vanilla (vanilla extract, vanilla bean specks)",
+                     "harina de trigo, agua, sal. 1 porcion = 30 g"] {
+            XCTAssertNotEqual(verdict(text).overallGrade, .haram, text)
+        }
+        XCTAssertEqual(verdict("pork, salt").overallGrade, .haram)
+        XCTAssertEqual(verdict("porc, sel").overallGrade, .haram)
+        XCTAssertEqual(verdict("bourbon whiskey, sugar").overallGrade, .haram)
+    }
+
+    func testNutritionPanelOrMarketingTextIsNotClean() {
+        XCTAssertNotEqual(verdict("Contains A BIOENGINEERED FOOD INGREDIENT MADE IN MEXICO").overall, .halal)
+        XCTAssertNotEqual(verdict("Nutrition Facts 3 servings per container, Calories 140").overall, .halal)
+        XCTAssertEqual(verdict("whole grain rolled oats").overall, .halal)
+        XCTAssertEqual(verdict("Italian whole peeled tomatoes, olive oil, onions, salt, garlic, basil").overall, .halal)
+    }
 }

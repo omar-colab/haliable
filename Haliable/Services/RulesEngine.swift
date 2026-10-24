@@ -83,7 +83,9 @@ final class RulesEngine {
                 let e = NSRegularExpression.escapedPattern(for: k)
                 // Very short words must be whole words ("ham" not "hamburger",
                 // "rum" not "rump"); a plural is allowed.
-                return k.count <= 3 ? e + "(?:e?s)?(?![\\p{L}\\p{N}])" : e
+                // So must a few longer ones that start other words: "porc" in
+                // Spanish "porción", "vino" in "vinous".
+                return k.count <= 3 || Self.wholeWordOnly.contains(k) ? e + "(?:e?s)?(?![\\p{L}\\p{N}])" : e
             }.joined(separator: "|")
         }
         latinTerms = try? NSRegularExpression(
@@ -166,6 +168,16 @@ final class RulesEngine {
                 originalText: "Ingredient rules unavailable",
                 matchedRule: nil, standard: standard,
                 note: "Haliable's ingredient rules didn't load, so nothing on this label could be checked. Restart the app; if this stays, reinstall it."))
+        }
+
+        // A nutrition panel or marketing line where the list should be: what we
+        // checked isn't the whole label, so it can't come out clean.
+        if Self.looksIncomplete(raw) {
+            matched.append(MatchedIngredient(
+                originalText: "Ingredient list looks incomplete",
+                matchedRule: nil, standard: standard,
+                note: "The ingredient text we have for this product looks like part of the nutrition panel or packaging, not the full list, so we couldn't confirm it. Check the package label.",
+                labelText: String(raw.prefix(120))))
         }
 
         // STEP 3: SAFETY NET — if we had nothing to inspect, we cannot claim halal.
@@ -310,6 +322,19 @@ final class RulesEngine {
 
     // MARK: - Static tables
 
+    /// Text that isn't a full ingredient list: it carries nutrition-panel
+    /// words, or it is one long run of words with no list separators.
+    /// ponytail: keyword heuristic; OCR'd panels in other languages slip past.
+    static func looksIncomplete(_ raw: String) -> Bool {
+        let t = raw.lowercased()
+        if t.range(of: "calories|daily value|valor diario|serving size|nutrition facts|per serving|amount per",
+                   options: .regularExpression) != nil { return true }
+        let items = t.split(whereSeparator: { ",;".contains($0) }).filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
+        return items.count < 2 && t.split(separator: " ").count > 6
+    }
+
+    private static let wholeWordOnly: Set<String> = ["porc", "vino", "babi", "sake", "arak", "bira"]
+
     private static let eCode = try! NSRegularExpression(pattern: "(?<![\\p{L}\\p{N}])e\\d{3,4}(?![\\p{L}\\p{N}])")
 
     /// Wording that names a concern without containing it. A masked span can only
@@ -318,7 +343,7 @@ final class RulesEngine {
         "(?:alcohol|alcool|alkohol|pork|porcine|gelatine?|lard|animal|meat)[ -]?free",
         "(?:no|non|without|free from|sans|sin|ohne|bebas|tanpa)[ -](?:added )?(?:alcohol(?:ic)?|alcool|alkohol|pork|porcine|gelatine?|lard|animal|meat)",
         "non-?alcoholic", "sugar alcohols?", "liquorice", "root beer", "meatless", "babies", "cheese cultures?",
-        "coconut meat", "porcini", "weinstein", "weinsaure", "weintraube", "beefsteak tomato", "lamb's lettuce",
+        "coconut meat", "(?:chocolate|cocoa|cacao) liquor", "bourbon vanilla", "porcini", "weinstein", "weinsaure", "weintraube", "beefsteak tomato", "lamb's lettuce",
         "goat'?s? (?:milk|cheese|yogh?urt|butter)", "chicken eggs?", "duck eggs?",
         "(?:product of|made in|produced in|origin:?) turkey",
         // "turkey bacon" is turkey, not pork: only the word "bacon"/"ham" is masked,
