@@ -347,6 +347,7 @@ final class RulesEngine {
         "kein(?:e|en|er)? (?:alkohol|schweine\\p{L}*|gelatine|tierische\\p{L}*)",
         // "Our products do not contain any alcohol or pork based ingredients."
         "(?:do(?:es)? not|does?n.?t|never|will not) contain(?:s)?(?: any)?[^.;]*|contains? no [^.;]*",
+        "(?:لا [يت]حتوي|خال[يى]?[ةه]? من|بدون)[^.;،]*",   // Arabic "doesn't contain / free of / without"
         "h[iı]cbir[^.,;]*", "(?:alkol|domuz)[^.;]*(?:yoktur|kullan[iı]lmamaktad[iı]r|kat[iı]lmam[iı]st[iı]r|i[cç]ermez)", "huhnere[iı]\\p{L}*",
         "non-?alcoholic", "sugar alcohols?", "liquorice", "root beer", "meatless", "babies", "cheese cultures?",
         "coconut meat", "(?:chocolate|cocoa|cacao) liquor", "bourbon vanilla", "vanill\\p{L}*(?: \\p{L}+)? bourbon", "porcini", "weinstein", "weinsaure", "weintraube", "beefsteak tomato", "lamb's lettuce",

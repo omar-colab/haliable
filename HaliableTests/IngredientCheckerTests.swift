@@ -270,6 +270,8 @@ final class IngredientCheckerTests: XCTestCase {
         XCTAssertNotEqual(verdict("sugar, cocoa. contains no pork or alcohol.").overallGrade, .haram)
         XCTAssertNotEqual(verdict("sucre, gousses de vanille bourbon").overallGrade, .haram)
         XCTAssertEqual(item(verdict("sugar, modified corn gelatin"), "gelatin")?.resolvedOrigin, .plant)
+        XCTAssertNotEqual(verdict("دقيق القمح، سكر. لا تحتوي منتجاتنا على الكحول أو مكونات مشتقة من لحم الخنزير").overallGrade, .haram)
+        XCTAssertEqual(verdict("دقيق القمح، دهن الخنزير، سكر").overallGrade, .haram)
         // Pork outside the statement is still pork.
         XCTAssertEqual(verdict("pork gelatin, sugar. does not contain alcohol.").overallGrade, .haram)
     }
