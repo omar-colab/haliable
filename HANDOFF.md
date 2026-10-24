@@ -62,6 +62,9 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
    statuses for 31 common additives (20 listed Halal with no condition: citric acid, xanthan, ascorbic acid,
    pectin, guar, gum arabic, carrageenan, phosphates, sorbates…). Decide whether Source A (Halal Authority
    India's E-number table — publisher unverified) counts as tier 1. Nothing is wired in until you approve.
+   **Ready-made:** branch `proposal/additive-citations` (e16e0bc) stages 11 additives with two independent tier-1
+   sources (Source A plus Indonesia's KMA 1360/2021) as 44 candidates. Dry run: 44/44 clear once approved.
+   Approval steps are at the end of the proposal doc. Don't merge that branch unapproved.
 
 ### Decisions made while Omar was away
 - Rule 7 (no new features) set aside for the label-photo scan, the ingredient checker and the
