@@ -121,6 +121,8 @@ function clean(raw: Record<string, unknown>): Place | null {
 
 Deno.serve(async (r) => {
   if (r.method !== "POST") return new Response("POST only", { status: 405 });
+  // $0 mode (Omar, Oct 26): no paid AI calls unless AI_AGENTS_ENABLED=true is set.
+  if (Deno.env.get("AI_AGENTS_ENABLED") !== "true") return new Response("research is off", { status: 503 });
   const body = await r.json().catch(() => ({}));
 
   let jobs: { place: Place; store_id?: string }[] = [];

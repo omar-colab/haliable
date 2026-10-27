@@ -102,6 +102,8 @@ const since = () => new Date(Date.now() - 24 * 3600 * 1000).toISOString();
 
 Deno.serve(async (r) => {
   if (r.method !== "POST") return new Response("POST only", { status: 405 });
+  // $0 mode (Omar, Oct 26): no paid AI calls unless AI_AGENTS_ENABLED=true is set.
+  if (Deno.env.get("AI_AGENTS_ENABLED") !== "true") return new Response("research is off", { status: 503 });
   const body = await r.json().catch(() => ({}));
   const terms = [...new Set((Array.isArray(body?.terms) ? body.terms : [])
     .map((t: unknown) => typeof t === "string" ? normalizeTerm(t) : null)

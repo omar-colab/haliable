@@ -126,6 +126,8 @@ async function run(id: string) {
     <p>${photos.map((u, i) => `<a href="${esc(u)}">Photo ${i + 1}</a>`).join(" · ")}</p>`;
 
   try {
+    // $0 mode (Omar, Oct 26): no paid AI call; the catch below emails Omar the request to answer by hand.
+    if (Deno.env.get("AI_AGENTS_ENABLED") !== "true") throw new Error("AI research is off ($0 mode) — answer this one by hand");
     const draft = await verify(await research(req, photos));
     const { verdict, note } = settle(draft);
     await db.from("review_agent_drafts").update({ status: "drafted", draft: { ...draft, final: verdict, note }, updated_at: new Date().toISOString() }).eq("request_id", id);
