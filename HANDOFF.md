@@ -4,6 +4,25 @@ Last updated: **Oct 23, 2026** · **Build 8 is on TestFlight** ·
 site live · review agent built · **136 tests green**
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 
+## ▶️ RESUME HERE (Oct 26, late) — $0 mode + free features, NOT uploaded
+
+**Omar: "never cost money" + "don't push a build to my phone until I say so."**
+- **AI agents OFF** (faafb98): source-scout / place-scout return 503 and review-agent skips research
+  unless the Supabase secret `AI_AGENTS_ENABLED=true` is set (it isn't). Review requests are still
+  emailed to Omar to answer by hand (free). Daily digest keeps running (free; nothing new to send).
+- **Ingredient checker** (Home → "Check ingredients", and the scanner's top bar): type or paste a list,
+  or read the pack live with Apple's VisionKit `DataScannerViewController` (photo fallback). The live
+  check grades as you type with the bundled rules — offline, no AI. Camera text shows only flags until
+  "I checked this matches the label" (a misread list must never read as Halal). UI test
+  `IngredientCheckerUITests` drives it end to end.
+- **Map:** Apple Maps place card in each place's detail ("Menu, hours & photos" — `.mapItemDetailSheet`,
+  free). OpenStreetMap `diet:halal=yes|only` places shown as grey unverified pins via the public Overpass
+  API (free; Manhattan: 94 places, Hartford: 0 tagged yet). The app no longer sends places to our server.
+- **Scanner:** 8-digit UPC-E codes (cans, candy) retry as the full UPC-A when not found — USDA only knows
+  UPC-A, so these always missed USDA before. QR / Code 39 / Code 128 no longer read (never a food barcode).
+- Privacy page updated for Overpass + no place lookups (deploy after Nov 10 — Netlify credits).
+- Tests: 191 unit + checker UI test green. Nothing uploaded.
+
 ## ▶️ RESUME HERE (Oct 26) — agents that run themselves; Omar approves by email
 
 Same branch (`feat/ingredient-checker-ship`), not merged, nothing live yet.

@@ -27,6 +27,8 @@ final class StoreService {
     private(set) var stores: [Store] = []
     /// Apple Maps "halal" results for wherever the map is pointed (see searchAppleMaps).
     private(set) var appleStores: [Store] = []
+    /// Places OpenStreetMap mappers tagged `diet:halal` in the area on screen.
+    private(set) var osmStores: [Store] = []
     private(set) var isLoading = false
     var lastError: String?
 
@@ -95,11 +97,83 @@ final class StoreService {
                 stores[i].distanceM = CLLocation(latitude: stores[i].lat, longitude: stores[i].lng).distance(from: here)
             }
         }
+        await searchOSM(in: region, from: user)
+        guard !Task.isCancelled else { return }
         await searchAppleMaps(in: region, from: user)
     }
 
+    /// The area last asked of OpenStreetMap, so panning inside it doesn't re-ask.
+    private var osmFetched: (box: MKCoordinateRegion, at: Date)?
+
+    /// Free, no key: the public Overpass API, for places mappers tagged
+    /// `diet:halal=yes|only`. Sends only the map's bounding box. Any within 80 m
+    /// of an Atlas place is dropped so the verified entry wins.
+    func searchOSM(in region: MKCoordinateRegion, from user: CLLocationCoordinate2D?) async {
+        if let last = osmFetched, Date().timeIntervalSince(last.at) < 600, Self.contains(last.box, region) { return }
+        // ponytail: ask for a box 1.5x the view so small pans stay cached; one
+        // public server, fair-use limits — move to a mirror if it ever throttles.
+        let box = MKCoordinateRegion(center: region.center,
+                                     span: MKCoordinateSpan(latitudeDelta: region.span.latitudeDelta * 1.5,
+                                                            longitudeDelta: region.span.longitudeDelta * 1.5))
+        let s = box.center.latitude - box.span.latitudeDelta / 2, n = box.center.latitude + box.span.latitudeDelta / 2
+        let w = box.center.longitude - box.span.longitudeDelta / 2, e = box.center.longitude + box.span.longitudeDelta / 2
+        let query = "[out:json][timeout:15];nwr[\"diet:halal\"~\"^(yes|only)$\"][name](\(s),\(w),\(n),\(e));out center 300;"
+        var request = URLRequest(url: URL(string: "https://overpass-api.de/api/interpreter")!)
+        request.httpMethod = "POST"
+        request.setValue("Haliable iOS (halal map; contact via haliable.netlify.app)", forHTTPHeaderField: "User-Agent")
+        request.httpBody = "data=\(query.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? "")".data(using: .utf8)
+        request.timeoutInterval = 20
+        guard let (data, response) = try? await URLSession.shared.data(for: request),
+              (response as? HTTPURLResponse)?.statusCode == 200, !Task.isCancelled else { return }
+        let origin = user ?? region.center
+        let here = CLLocation(latitude: origin.latitude, longitude: origin.longitude)
+        osmFetched = (box, Date())
+        osmStores = Self.osmStores(from: data, here: here).filter { o in
+            let po = CLLocation(latitude: o.lat, longitude: o.lng)
+            return !stores.contains { CLLocation(latitude: $0.lat, longitude: $0.lng).distance(from: po) < 80 }
+        }
+    }
+
+    private static func contains(_ outer: MKCoordinateRegion, _ inner: MKCoordinateRegion) -> Bool {
+        abs(inner.center.latitude - outer.center.latitude) + inner.span.latitudeDelta / 2 <= outer.span.latitudeDelta / 2
+            && abs(inner.center.longitude - outer.center.longitude) + inner.span.longitudeDelta / 2 <= outer.span.longitudeDelta / 2
+    }
+
+    /// Overpass JSON → unverified pins. Nodes carry lat/lon, ways/relations a `center`.
+    static func osmStores(from data: Data, here: CLLocation) -> [Store] {
+        struct Response: Decodable { let elements: [Element] }
+        struct Element: Decodable {
+            struct Center: Decodable { let lat: Double; let lon: Double }
+            let type: String; let id: Int64
+            let lat: Double?; let lon: Double?; let center: Center?
+            let tags: [String: String]?
+        }
+        guard let elements = try? JSONDecoder().decode(Response.self, from: data).elements else { return [] }
+        let categories: [String: StoreCategory] = [
+            "restaurant": .restaurant, "fast_food": .restaurant, "food_court": .restaurant,
+            "cafe": .cafe, "bakery": .bakery, "butcher": .butcher, "supermarket": .supermarket,
+            "convenience": .grocery, "greengrocer": .grocery, "deli": .grocery,
+        ]
+        return elements.compactMap { el in
+            guard let tags = el.tags, let name = tags["name"], let halal = tags["diet:halal"],
+                  let lat = el.lat ?? el.center?.lat, let lng = el.lon ?? el.center?.lon else { return nil }
+            let loc = CLLocation(latitude: lat, longitude: lng)
+            return Store(id: UUID(uuidString: String(format: "00000000-0000-4000-8%03d-%012llx",
+                                                     ["node", "way", "relation"].firstIndex(of: el.type) ?? 9,
+                                                     UInt64(el.id) & 0xFFFF_FFFF_FFFF)) ?? UUID(),
+                         name: name,
+                         category: (tags["amenity"] ?? tags["shop"]).flatMap { categories[$0] } ?? .other,
+                         halalScope: .unverified,
+                         address: [tags["addr:housenumber"], tags["addr:street"]].compactMap { $0 }.joined(separator: " "),
+                         city: tags["addr:city"] ?? "", state: tags["addr:state"] ?? "", zip: tags["addr:postcode"] ?? "",
+                         lat: lat, lng: lng, certifications: [], status: .pending,
+                         confirmCount: 0, disputeCount: 0, distanceM: loc.distance(from: here), createdAt: "",
+                         external: .openStreetMap(onlyHalal: halal == "only"))
+        }
+    }
+
     /// Fill the map beyond the Atlas: ask Apple Maps for "halal" around `region`.
-    /// Results come back `.unverified` and flagged `isAppleMaps`; any within 80 m of
+    /// Results come back `.unverified` with `external = .appleMaps`; any within 80 m of
     /// an Atlas place is dropped so the verified entry wins.
     func searchAppleMaps(in region: MKCoordinateRegion, from user: CLLocationCoordinate2D?) async {
         let request = MKLocalSearch.Request()
@@ -110,43 +184,27 @@ final class StoreService {
               !Task.isCancelled else { return }
         let origin = user ?? region.center
         let here = CLLocation(latitude: origin.latitude, longitude: origin.longitude)
-        let nearAtlas = { (c: CLLocationCoordinate2D) in
-            let p = CLLocation(latitude: c.latitude, longitude: c.longitude)
-            return self.stores.contains { CLLocation(latitude: $0.lat, longitude: $0.lng).distance(from: p) < 80 }
-        }
-        appleStores = items.compactMap { Store(appleMapItem: $0, from: here) }.filter { !nearAtlas($0.coordinate) }
-        // Food places Apple matched on "halal" without the word in their name
-        // (it read reviews or menus). The place agent checks their certificate
-        // and menu; only Omar's ✅ from the daily email puts one on the map.
-        scoutPlaces(items.filter { item in
-            let name = (item.name ?? "").lowercased()
-            return !name.contains("halal") && !name.contains("zabiha")
-                && item.pointOfInterestCategory.flatMap { Store.appleFoodCategories[$0] } != nil
-                && !nearAtlas(item.placemark.coordinate)
-        })
+        appleStores = items.compactMap { Store(appleMapItem: $0, from: here) }
+            .filter { a in
+                let pa = CLLocation(latitude: a.lat, longitude: a.lng)
+                return !(stores + osmStores).contains { CLLocation(latitude: $0.lat, longitude: $0.lng).distance(from: pa) < 80 }
+            }
     }
 
-    /// Places already sent this session, so panning back and forth doesn't resend.
-    private var scouted: Set<String> = []
-
-    /// Fire-and-forget: the server researches each place once for everyone,
-    /// under a daily cap, and stores nothing about who asked.
-    private func scoutPlaces(_ items: [MKMapItem]) {
-        #if canImport(Supabase)
-        guard isLive, let client = SupabaseManager.shared else { return }
-        let fresh = items.filter { scouted.insert("\($0.name ?? "")|\($0.placemark.coordinate.latitude)").inserted }.prefix(5)
-        guard !fresh.isEmpty else { return }
-        let places = fresh.map { item in
-            let p = item.placemark
-            return ScoutPlace(name: item.name ?? "", address: [p.subThoroughfare, p.thoroughfare].compactMap { $0 }.joined(separator: " "),
-                              city: p.locality ?? "", state: p.administrativeArea ?? "",
-                              category: item.pointOfInterestCategory.flatMap { Store.appleFoodCategories[$0] }?.rawValue ?? "other",
-                              lat: p.coordinate.latitude, lng: p.coordinate.longitude)
-        }
-        Task.detached {
-            _ = try? await client.functions.invoke("place-scout", options: FunctionInvokeOptions(body: ["places": Array(places)]))
-        }
-        #endif
+    /// Apple's own entry for a place, for its place card (menu link, hours,
+    /// photos, phone). Free and on Apple's side; nil when Apple doesn't know it.
+    func appleMapItem(for store: Store) async -> MKMapItem? {
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = store.name
+        request.region = MKCoordinateRegion(center: store.coordinate, latitudinalMeters: 600, longitudinalMeters: 600)
+        request.resultTypes = .pointOfInterest
+        guard let items = try? await MKLocalSearch(request: request).start().mapItems else { return nil }
+        let here = CLLocation(latitude: store.lat, longitude: store.lng)
+        return items
+            .map { ($0, CLLocation(latitude: $0.placemark.coordinate.latitude,
+                                   longitude: $0.placemark.coordinate.longitude).distance(from: here)) }
+            .filter { $0.1 < 150 }
+            .min { $0.1 < $1.1 }?.0
     }
 
     /// Submit a community store. Validates client-side, then (when live) calls the
@@ -359,12 +417,6 @@ private struct SubmitParams: Encodable {
     }
 }
 
-/// One Apple Maps place for the `place-scout` Edge Function.
-private struct ScoutPlace: Encodable, Sendable {
-    let name, address, city, state, category: String
-    let lat, lng: Double
-}
-
 /// Encodable parameters for the `vote_store` RPC.
 private struct VoteParams: Encodable {
     let in_store_id: UUID
@@ -393,6 +445,6 @@ extension Store {
                   city: p.locality ?? "", state: p.administrativeArea ?? "", zip: p.postalCode ?? "",
                   lat: loc.coordinate.latitude, lng: loc.coordinate.longitude,
                   certifications: [], status: .pending, confirmCount: 0, disputeCount: 0,
-                  distanceM: loc.distance(from: here), createdAt: "", isAppleMaps: true)
+                  distanceM: loc.distance(from: here), createdAt: "", external: .appleMaps)
     }
 }

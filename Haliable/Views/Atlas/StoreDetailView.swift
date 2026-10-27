@@ -19,6 +19,9 @@ struct StoreDetailView: View {
     @State private var asking = false
     @State private var confirms: Int
     @State private var disputes: Int
+    @State private var placeCard: MKMapItem?
+    @State private var findingCard = false
+    @State private var cardMissing = false
 
     init(store: Store, service: StoreService) {
         self.store = store
@@ -47,22 +50,30 @@ struct StoreDetailView: View {
                 GuardRow(symbol: "checkmark.circle",
                          tint: store.halalScope == .halalOptions ? DSColor.warning : DSColor.success,
                          title: store.halalScope.displayName,
-                         subtitle: store.isAppleMaps
-                            ? "Found by Apple Maps search — not verified by Haliable. Ask before you order."
-                            : store.certifications.isEmpty
-                            ? "Listed in the Haliable Store Atlas"
-                            : "Certified: " + store.certifications.joined(separator: ", "),
+                         subtitle: store.external.map { "\($0.claim) — not verified by Haliable. Ask before you order." }
+                            ?? (store.certifications.isEmpty
+                                ? "Listed in the Haliable Store Atlas"
+                                : "Certified: " + store.certifications.joined(separator: ", ")),
                          showsArrow: false)
 
                 GuardRow(symbol: "mappin.and.ellipse",
                          tint: DSColor.textPrimary,
                          title: store.address,
                          subtitle: ([store.city, store.state].filter { !$0.isEmpty }.joined(separator: ", ") + " · "
-                                    + (store.isAppleMaps ? "Apple Maps" : "Haliable Atlas")).trimmingCharacters(in: CharacterSet(charactersIn: " ·"))) {
+                                    + (store.external?.name ?? "Haliable Atlas")).trimmingCharacters(in: CharacterSet(charactersIn: " ·"))) {
                     openInMaps()
                 }
 
-                if !store.isAppleMaps {
+                GuardAction(symbol: "menucard",
+                            title: findingCard ? "Opening Apple Maps…" : "Menu, hours & photos",
+                            subtitle: cardMissing ? "Apple Maps doesn't have this place yet."
+                                                  : "Apple Maps place card · check the menu before you order") {
+                    Task { await openPlaceCard() }
+                }
+                .disabled(findingCard)
+                .padding(.top, DSSpacing.xs)
+
+                if !store.isExternal {
                 GuardAction(symbol: "checkmark.circle",
                             title: "Still accurate?",
                             subtitle: "Confirm or dispute what's listed here.") {
@@ -85,6 +96,7 @@ struct StoreDetailView: View {
         .presentationDragIndicator(.visible)
         .presentationCornerRadius(30)
         .presentationBackground(DSColor.surface)
+        .mapItemDetailSheet(item: $placeCard)
         .confirmationDialog("Is this listing still accurate?", isPresented: $asking, titleVisibility: .visible) {
             Button("Yes — still accurate") { Task { await act(confirm: true) } }
             Button("No — report an issue", role: .destructive) { Task { await act(confirm: false) } }
@@ -111,6 +123,13 @@ struct StoreDetailView: View {
                            : AnyShapeStyle(DSColor.surfaceElevated), in: Capsule())
             .overlay(Capsule().strokeBorder(on ? .clear : DSColor.outline, lineWidth: 1))
             .foregroundStyle(on ? .white : DSColor.textSecondary)
+    }
+
+    private func openPlaceCard() async {
+        findingCard = true
+        defer { findingCard = false }
+        placeCard = await service.appleMapItem(for: store)
+        cardMissing = placeCard == nil
     }
 
     private func openInMaps() {

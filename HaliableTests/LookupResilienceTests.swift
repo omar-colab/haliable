@@ -201,4 +201,31 @@ final class MockURLProtocol: URLProtocol {
             client?.urlProtocolDidFinishLoading(self)
         }
     }
+
+    /// Coke 12 oz can: UPC-E 04963406 is UPC-A 049000006346. A wrong check digit
+    /// (an EAN-8 that isn't UPC-E) expands to nothing.
+    func testUPCEExpandsToUPCA() {
+        XCTAssertEqual(ProductLookupService.upcAFromUPCE("04963406"), "049000006346")
+        XCTAssertEqual(ProductLookupService.upcAFromUPCE("01234505"), "012000003455")   // 6th digit 0–2 rule
+        XCTAssertEqual(ProductLookupService.upcAFromUPCE("01234572"), "012345000072")   // 6th digit 5–9 rule
+        XCTAssertNil(ProductLookupService.upcAFromUPCE("04963407"))
+        XCTAssertNil(ProductLookupService.upcAFromUPCE("96385074"))                     // EAN-8, system digit 9
+        XCTAssertNil(ProductLookupService.upcAFromUPCE("4963406"))
+    }
+
+    func testShortCodeNotFoundRetriesFullUPCA() async throws {
+        let svc = ProductLookupService(
+            usda: ByCode(known: ["049000006346": makeProduct("049000006346", "Coke (USDA)")]),
+            off: ByCode(known: [:]))
+        let p = try await svc.fetchProduct(barcode: "04963406")
+        XCTAssertEqual(p.name, "Coke (USDA)")
+    }
+}
+
+private struct ByCode: ProductLookupSource {
+    let known: [String: Product]
+    func fetchProduct(barcode: String) async throws -> Product {
+        guard let p = known[barcode] else { throw OFFError.productNotFound }
+        return p
+    }
 }

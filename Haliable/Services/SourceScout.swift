@@ -2,10 +2,10 @@
 //  SourceScout.swift
 //  Haliable
 //
-//  The in-app research bot. After a scan, every flagged ingredient with no
-//  citation is sent to the `source-scout` Edge Function, which looks for what
-//  published halal sources say about it (once, for everyone) and stores only
-//  quotes it found word-for-word on their page. This polls for the result.
+//  Sources on file for uncited ingredients. After a scan, every flagged
+//  ingredient with no citation is looked up in `ingredient_research`, where the
+//  (now switched-off) `source-scout` bot stored quotes it found word-for-word
+//  on their page. One read; nothing is researched.
 //
 //  Report, don't rule: what it finds is shown as "found automatically, not
 //  reviewed yet" beside the grade. It never changes a grade; only Omar's
@@ -68,8 +68,9 @@ final class SourceScout {
         return t
     }
 
-    /// Ask for every uncited flagged ingredient, then poll until each is done
-    /// (or ~90 s pass). Cancelled with the view's task.
+    /// Read what's already on file for every uncited flagged ingredient: one
+    /// free read, no research. ($0 mode, Oct 26: the `source-scout` AI is off,
+    /// so asking it would only wait on nothing.)
     func research(_ items: [MatchedIngredient]) async {
         let terms = Array(Set(items.compactMap(Self.term(for:)))).sorted().prefix(5)
         guard !terms.isEmpty else { return }
@@ -77,22 +78,9 @@ final class SourceScout {
         guard let client = SupabaseManager.shared else { return }
         pending.formUnion(terms)
         defer { pending.subtract(terms) }
-        do {
-            try await client.functions.invoke("source-scout",
-                                              options: FunctionInvokeOptions(body: ["terms": Array(terms)]))
-        } catch {
-            // Offline or capped: still read what's already known.
-        }
-        for poll in 0..<18 {
-            if let rows: [Research] = try? await client.from("ingredient_research")
-                .select("term,status,sources,reviewed").in("term", values: Array(terms)).execute().value {
-                for r in rows { results[r.term] = r }
-            }
-            // The function claims a row before it answers, so a term still
-            // missing now was held back (daily cap, offline): stop waiting on it.
-            if poll == 0 { pending.subtract(terms.filter { results[$0] == nil }) }
-            if terms.allSatisfy({ results[$0].map { $0.status != "researching" } ?? false }) { return }
-            do { try await Task.sleep(for: .seconds(5)) } catch { return }
+        if let rows: [Research] = try? await client.from("ingredient_research")
+            .select("term,status,sources,reviewed").in("term", values: Array(terms)).execute().value {
+            for r in rows { results[r.term] = r }
         }
         #endif
     }

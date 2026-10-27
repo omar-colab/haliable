@@ -23,10 +23,14 @@ struct HomeView: View {
     @Environment(AppSettings.self) private var settings
     @Environment(AuthManager.self) private var auth
     @Environment(ReviewStore.self) private var reviews
+    @Environment(RulesEngine.self) private var engine
     @Query(sort: \ScanRecord.scannedAt, order: .reverse) private var history: [ScanRecord]
 
     @State private var showSettings = false
     @State private var showStandardSheet = false
+    @State private var showChecker = false
+    @State private var checked: ProductVerdict?
+    @State private var checkedText: String?
 
     private var needsAttention: [ScanRecord] {
         Array(history.filter { $0.overallVerdict != .halal }.prefix(2))
@@ -74,6 +78,15 @@ struct HomeView: View {
                     .accessibilityIdentifier("home.startScan")
                     .reveal(0.15)
 
+                    GuardAction(symbol: "text.viewfinder",
+                                title: "Check ingredients",
+                                subtitle: "Type, paste or read a label — no barcode needed.") {
+                        showChecker = true
+                    }
+                    .accessibilityIdentifier("home.checkIngredients")
+                    .padding(.top, DSSpacing.xs)
+                    .reveal(0.18)
+
                     attention
                         .padding(.top, DSSpacing.md)
                         .reveal(0.22)
@@ -85,6 +98,17 @@ struct HomeView: View {
             .scrollIndicators(.hidden)
         }
         .sheet(isPresented: $showSettings) { SettingsV2() }
+        // The result opens once the checker has fully closed; two sheets
+        // swapping in one frame can drop the second.
+        .sheet(isPresented: $showChecker, onDismiss: {
+            if let text = checkedText {
+                checkedText = nil
+                checked = engine.evaluate(product: LabelScanView.product(text), standard: settings.halalStandard)
+            }
+        }) {
+            LabelScanView { checkedText = $0 }
+        }
+        .sheet(item: $checked) { VerdictView(verdict: $0) }
         .sheet(isPresented: $showStandardSheet) {
             StandardSelectorSheet(selected: $settings.halalStandard,
                                   onCommit: { _ in settings.hasChosenStandard = true })

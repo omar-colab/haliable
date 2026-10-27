@@ -47,6 +47,28 @@ enum StoreStatus: String, Codable, Hashable {
     case pending, approved, rejected, flagged
 }
 
+enum ExternalSource: Hashable {
+    case appleMaps
+    /// `diet:halal=only` (everything halal, per the mapper) vs `yes` (has halal options).
+    case openStreetMap(onlyHalal: Bool)
+
+    var name: String {
+        switch self {
+        case .appleMaps: return "Apple Maps"
+        case .openStreetMap: return "OpenStreetMap"
+        }
+    }
+
+    /// What the source claims, in its own words — reported, not ruled on.
+    var claim: String {
+        switch self {
+        case .appleMaps: return "Found by Apple Maps search"
+        case .openStreetMap(let only): return only ? "Tagged \"only halal\" by OpenStreetMap mappers"
+                                                   : "Tagged \"halal options\" by OpenStreetMap mappers"
+        }
+    }
+}
+
 struct Store: Identifiable, Codable, Hashable {
     let id: UUID
     let name: String
@@ -64,10 +86,12 @@ struct Store: Identifiable, Codable, Hashable {
     let disputeCount: Int
     var distanceM: Double?
     let createdAt: String
-    /// True for places found by Apple Maps search, not the Haliable Atlas. They
-    /// matched "halal" on Apple's side only — nobody here has verified them, so
-    /// they can't be voted on. Not in CodingKeys: never sent to or read from the DB.
-    var isAppleMaps = false
+    /// Where an unverified place came from: Apple Maps search, or a halal tag an
+    /// OpenStreetMap mapper added. nil = the Haliable Atlas. Nobody here has
+    /// verified these, so they can't be voted on. Not in CodingKeys: never sent
+    /// to or read from the DB.
+    var external: ExternalSource? = nil
+    var isExternal: Bool { external != nil }
 
     var coordinate: CLLocationCoordinate2D { .init(latitude: lat, longitude: lng) }
 

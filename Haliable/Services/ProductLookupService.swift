@@ -46,7 +46,15 @@ final class ProductLookupService {
         // plain code goes into the OFF URL path — "../" or "?" never does.
         guard Self.isLookupable(barcode) else { throw OFFError.productNotFound }
         do {
-            let product = try await resolveOnline(barcode: barcode)
+            let product: Product
+            do {
+                product = try await resolveOnline(barcode: barcode)
+            } catch OFFError.productNotFound {
+                // Small packs (cans, candy) carry 8-digit UPC-E; USDA and many OFF
+                // entries only know the full UPC-A. Try that before giving up.
+                guard let full = Self.upcAFromUPCE(barcode) else { throw OFFError.productNotFound }
+                product = try await resolveOnline(barcode: full)
+            }
             cache?.store(product)
             return product
         } catch let error as OFFError {
@@ -59,6 +67,26 @@ final class ProductLookupService {
             }
             throw error
         }
+    }
+
+    /// UPC-E (8 digits, number system 0 or 1) → its 12-digit UPC-A, or nil when
+    /// the code isn't a valid UPC-E (e.g. an EAN-8 whose check digit won't fit).
+    static func upcAFromUPCE(_ code: String) -> String? {
+        let d = code.compactMap(\.wholeNumberValue)
+        guard code.count == 8, d.count == 8, d[0] <= 1 else { return nil }
+        let s = Array(d[1...6])
+        let body: [Int]
+        switch s[5] {
+        case 0...2: body = [s[0], s[1], s[5], 0, 0, 0, 0, s[2], s[3], s[4]]
+        case 3:     body = [s[0], s[1], s[2], 0, 0, 0, 0, 0, s[3], s[4]]
+        case 4:     body = [s[0], s[1], s[2], s[3], 0, 0, 0, 0, 0, s[4]]
+        default:    body = [s[0], s[1], s[2], s[3], s[4], 0, 0, 0, 0, s[5]]
+        }
+        let eleven = [d[0]] + body
+        let odd = stride(from: 0, to: 11, by: 2).map { eleven[$0] }.reduce(0, +)
+        let even = stride(from: 1, to: 11, by: 2).map { eleven[$0] }.reduce(0, +)
+        guard (10 - (odd * 3 + even) % 10) % 10 == d[7] else { return nil }
+        return (eleven + [d[7]]).map(String.init).joined()
     }
 
     static func isLookupable(_ code: String) -> Bool {

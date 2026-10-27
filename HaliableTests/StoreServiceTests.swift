@@ -194,4 +194,30 @@ final class StoreServiceTests: XCTestCase {
         XCTAssertNil(store.distanceM)
         XCTAssertEqual(store.halalScope, .unverified)
     }
+
+    /// OpenStreetMap halal tags become unverified pins: nodes use lat/lon, ways
+    /// their center; untagged or unnamed elements are dropped; the halal scope is
+    /// never upgraded from a mapper's tag (report, don't rule).
+    func testOverpassResponseBecomesUnverifiedPins() throws {
+        let json = Data("""
+        {"elements":[
+          {"type":"node","id":101,"lat":41.81,"lon":-72.25,
+           "tags":{"name":"Kebab House","amenity":"restaurant","diet:halal":"only","addr:city":"Storrs"}},
+          {"type":"way","id":202,"center":{"lat":41.82,"lon":-72.26},
+           "tags":{"name":"Corner Market","shop":"convenience","diet:halal":"yes"}},
+          {"type":"node","id":303,"lat":41.8,"lon":-72.2,"tags":{"diet:halal":"yes"}},
+          {"type":"node","id":404,"lat":41.8,"lon":-72.2,"tags":{"name":"No tag"}}
+        ]}
+        """.utf8)
+        let pins = StoreService.osmStores(from: json, here: CLLocation(latitude: 41.81, longitude: -72.25))
+        XCTAssertEqual(pins.map(\.name), ["Kebab House", "Corner Market"])
+        XCTAssertEqual(pins[0].external, .openStreetMap(onlyHalal: true))
+        XCTAssertEqual(pins[1].external, .openStreetMap(onlyHalal: false))
+        XCTAssertEqual(pins[0].category, .restaurant)
+        XCTAssertEqual(pins[1].category, .grocery)
+        XCTAssertEqual(pins[1].lat, 41.82)
+        XCTAssertTrue(pins.allSatisfy { $0.halalScope == .unverified && $0.isExternal })
+        // Same OSM element → same id across fetches, so the map doesn't flicker.
+        XCTAssertEqual(StoreService.osmStores(from: json, here: CLLocation(latitude: 0, longitude: 0)).first?.id, pins[0].id)
+    }
 }

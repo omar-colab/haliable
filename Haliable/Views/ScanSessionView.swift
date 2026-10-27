@@ -6,9 +6,8 @@
 //  scan" or the dock. Same BarcodeScannerView and the same lookup → evaluate →
 //  save path the old in-page viewfinder used; only the chrome is new.
 //
-//  Deliberately NOT here: the board's live ingredient tags over the feed
-//  ("14 of 18 read"). Those need on-device label OCR — a feature the app does
-//  not have — so the chip states only what is true: which standard is active.
+//  Ingredient checker (top bar): type, paste or read a label live — see
+//  LabelScanView. The barcode feed itself carries no ingredient tags.
 //
 
 import SwiftUI
@@ -40,6 +39,7 @@ struct ScanSessionView: View {
     @State private var showManualEntry = false
     @State private var showManualReview = false
     @State private var showLabelScan = false
+    @State private var labelText: String?
     @State private var torchOn = false
 
     private let lookup = ProductLookupService()
@@ -66,8 +66,12 @@ struct ScanSessionView: View {
         .animation(DSMotion.move, value: showManualEntry)
         .animation(DSMotion.move, value: errorMessage)
         .sheet(item: $currentVerdict) { VerdictView(verdict: $0) }
-        .sheet(isPresented: $showLabelScan) {
-            LabelScanView { text in checkLabel(text) }
+        // The verdict opens once the checker has fully closed; two sheets
+        // swapping in one frame can drop the second.
+        .sheet(isPresented: $showLabelScan, onDismiss: {
+            if let text = labelText { labelText = nil; checkLabel(text) }
+        }) {
+            LabelScanView { labelText = $0 }
         }
         .sheet(isPresented: $showManualReview) {
             RequestReviewView(prefillBarcode: manualBarcode.isEmpty ? nil : manualBarcode)
@@ -115,6 +119,7 @@ struct ScanSessionView: View {
             RingButton(symbol: "chevron.left", label: "Close scanner") { dismiss() }
             GuardChip(text: settings.halalStandard.displayName, live: !cameraUnavailable)
             Spacer(minLength: 0)
+            RingButton(symbol: "text.viewfinder", label: "Ingredient checker") { showLabelScan = true }
             if hasTorch && !cameraUnavailable {
                 RingButton(symbol: torchOn ? "bolt.fill" : "bolt", label: torchOn ? "Turn torch off" : "Turn torch on",
                            active: torchOn) { setTorch(!torchOn) }
@@ -209,7 +214,7 @@ struct ScanSessionView: View {
                 .foregroundStyle(DSColor.danger)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
-            Button("Read the ingredient label instead") { showLabelScan = true }
+            Button("Check the ingredient label instead") { showLabelScan = true }
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(DSColor.accent)
             Button("Request a manual review instead") { showManualReview = true }
@@ -300,9 +305,7 @@ struct ScanSessionView: View {
     /// engine and worst-case roll-up as a barcode; not saved to History, which
     /// is keyed by barcode.
     private func checkLabel(_ text: String) {
-        let product = Product(id: "label-\(UUID().uuidString)", name: "Ingredients from your photo",
-                              brand: "Read from the label, checked by you",
-                              rawIngredientsText: text, additivesENumbers: [])
+        let product = LabelScanView.product(text)
         errorMessage = nil
         hapticSuccess()
         currentVerdict = engine.evaluate(product: product, standard: settings.halalStandard)

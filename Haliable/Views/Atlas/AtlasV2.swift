@@ -51,7 +51,7 @@ struct AtlasV2: View {
 
     private var visible: [Store] {
         guard zoomedIn else { return [] }
-        return (stores.stores + stores.appleStores)
+        return (stores.stores + stores.osmStores + stores.appleStores)
             .filter { filter.admits($0.halalScope) && inView($0.coordinate) }
             .sorted { ($0.distanceM ?? .greatestFiniteMagnitude) < ($1.distanceM ?? .greatestFiniteMagnitude) }
     }
@@ -145,7 +145,7 @@ struct AtlasV2: View {
     }
 
     private func clusterBubble(_ c: Cluster) -> some View {
-        let verified = c.stores.contains { !$0.isAppleMaps }
+        let verified = c.stores.contains { !$0.isExternal }
         return Button { open(c) } label: {
             Text("\(c.stores.count)")
                 .font(.system(size: 13, weight: .heavy))
@@ -181,7 +181,7 @@ struct AtlasV2: View {
 
     private func pin(_ store: Store) -> some View {
         let on = selected?.id == store.id
-        let fill = store.isAppleMaps ? [DSColor.textSecondary, DSColor.textSecondary]
+        let fill = store.isExternal ? [DSColor.textSecondary, DSColor.textSecondary]
                                      : [DSColor.accent, DSColor.accentGradientEnd]
         return Button { selected = store } label: {
             HStack(spacing: 5) {
@@ -213,7 +213,7 @@ struct AtlasV2: View {
             .shadow(color: on ? DSColor.accent.opacity(0.45) : .black.opacity(0.18), radius: 8, y: 3)
         }
         .pressable(0.94)
-        .accessibilityLabel(store.isAppleMaps ? "\(store.name), Apple Maps result, not verified"
+        .accessibilityLabel(store.isExternal ? "\(store.name), \(store.external?.name ?? "") result, not verified"
                                                 : "\(store.name), \(store.halalScope.displayName)")
     }
 
@@ -281,7 +281,7 @@ struct AtlasV2: View {
                     .frame(maxHeight: 230)
                     .scrollIndicators(.hidden)
                 }
-                Text("Locations © OpenStreetMap contributors (ODbL) · grey pins: Apple Maps, not verified")
+                Text("Data © OpenStreetMap contributors (ODbL) · grey pins: Apple Maps / OpenStreetMap, not verified")
                     .font(.system(size: 9.5))
                     .foregroundStyle(DSColor.textTertiary)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -296,7 +296,7 @@ struct AtlasV2: View {
     }
 
     private func rowDetail(_ store: Store) -> String {
-        [store.isAppleMaps ? "Apple Maps · not verified" : store.halalScope.displayName.lowercased(), store.distanceText].compactMap { $0 }.joined(separator: " · ")
+        [store.external.map { "\($0.name) · not verified" } ?? store.halalScope.displayName.lowercased(), store.distanceText].compactMap { $0 }.joined(separator: " · ")
     }
 
     // MARK: - Logic

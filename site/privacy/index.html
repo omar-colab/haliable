@@ -31,14 +31,12 @@ Facts</a> and the <a href="https://fdc.nal.usda.gov">USDA FoodData Central</a>. 
 do not retain those lookups.</p>
 <p>When a product contains an ingredient our sources don't cover yet, the app sends
 just that <strong>ingredient's name</strong> (for example "E1105 lysozyme"). It never
-sends the barcode, the product or anything about you. Our server looks up what
-published halal sources say about it and keeps the result, which is shared with
-everyone who scans that ingredient. Nothing about who asked is stored.</p>
-<p>On the Find map, the app asks Apple Maps for halal places in the area you are
-viewing. For food places Apple suggests whose name doesn't say "halal", the app sends
-that <strong>business's public name, address and location</strong> to our server so it
-can check the place's halal certificate and menu. This reveals roughly which area you
-are looking at, but nothing about who you are, and we don't store who asked.</p>
+sends the barcode, the product or anything about you. The app reads any published
+halal sources we have on file for it. Nothing about who asked is stored.</p>
+<p>On the Find map, the app asks Apple Maps and the public
+<a href="https://www.openstreetmap.org">OpenStreetMap</a> Overpass service for halal places
+in the <strong>area you are viewing</strong>. That reveals roughly which area you are looking
+at to those services, but nothing about who you are; nothing goes to our server.</p>
 
 <h2>What we collect (only if you choose to contribute)</h2>
 <p>Browsing and scanning never require an account. You only sign in — with
@@ -63,8 +61,7 @@ other apps or websites. There are no third-party advertising or analytics SDKs.<
   for a manual review, searches published halal sources, and drafts an answer. The
   app asks your permission before the first time it sends them. A person checks
   every draft before you see a verdict. Anthropic does not use this data to train
-  its models. It also researches the ingredient names and businesses described
-  above, which contain nothing about you.</li>
+  its models.</li>
   <li><strong>Resend</strong> delivers the email that tells us a review request
   arrived (product name, barcode, your notes and links to the photos).</li>
   <li><strong>Netlify</strong> hosts this website, and <strong>MailerLite</strong>

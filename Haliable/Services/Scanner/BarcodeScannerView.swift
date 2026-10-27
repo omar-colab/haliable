@@ -101,7 +101,7 @@ final class ScannerViewController: UIViewController, AVCaptureMetadataOutputObje
     private let trackLayer = CAShapeLayer()
     private var hideTrack: DispatchWorkItem?
     private let supportedTypes: [AVMetadataObject.ObjectType] =
-        [.ean13, .ean8, .upce, .code128, .code39, .qr]
+        [.ean13, .ean8, .upce]   // retail food codes only; a shelf QR is never a product
 
     // Main-thread state.
     private var isConfigured = false
