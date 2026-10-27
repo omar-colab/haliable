@@ -22,15 +22,22 @@ Same branch (`feat/ingredient-checker-ship`), not merged, nothing live yet.
 - Map detail: address line no longer says "OpenStreetMap" for every place or ", " when city is blank.
 - Privacy page discloses the place lookups (deploy with the functions).
 
-### Needs Omar — go live (one sitting, ~10 min)
-1. Merge the branch.
-2. Run migrations `0017_ingredient_research` and `0018_agents_digest` (SQL editor or
-   `supabase/apply-migrations.sh`). 0018 enables `pg_cron` — if it errors, turn on
-   pg_cron under Database → Extensions first.
-3. `supabase functions deploy source-scout place-scout daily-digest review-decide review-agent --no-verify-jwt`
-   (existing secrets cover all of them: ANTHROPIC_API_KEY, HALIABLE_SECRET_KEY, RESEND_API_KEY, OWNER_EMAIL).
-4. Deploy the site (privacy page) in the same step.
-After that the only recurring work is tapping ✅/❌ in the morning email.
+### LIVE (Oct 26, evening) — done by Claude on Omar's go-ahead
+- Migrations 0017 + 0018 applied; pg_cron job `haliable-daily-digest` (13:00 UTC) active;
+  `stores_place_scout` trigger live. All five functions deployed.
+- Tested live: source-scout (E1105 lysozyme → EFSA tier-2 verified), place-scout via the app path
+  (The Halal Guys → halal_meat_only, 2 verified quotes from thehalalguys.com) and via the
+  submission trigger (test row deleted after). Digest email delivered; a second call sends nothing.
+- First version missed official sites (Halal Guys came back "unknown"); prompt now searches the
+  place's own site first (dde63f9).
+- Branch fast-forwarded into `main` and `fix/testflight-feedback`; PR #1 merged.
+
+### Still needs Omar
+- **Site deploy:** Netlify isn't git-connected and the CLI isn't logged in. Run `! netlify login`,
+  then `netlify deploy --prod --dir site` (privacy page discloses the place lookups). Must be live
+  before a build that sends place lookups goes beyond your own "Me" testers.
+- **Build 18 uploaded to TestFlight** (group "Me", auto-assigned) — first build that calls place-scout + shows "checked by Haliable".
+- **Morning email:** tap ✅/❌. That's the whole recurring job.
 
 ### Decisions made while Omar was away (Oct 26)
 - "Menu agent" and "is-it-halal agent" are **one** function (`place-scout`): one search session
