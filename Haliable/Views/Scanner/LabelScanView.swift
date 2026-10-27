@@ -41,7 +41,7 @@ struct LabelScanView: View {
 
     static func product(_ text: String) -> Product {
         Product(id: "label-\(UUID().uuidString)", name: "Ingredients you checked",
-                brand: "Typed or read from the label", rawIngredientsText: text, additivesENumbers: [])
+                brand: "From the label", rawIngredientsText: text, additivesENumbers: [])
     }
 
     var body: some View {
@@ -53,6 +53,7 @@ struct LabelScanView: View {
                         .lineLimit(4...12)
                         .font(DSFont.body)
                         .focused($editing)
+                        .accessibilityIdentifier("checker.input")
                         .onChange(of: text) { _, _ in confirmed = false }
                     if reading { HStack(spacing: DSSpacing.sm) { ProgressView(); Text("Reading the label…") } }
                     if let error { Text(error).foregroundStyle(DSColor.danger) }

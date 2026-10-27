@@ -19,7 +19,7 @@ final class IngredientCheckerUITests: XCTestCase {
         XCTAssertTrue(open.waitForExistence(timeout: 10))
         open.tap()
 
-        let field = app.textFields.firstMatch.exists ? app.textFields.firstMatch : app.textViews.firstMatch
+        let field = app.descendants(matching: .any)["checker.input"]   // waits for the sheet, whatever element type the field is
         XCTAssertTrue(field.waitForExistence(timeout: 5))
         field.tap()
         field.typeText("sugar, pork gelatin, water")
@@ -51,7 +51,7 @@ final class IngredientCheckerUITests: XCTestCase {
         let open = app.buttons["home.checkIngredients"]
         XCTAssertTrue(open.waitForExistence(timeout: 10))
         open.tap()
-        let field = app.textFields.firstMatch.exists ? app.textFields.firstMatch : app.textViews.firstMatch
+        let field = app.descendants(matching: .any)["checker.input"]   // waits for the sheet, whatever element type the field is
         XCTAssertTrue(field.waitForExistence(timeout: 5))
         field.tap()
         field.typeText("sugar, gelatin, natural flavor")

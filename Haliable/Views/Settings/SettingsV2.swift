@@ -172,7 +172,7 @@ struct SettingsV2: View {
         } header: {
             sectionHeader("Location & Map")
         } footer: {
-            Text("Used only to center the Find Halal map and search nearby. Never stored or shared.")
+            Text("Used only to center the Find Halal map. Place searches send the area on screen; your location is never stored.")
                 .settingsFooterV2()
         }
         .listRowBackground(DSColor.surface)
@@ -245,8 +245,10 @@ struct SettingsV2: View {
         } header: {
             sectionHeader("Account")
         } footer: {
-            Text("Account deletion is required by App Store guideline 5.1.1(v).")
-                .settingsFooterV2()
+            if auth.isSignedIn {
+                Text("Deleting your account erases it and everything tied to it on our server, plus this phone's scan history.")
+                    .settingsFooterV2()
+            }
         }
         .listRowBackground(DSColor.surface)
     }

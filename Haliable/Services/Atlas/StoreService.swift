@@ -73,7 +73,7 @@ final class StoreService {
             } catch {
                 // keep the last good pins on screen; an outage shouldn't empty the map
                 guard !Task.isCancelled else { return }
-                lastError = "Couldn't reach the store map. Check your connection and try again."
+                lastError = "Couldn't load places. Check your connection."
                 return
             }
         }

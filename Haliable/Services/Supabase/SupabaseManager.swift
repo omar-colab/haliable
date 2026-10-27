@@ -17,7 +17,10 @@ enum SupabaseManager {
     /// nil until both the package is present AND Secrets are configured.
     static let shared: SupabaseClient? = {
         guard let url = SupabaseConfig.url, let key = SupabaseConfig.anonKey else { return nil }
-        return SupabaseClient(supabaseURL: url, supabaseKey: key)
+        // Opt in to the SDK's next-major behaviour (silences its launch warning). Safe
+        // here: AuthManager reads `auth.session`, which refreshes, not the initial event.
+        return SupabaseClient(supabaseURL: url, supabaseKey: key,
+                              options: SupabaseClientOptions(auth: .init(emitLocalSessionAsInitialSession: true)))
     }()
 }
 #endif

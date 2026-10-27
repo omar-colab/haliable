@@ -136,7 +136,7 @@ struct VerdictView: View {
                     .foregroundStyle(live.overallNeedsReview ? DSColor.warning : live.overall.tint)
                     .id(live.overall)
                     .transition(.opacity)
-                Text([live.product.name, live.product.brand].compactMap { $0 }.joined(separator: " · "))
+                Text([live.product.name, live.product.displayBrand].compactMap { $0 }.joined(separator: " · "))
                     .font(.footnote)
                     .foregroundStyle(DSColor.textSecondary)
                     .lineLimit(1)

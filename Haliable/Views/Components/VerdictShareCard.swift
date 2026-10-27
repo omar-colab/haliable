@@ -35,7 +35,7 @@ struct VerdictShareCard: View {
                     .foregroundStyle(DSColor.textPrimary)
                     .lineLimit(3)
                     .minimumScaleFactor(0.6)
-                if let brand = verdict.product.brand, !brand.isEmpty {
+                if let brand = verdict.product.displayBrand {
                     Text(brand)
                         .font(.system(size: 34))
                         .foregroundStyle(DSColor.textSecondary)

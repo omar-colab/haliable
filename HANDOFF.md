@@ -4,6 +4,29 @@ Last updated: **Oct 23, 2026** · **Build 8 is on TestFlight** ·
 site live · review agent built · **136 tests green**
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 
+## ▶️ RESUME HERE (Oct 27) — polish pass, branch `polish/oct27`, NOT merged or uploaded
+
+Omar: "more polished, don't send me the build." Screenshot pass over every screen, then:
+- **iPhone locked to portrait.** Landscape was never designed for: Home's cards ran off-screen. It
+  also explained the checker UI tests failing in the full suite (the launch tests left the sim landscape).
+- Verdict + share card: brand no longer repeats the name ("Nutella · Nutella, Ferrero" → "Nutella · Ferrero").
+  `Product.displayBrand`, tested.
+- Scanner hint said "Hold steady — reading the barcode" before any barcode was seen → "Line up the
+  barcode inside the frame".
+- Map error chip was cut off → "Couldn't load places. Check your connection."
+- Checker result subtitle was cut off → brand "From the label".
+- Settings: removed the developer note "Account deletion is required by App Store guideline 5.1.1(v)"
+  (now a plain explanation, shown only when signed in); location footer said "never shared" though
+  place searches send the map area → now says exactly that.
+- Supabase SDK launch warning silenced (`emitLocalSessionAsInitialSession: true`; we only read
+  `auth.session`, which refreshes).
+- Checker UI tests find the field by identifier `checker.input` (no more textField/textView guess).
+- 234 tests green. Release build green.
+
+**For Omar to look at:** checking "pork" in the ingredient checker shows "Pending review" with a draft
+Haram grade — correct under rule 3 (the cell isn't cleared yet), but it reads oddly for pork. Clearing
+that cell through the citation pipeline would fix it.
+
 ## ▶️ RESUME HERE (Oct 26, late) — $0 mode + free features, NOT uploaded
 
 **Omar: "never cost money" + "don't push a build to my phone until I say so."**

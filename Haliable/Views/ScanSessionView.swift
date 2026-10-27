@@ -133,7 +133,7 @@ struct ScanSessionView: View {
             if cameraUnavailable {
                 unavailableCard
             } else {
-                GuardChip(text: "Hold steady — reading the barcode")
+                GuardChip(text: "Line up the barcode inside the frame")
             }
             if showManualEntry { manualField.transition(.opacity.combined(with: .move(edge: .bottom))) }
             if let errorMessage { errorCard(errorMessage).transition(.opacity) }

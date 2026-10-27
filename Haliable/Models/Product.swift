@@ -25,4 +25,13 @@ struct Product: Identifiable, Hashable {
     /// English ("en:pork-gelatin") whatever language the label is in. The engine
     /// uses the "en:" ones only to fill in what the text itself doesn't name.
     var ingredientTags: [String] = []
+
+    /// The brand line for display, minus any brand that just repeats the name
+    /// (Open Food Facts lists Nutella's brands as "Nutella, Ferrero").
+    var displayBrand: String? {
+        let parts = (brand ?? "").split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty && $0.caseInsensitiveCompare(name) != .orderedSame }
+        return parts.isEmpty ? nil : parts.joined(separator: ", ")
+    }
 }
