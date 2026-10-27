@@ -50,7 +50,7 @@ struct VerdictView: View {
                     .animation(.easeInOut(duration: 0.25), value: settings.halalStandard)
 
                 GuardSection(title: "Flagged",
-                             trailing: live.flagged.isEmpty ? nil : "\(live.flagged.count) of \(live.matched.count) checked")
+                             trailing: live.flagged.isEmpty ? nil : "\(live.flagged.count) of \(max(ProductVerdict.ingredientCount(live.product.rawIngredientsText ?? ""), live.matched.count)) flagged")
                     .padding(.top, DSSpacing.xs)
 
                 if live.flagged.isEmpty {
