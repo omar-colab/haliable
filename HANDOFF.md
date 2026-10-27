@@ -21,7 +21,12 @@ Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 - **Scanner:** 8-digit UPC-E codes (cans, candy) retry as the full UPC-A when not found — USDA only knows
   UPC-A, so these always missed USDA before. QR / Code 39 / Code 128 no longer read (never a food barcode).
 - Privacy page updated for Overpass + no place lookups (deploy after Nov 10 — Netlify credits).
-- Tests: 191 unit + checker UI test green. Nothing uploaded.
+- Verdict header now says "1 of 3 flagged" (was "1 of 1 checked", counting only rule-matched items).
+- **Large text fixed:** grade pills stay on one line at every size (capped at XXXL so "Questionable —
+  contested" never clips) and checker rows stack at accessibility sizes. `testLargestTextSize` covers it.
+- Tests: 189 unit + 2 checker UI tests + map smoke test green. Nothing uploaded.
+- Open for Omar (unchanged): additive consistency (named "citric acid" not flagged vs OFF code E330
+  flagged), the 28-additive citation proposal, wine-vinegar/brewer's-yeast calls.
 
 ## ▶️ RESUME HERE (Oct 26) — agents that run themselves; Omar approves by email
 
