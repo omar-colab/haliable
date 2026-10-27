@@ -28,6 +28,7 @@ struct LabelScanView: View {
     @State private var reading = false
     @State private var error: String?
     @FocusState private var editing: Bool
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     private var enough: Bool { LabelTextReader.looksLikeAnIngredientList(text) }
     private var trusted: Bool { !fromCamera || confirmed }
@@ -114,9 +115,7 @@ struct LabelScanView: View {
     @ViewBuilder private func previewSection(_ v: ProductVerdict) -> some View {
         Section {
             if trusted {
-                HStack {
-                    Text("Overall").font(DSFont.headline)
-                    Spacer()
+                row { Text("Overall").font(DSFont.headline) } badge: {
                     GradeBadge(grade: v.overallGrade, pendingReview: v.overallNeedsReview)
                 }
             }
@@ -126,16 +125,28 @@ struct LabelScanView: View {
                     .foregroundStyle(DSColor.textSecondary)
             }
             ForEach(v.flagged) { item in
-                HStack {
-                    Image(systemName: item.grade.symbolName).foregroundStyle(item.grade.tint)
-                    Text(item.displayName)
-                    Spacer()
+                row {
+                    Label { Text(item.displayName) } icon: {
+                        Image(systemName: item.grade.symbolName).foregroundStyle(item.grade.tint)
+                    }
+                } badge: {
                     GradeBadge(grade: item.grade, pendingReview: item.needsReview)
                 }
                 .accessibilityElement(children: .combine)
             }
         } header: {
             Text("Live check · \(settings.halalStandard.displayName)")
+        }
+    }
+
+    /// Side by side normally; stacked at accessibility text sizes, so neither
+    /// the name nor the grade pill gets squeezed into "Nat-ural" or "…".
+    @ViewBuilder private func row<Title: View, Badge: View>(@ViewBuilder _ title: () -> Title,
+                                                             @ViewBuilder badge: () -> Badge) -> some View {
+        if typeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: DSSpacing.xs) { title(); badge() }
+        } else {
+            HStack { title(); Spacer(); badge() }
         }
     }
 

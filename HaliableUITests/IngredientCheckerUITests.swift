@@ -41,4 +41,23 @@ final class IngredientCheckerUITests: XCTestCase {
         a.name = name; a.lifetime = .keepAlways
         add(a)
     }
+
+    /// Largest accessibility text: the checker still works and the grade pill
+    /// stays on one line (screenshot for eyes; a broken layout shows there).
+    func testLargestTextSize() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launch()
+        let open = app.buttons["home.checkIngredients"]
+        XCTAssertTrue(open.waitForExistence(timeout: 10))
+        open.tap()
+        let field = app.textFields.firstMatch.exists ? app.textFields.firstMatch : app.textViews.firstMatch
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.tap()
+        field.typeText("sugar, gelatin, natural flavor")
+        app.buttons["Done"].tap()
+        app.swipeUp()
+        app.swipeUp()
+        attach(app, "checker-xxxl")
+    }
 }

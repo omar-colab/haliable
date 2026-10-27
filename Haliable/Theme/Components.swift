@@ -153,6 +153,14 @@ struct StatusBadge: View {
         }
         .font(DSFont.label)
         .tracking(0.3)
+        // One line at every text size: shrink before "Question-able" breaks mid-word,
+        // and win space from the row's title rather than wrap.
+        .lineLimit(1)
+        .minimumScaleFactor(0.6)
+        .layoutPriority(1)
+        // Pills stop growing at the largest standard size: at accessibility sizes a
+        // one-word grade otherwise clips to "Question…". Still large, never cut.
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         .padding(.horizontal, DSSpacing.sm - 1)
         .padding(.vertical, DSSpacing.xxs + 1)
         .background(tint.opacity(0.18))
