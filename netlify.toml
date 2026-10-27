@@ -6,6 +6,10 @@
   publish = "site"
   # Serverless functions live here.
   functions = "netlify/functions"
+  # Only deploy when the site or its functions changed. Every iOS commit used to
+  # trigger a production deploy and burned the free plan's monthly credits
+  # (deploys blocked Oct 22 – Nov 10, 2026). Exit 0 = skip the build.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- site netlify netlify.toml"
 
 [functions]
   node_bundler = "esbuild"

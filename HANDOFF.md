@@ -33,9 +33,11 @@ Same branch (`feat/ingredient-checker-ship`), not merged, nothing live yet.
 - Branch fast-forwarded into `main` and `fix/testflight-feedback`; PR #1 merged.
 
 ### Still needs Omar
-- **Site deploy:** Netlify isn't git-connected and the CLI isn't logged in. Run `! netlify login`,
-  then `netlify deploy --prod --dir site` (privacy page discloses the place lookups). Must be live
-  before a build that sends place lookups goes beyond your own "Me" testers.
+- **Site deploy BLOCKED until Nov 10:** Netlify free plan is out of credits (300/month, every iOS
+  push to main triggered a production deploy). `netlify.toml` now skips builds unless site/ or
+  netlify/ changed. Nov 10+: `netlify deploy --prod --no-build --dir site --site 0819c530-69f1-48d7-b8bb-243fe50385cd`
+  (CLI is logged in). Until then keep Build 18+ to the "Me" group — the live privacy page doesn't
+  yet mention place lookups.
 - **Build 18 uploaded to TestFlight** (group "Me", auto-assigned) — first build that calls place-scout + shows "checked by Haliable".
 - **Morning email:** tap ✅/❌. That's the whole recurring job.
 
