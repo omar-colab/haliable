@@ -14,6 +14,7 @@ import Anthropic from "npm:@anthropic-ai/sdk@0.110.0";
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
 import { type Draft, settle } from "../_shared/verdict.ts";
 import { verifySources } from "../_shared/page.ts";
+import { email, esc } from "../_shared/email.ts";
 
 const BASE = "https://abumevloleevhoqxfnoe.supabase.co";
 const db = createClient(BASE, Deno.env.get("HALIABLE_SECRET_KEY")!, { auth: { persistSession: false } });
@@ -105,17 +106,6 @@ async function research(req: Record<string, unknown>, photoUrls: string[]): Prom
 async function verify(d: Draft): Promise<Draft> {
   await verifySources(d.sources);
   return d;
-}
-
-const esc = (s: unknown) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]!));
-
-async function email(subject: string, html: string) {
-  const r = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${Deno.env.get("RESEND_API_KEY")}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: "Haliable <onboarding@resend.dev>", to: [Deno.env.get("OWNER_EMAIL")], subject, html }),
-  });
-  if (!r.ok) console.error("resend", r.status, await r.text());
 }
 
 async function run(id: string) {

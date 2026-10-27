@@ -57,7 +57,8 @@ struct StoreDetailView: View {
                 GuardRow(symbol: "mappin.and.ellipse",
                          tint: DSColor.textPrimary,
                          title: store.address,
-                         subtitle: "\(store.city), \(store.state) · \(store.isAppleMaps ? "Apple Maps" : "OpenStreetMap · ODbL")") {
+                         subtitle: ([store.city, store.state].filter { !$0.isEmpty }.joined(separator: ", ") + " · "
+                                    + (store.isAppleMaps ? "Apple Maps" : "Haliable Atlas")).trimmingCharacters(in: CharacterSet(charactersIn: " ·"))) {
                     openInMaps()
                 }
 

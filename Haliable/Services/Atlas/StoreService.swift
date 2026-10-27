@@ -110,11 +110,43 @@ final class StoreService {
               !Task.isCancelled else { return }
         let origin = user ?? region.center
         let here = CLLocation(latitude: origin.latitude, longitude: origin.longitude)
-        appleStores = items.compactMap { Store(appleMapItem: $0, from: here) }
-            .filter { a in
-                let pa = CLLocation(latitude: a.lat, longitude: a.lng)
-                return !stores.contains { CLLocation(latitude: $0.lat, longitude: $0.lng).distance(from: pa) < 80 }
-            }
+        let nearAtlas = { (c: CLLocationCoordinate2D) in
+            let p = CLLocation(latitude: c.latitude, longitude: c.longitude)
+            return self.stores.contains { CLLocation(latitude: $0.lat, longitude: $0.lng).distance(from: p) < 80 }
+        }
+        appleStores = items.compactMap { Store(appleMapItem: $0, from: here) }.filter { !nearAtlas($0.coordinate) }
+        // Food places Apple matched on "halal" without the word in their name
+        // (it read reviews or menus). The place agent checks their certificate
+        // and menu; only Omar's ✅ from the daily email puts one on the map.
+        scoutPlaces(items.filter { item in
+            let name = (item.name ?? "").lowercased()
+            return !name.contains("halal") && !name.contains("zabiha")
+                && item.pointOfInterestCategory.flatMap { Store.appleFoodCategories[$0] } != nil
+                && !nearAtlas(item.placemark.coordinate)
+        })
+    }
+
+    /// Places already sent this session, so panning back and forth doesn't resend.
+    private var scouted: Set<String> = []
+
+    /// Fire-and-forget: the server researches each place once for everyone,
+    /// under a daily cap, and stores nothing about who asked.
+    private func scoutPlaces(_ items: [MKMapItem]) {
+        #if canImport(Supabase)
+        guard isLive, let client = SupabaseManager.shared else { return }
+        let fresh = items.filter { scouted.insert("\($0.name ?? "")|\($0.placemark.coordinate.latitude)").inserted }.prefix(5)
+        guard !fresh.isEmpty else { return }
+        let places = fresh.map { item in
+            let p = item.placemark
+            return ScoutPlace(name: item.name ?? "", address: [p.subThoroughfare, p.thoroughfare].compactMap { $0 }.joined(separator: " "),
+                              city: p.locality ?? "", state: p.administrativeArea ?? "",
+                              category: item.pointOfInterestCategory.flatMap { Store.appleFoodCategories[$0] }?.rawValue ?? "other",
+                              lat: p.coordinate.latitude, lng: p.coordinate.longitude)
+        }
+        Task.detached {
+            _ = try? await client.functions.invoke("place-scout", options: FunctionInvokeOptions(body: ["places": Array(places)]))
+        }
+        #endif
     }
 
     /// Submit a community store. Validates client-side, then (when live) calls the
@@ -327,6 +359,12 @@ private struct SubmitParams: Encodable {
     }
 }
 
+/// One Apple Maps place for the `place-scout` Edge Function.
+private struct ScoutPlace: Encodable, Sendable {
+    let name, address, city, state, category: String
+    let lat, lng: Double
+}
+
 /// Encodable parameters for the `vote_store` RPC.
 private struct VoteParams: Encodable {
     let in_store_id: UUID
@@ -338,13 +376,14 @@ extension Store {
     /// An Apple Maps result. Kept only when the place's own name says "halal" or
     /// "zabiha": Apple's search matches reviews and menus too, so a category alone
     /// would pin any restaurant that once mentioned the word.
+    static let appleFoodCategories: [MKPointOfInterestCategory: StoreCategory] = [
+        .restaurant: .restaurant, .cafe: .cafe, .bakery: .bakery,
+        .foodMarket: .grocery, .store: .grocery,
+    ]
+
     init?(appleMapItem item: MKMapItem, from here: CLLocation) {
-        let food: [MKPointOfInterestCategory: StoreCategory] = [
-            .restaurant: .restaurant, .cafe: .cafe, .bakery: .bakery,
-            .foodMarket: .grocery, .store: .grocery,
-        ]
         let name = item.name ?? ""
-        let category = item.pointOfInterestCategory.flatMap { food[$0] }
+        let category = item.pointOfInterestCategory.flatMap { Self.appleFoodCategories[$0] }
         let lower = name.lowercased()
         guard lower.contains("halal") || lower.contains("zabiha") else { return nil }
         let p = item.placemark

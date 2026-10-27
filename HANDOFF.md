@@ -4,6 +4,41 @@ Last updated: **Oct 23, 2026** · **Build 8 is on TestFlight** ·
 site live · review agent built · **136 tests green**
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
 
+## ▶️ RESUME HERE (Oct 26) — agents that run themselves; Omar approves by email
+
+Same branch (`feat/ingredient-checker-ship`), not merged, nothing live yet.
+
+- **One email a day** (`daily-digest`, pg_cron 13:00 UTC): every new ingredient source the
+  research bot found + every place the new place agent checked, each with one-tap
+  ✅/❌ (handled by `review-decide`, same 1-minute scanner guard). No email when nothing is new.
+  - Ingredient ✅ → app shows "sources checked by Haliable". ❌ → users stop seeing them.
+    **Neither changes a grade** (rule 3) — turning a source into a citation is still the pipeline.
+  - Place ✅ → it goes on the public map (approved, scope + certifier filled in). ❌ → rejected.
+- **`place-scout`** (new): checks a place's halal certificate AND its menu (halal / pork /
+  alcohol / unclear per dish). Runs on every community submission (trigger) and on Apple Maps
+  food places the map finds whose name doesn't say "halal" (before, those were silently dropped).
+  Listable only on a machine-verified tier-1 (certifier) or tier-2 (own site/menu) quote; pork or
+  alcohol on the menu caps it at "Halal options". Cap 30 new places/day (≈ $1.50/day worst case).
+- Map detail: address line no longer says "OpenStreetMap" for every place or ", " when city is blank.
+- Privacy page discloses the place lookups (deploy with the functions).
+
+### Needs Omar — go live (one sitting, ~10 min)
+1. Merge the branch.
+2. Run migrations `0017_ingredient_research` and `0018_agents_digest` (SQL editor or
+   `supabase/apply-migrations.sh`). 0018 enables `pg_cron` — if it errors, turn on
+   pg_cron under Database → Extensions first.
+3. `supabase functions deploy source-scout place-scout daily-digest review-decide review-agent --no-verify-jwt`
+   (existing secrets cover all of them: ANTHROPIC_API_KEY, HALIABLE_SECRET_KEY, RESEND_API_KEY, OWNER_EMAIL).
+4. Deploy the site (privacy page) in the same step.
+After that the only recurring work is tapping ✅/❌ in the morning email.
+
+### Decisions made while Omar was away (Oct 26)
+- "Menu agent" and "is-it-halal agent" are **one** function (`place-scout`): one search session
+  answers both, at half the cost. Split later only if one of them needs a different schedule.
+- Digest instead of an email per finding (up to 80/day otherwise).
+- Approving an ingredient source does not change grades; promoting it to a citation still
+  needs a grade decision per school, which an email tap can't carry.
+
 ## ▶️ RESUME HERE (Oct 23) — branch `feat/ingredient-checker-ship`, not merged, not uploaded
 
 - **Ingredient checker rebuilt** (3da95a0): real label parser (nested brackets, allergen

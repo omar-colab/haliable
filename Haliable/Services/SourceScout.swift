@@ -30,6 +30,8 @@ final class SourceScout {
         let term: String
         let status: String          // researching | done | failed
         let sources: [Source]
+        /// Omar approved these sources from the daily digest email. Grade still unchanged.
+        let reviewed: Bool?
     }
 
     /// Latest known research per term. A term with no entry hasn't been looked
@@ -83,7 +85,7 @@ final class SourceScout {
         }
         for poll in 0..<18 {
             if let rows: [Research] = try? await client.from("ingredient_research")
-                .select("term,status,sources").in("term", values: Array(terms)).execute().value {
+                .select("term,status,sources,reviewed").in("term", values: Array(terms)).execute().value {
                 for r in rows { results[r.term] = r }
             }
             // The function claims a row before it answers, so a term still

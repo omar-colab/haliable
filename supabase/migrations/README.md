@@ -33,6 +33,8 @@ Conventions (match the existing `supabase-setup.sql` at the repo root):
   the Acknowledgements screen). Row-by-row evidence lives in
   `docs/stores-candidates.md`. ids are `uuid5(…, "haliable:osm:<type>/<id>")`, so the
   insert is idempotent and the rollback deletes exactly those rows.
+- `0018_agents_digest` — digest decisions on `ingredient_research`, the `place_research`
+  table + submission trigger for `place-scout`, and the daily `daily-digest` pg_cron job.
 
 Tests: `supabase/tests/rls_matrix.sql` proves the RLS invariants (run after 0004).
 

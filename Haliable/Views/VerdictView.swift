@@ -166,7 +166,8 @@ struct VerdictView: View {
         } else if let src = item.source {
             base = "\(src.body) · \(src.year)"
         } else if let term = SourceScout.term(for: item), let found = scout.results[term], !found.sources.isEmpty {
-            base = found.sources.count == 1 ? "1 source found · not reviewed" : "\(found.sources.count) sources found · not reviewed"
+            let state = found.reviewed == true ? "checked by Haliable" : "not reviewed"
+            base = found.sources.count == 1 ? "1 source found · \(state)" : "\(found.sources.count) sources found · \(state)"
         } else {
             base = "awaiting citation"
         }
@@ -227,7 +228,9 @@ struct VerdictView: View {
         let found = scout.results[term]
         if let found, found.status == "done", !found.sources.isEmpty {
             VStack(alignment: .leading, spacing: DSSpacing.xs) {
-                Label("Found automatically · not reviewed yet · grade unchanged", systemImage: "sparkle.magnifyingglass")
+                Label(found.reviewed == true ? "Found automatically · sources checked by Haliable · grade unchanged"
+                                             : "Found automatically · not reviewed yet · grade unchanged",
+                      systemImage: "sparkle.magnifyingglass")
                     .font(DSFont.caption.weight(.semibold))
                     .foregroundStyle(DSColor.textSecondary)
                 ForEach(found.sources, id: \.self) { s in
