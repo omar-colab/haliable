@@ -23,7 +23,7 @@ enum OFFError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .productNotFound:
-            return "This product isn't in the Open Food Facts database yet."
+            return "We couldn't find this barcode in USDA or Open Food Facts yet."
         case .networkFailure(let underlying):
             return "Network error: \(underlying.localizedDescription)"
         case .decoding:

@@ -342,6 +342,7 @@ struct FlaggedRing: View {
     var diameter: CGFloat = 64
 
     private var fraction: Double {
+        if flagged == 0 && checked > 0 { return 1 }   // all clear: a full ring in the grade's colour
         guard checked > 0 else { return 0 }
         return Double(flagged) / Double(checked)
     }

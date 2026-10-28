@@ -23,6 +23,19 @@ Omar: "more polished, don't send me the build." Screenshot pass over every scree
 - Checker UI tests find the field by identifier `checker.input` (no more textField/textView guess).
 - 234 tests green. Release build green.
 
+Second pass (same branch):
+- **Typed barcodes are checked before lookup:** 8 digits, or 12–14 with a valid check digit. "12345"
+  used to match a random French pastry on Open Food Facts. `isPlausibleTypedBarcode`, tested.
+  Camera scans are unaffected (the camera checks its own digits).
+- **Checker refused short lists:** "sugar, gelatin, water" said "Add at least two ingredients" (rule
+  needed 20 letters). Now: two or more items that each hold a word. Tested.
+- Checker rows: grade pill sits under the name, so pills are all the same size and never "contes…".
+- Verdict ring now uses the same count as the "1 of 3 flagged" header (was full red for 1 of 3) and
+  is a full green ring when nothing is flagged (was an empty grey circle).
+- Scanner: hint hides while typing a barcode; the error clears when you edit the number; "not found"
+  now names USDA and Open Food Facts (both are searched).
+- 235 tests green, Release green. Dark mode checked on every tab: no issues.
+
 **For Omar to look at:** checking "pork" in the ingredient checker shows "Pending review" with a draft
 Haram grade — correct under rule 3 (the cell isn't cleared yet), but it reads oddly for pork. Clearing
 that cell through the citation pipeline would fix it.

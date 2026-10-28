@@ -132,7 +132,7 @@ struct ScanSessionView: View {
         VStack(spacing: DSSpacing.sm) {
             if cameraUnavailable {
                 unavailableCard
-            } else {
+            } else if !showManualEntry {
                 GuardChip(text: "Line up the barcode inside the frame")
             }
             if showManualEntry { manualField.transition(.opacity.combined(with: .move(edge: .bottom))) }
@@ -190,8 +190,15 @@ struct ScanSessionView: View {
                 .background(DSColor.surface, in: Capsule())
                 .overlay(Capsule().strokeBorder(DSColor.outlineStrong, lineWidth: 1))
                 .accessibilityLabel("Barcode number")
+                .onChange(of: manualBarcode) { _, _ in errorMessage = nil }
             Button {
-                impactLight(); Task { await handleScan(barcode: manualBarcode) }
+                impactLight()
+                let code = manualBarcode.filter { !$0.isWhitespace }
+                guard ProductLookupService.isPlausibleTypedBarcode(code) else {
+                    errorMessage = "That number doesn't check out. Type all 8, 12 or 13 digits under the bars."
+                    return
+                }
+                Task { await handleScan(barcode: code) }
             } label: {
                 Image(systemName: "arrow.up.right")
                     .font(.system(size: 17, weight: .semibold))

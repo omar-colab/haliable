@@ -57,9 +57,12 @@ enum LabelTextReader {
     /// rather than grade a fragment (a fragment can miss the one ingredient
     /// that matters).
     static func looksLikeAnIngredientList(_ text: String) -> Bool {
-        let letters = text.filter(\.isLetter).count
-        let items = text.split(whereSeparator: { ",;".contains($0) }).count
-        return letters >= 20 && items >= 2
+        // Two or more items that each hold a word: "salt, oil" counts; a lone
+        // "GELATIN" or "Net wt 5 oz" doesn't. (A letter total was too strict for
+        // short typed lists — "sugar, gelatin, water" was refused.)
+        text.split(whereSeparator: { ",;".contains($0) })
+            .filter { $0.filter(\.isLetter).count >= 2 }
+            .count >= 2
     }
 }
 

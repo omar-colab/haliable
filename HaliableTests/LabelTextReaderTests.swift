@@ -29,6 +29,9 @@ final class LabelTextReaderTests: XCTestCase {
         XCTAssertFalse(LabelTextReader.looksLikeAnIngredientList("GELATIN"))
         XCTAssertFalse(LabelTextReader.looksLikeAnIngredientList("Net wt 5 oz"))
         XCTAssertTrue(LabelTextReader.looksLikeAnIngredientList("Ingredients: sugar, corn syrup, gelatin"))
+        XCTAssertTrue(LabelTextReader.looksLikeAnIngredientList("sugar, gelatin, water"))
+        XCTAssertTrue(LabelTextReader.looksLikeAnIngredientList("salt, oil"))
+        XCTAssertFalse(LabelTextReader.looksLikeAnIngredientList("sugar, 5, ."))
     }
 
     /// The point of the feature: a gelatin label read from a photo is flagged,

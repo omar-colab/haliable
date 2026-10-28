@@ -89,6 +89,18 @@ final class ProductLookupService {
         return (eleven + [d[7]]).map(String.init).joined()
     }
 
+    /// A typed barcode must be a whole retail code: 8 digits (EAN-8 / UPC-E, whose
+    /// check digit needs expanding first, so it's left to the lookup), or 12–14 with a
+    /// valid GTIN check digit. Catches typos before they match some other product.
+    static func isPlausibleTypedBarcode(_ code: String) -> Bool {
+        guard code.allSatisfy(\.isASCII), code.allSatisfy(\.isNumber) else { return false }
+        if code.count == 8 { return true }
+        guard (12...14).contains(code.count) else { return false }
+        let d = code.compactMap(\.wholeNumberValue)
+        let sum = d.dropLast().reversed().enumerated().reduce(0) { $0 + $1.element * ($1.offset % 2 == 0 ? 3 : 1) }
+        return (10 - sum % 10) % 10 == d.last
+    }
+
     static func isLookupable(_ code: String) -> Bool {
         code.range(of: #"^[0-9A-Za-z-]{1,32}$"#, options: .regularExpression) != nil
     }

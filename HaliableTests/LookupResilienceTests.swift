@@ -44,6 +44,18 @@ final class LookupResilienceTests: XCTestCase {
         XCTAssertFalse(ProductLookupService.isLookupable(""))
     }
 
+    func testTypedBarcodesMustBeWholeCodes() {
+        XCTAssertTrue(ProductLookupService.isPlausibleTypedBarcode("3017620422003"))   // Nutella EAN-13
+        XCTAssertTrue(ProductLookupService.isPlausibleTypedBarcode("041331092609"))    // UPC-A
+        XCTAssertTrue(ProductLookupService.isPlausibleTypedBarcode("00041331092609"))  // GTIN-14
+        XCTAssertTrue(ProductLookupService.isPlausibleTypedBarcode("04963406"))        // 8-digit
+        XCTAssertFalse(ProductLookupService.isPlausibleTypedBarcode("3017620422004"))  // one digit off
+        XCTAssertFalse(ProductLookupService.isPlausibleTypedBarcode("12345"))
+        XCTAssertFalse(ProductLookupService.isPlausibleTypedBarcode("30176204220a3"))
+        XCTAssertFalse(ProductLookupService.isPlausibleTypedBarcode("٣٠١٧٦٢٠٤٢٢٠٠٣"))  // non-ASCII digits
+        XCTAssertFalse(ProductLookupService.isPlausibleTypedBarcode(""))
+    }
+
     func testUsdaNeedsAnExactBarcodeMatch() {
         XCTAssertTrue(USDAFoodDataService.sameCode("00041331092609", "041331092609"))
         XCTAssertTrue(USDAFoodDataService.sameCode("041331092609", "41331092609"))

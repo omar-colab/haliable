@@ -50,7 +50,7 @@ struct VerdictView: View {
                     .animation(.easeInOut(duration: 0.25), value: settings.halalStandard)
 
                 GuardSection(title: "Flagged",
-                             trailing: live.flagged.isEmpty ? nil : "\(live.flagged.count) of \(max(ProductVerdict.ingredientCount(live.product.rawIngredientsText ?? ""), live.matched.count)) flagged")
+                             trailing: live.flagged.isEmpty ? nil : "\(live.flagged.count) of \(checkedCount) flagged")
                     .padding(.top, DSSpacing.xs)
 
                 if live.flagged.isEmpty {
@@ -117,11 +117,17 @@ struct VerdictView: View {
         }
     }
 
+    /// Every ingredient on the label, not just the ones a rule matched — the ring
+    /// and the "1 of 3 flagged" header must agree.
+    private var checkedCount: Int {
+        max(ProductVerdict.ingredientCount(live.product.rawIngredientsText ?? ""), live.matched.count)
+    }
+
     /// Ring, grade, product, and how many of the checked ingredients flagged.
     private var verdictTop: some View {
         HStack(spacing: DSSpacing.sm) {
             FlaggedRing(flagged: live.flagged.count,
-                        checked: live.matched.count,
+                        checked: checkedCount,
                         tint: live.overall.tint,
                         diameter: 66)
                 .background(PulseRings(color: live.overall.tint, diameter: 66, repeats: false))

@@ -28,7 +28,6 @@ struct LabelScanView: View {
     @State private var reading = false
     @State private var error: String?
     @FocusState private var editing: Bool
-    @Environment(\.dynamicTypeSize) private var typeSize
 
     private var enough: Bool { LabelTextReader.looksLikeAnIngredientList(text) }
     private var trusted: Bool { !fromCamera || confirmed }
@@ -140,15 +139,12 @@ struct LabelScanView: View {
         }
     }
 
-    /// Side by side normally; stacked at accessibility text sizes, so neither
-    /// the name nor the grade pill gets squeezed into "Nat-ural" or "…".
+    /// Name, then its grade pill underneath: the long grade names ("Questionable —
+    /// contested") never fit beside an ingredient name without shrinking or "…".
     @ViewBuilder private func row<Title: View, Badge: View>(@ViewBuilder _ title: () -> Title,
                                                              @ViewBuilder badge: () -> Badge) -> some View {
-        if typeSize.isAccessibilitySize {
-            VStack(alignment: .leading, spacing: DSSpacing.xs) { title(); badge() }
-        } else {
-            HStack { title(); Spacer(); badge() }
-        }
+        VStack(alignment: .leading, spacing: DSSpacing.xs) { title(); badge() }
+            .padding(.vertical, 2)
     }
 
     private func use(_ captured: String) {
