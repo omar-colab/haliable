@@ -232,6 +232,8 @@ struct GuardRow: View {
     let subtitle: String
     var trailing: String? = nil
     var showsArrow: Bool = true
+    /// Subtitles that carry a warning must wrap, not truncate.
+    var subtitleLines = 1
     /// 0–100 score; when set, a ring replaces the symbol (History rows).
     var score: Int? = nil
     /// Something is still working on this row (a scholar review): the thinking orb replaces the symbol.
@@ -261,7 +263,8 @@ struct GuardRow: View {
                 Text(subtitle)
                     .font(.system(size: 11.5))
                     .foregroundStyle(DSColor.textSecondary)
-                    .lineLimit(1)
+                    .lineLimit(subtitleLines)
+                    .fixedSize(horizontal: false, vertical: subtitleLines > 1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 

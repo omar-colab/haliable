@@ -47,20 +47,22 @@ struct StoreDetailView: View {
 
                 chips.padding(.bottom, DSSpacing.xxs)
 
-                GuardRow(symbol: "checkmark.circle",
-                         tint: store.halalScope == .halalOptions ? DSColor.warning : DSColor.success,
+                // Unverified must not wear the green check that verified places get.
+                GuardRow(symbol: store.halalScope == .unverified ? "questionmark.circle" : "checkmark.circle",
+                         tint: store.halalScope == .fullyHalal || store.halalScope == .halalMeatOnly
+                            ? DSColor.success : DSColor.warning,
                          title: store.halalScope.displayName,
                          subtitle: store.external.map { "\($0.claim) — not verified by Haliable. Ask before you order." }
                             ?? (store.certifications.isEmpty
                                 ? "Listed on Haliable"
                                 : "Certified: " + store.certifications.joined(separator: ", ")),
-                         showsArrow: false)
+                         showsArrow: false, subtitleLines: 3)
 
                 GuardRow(symbol: "mappin.and.ellipse",
                          tint: DSColor.textPrimary,
                          title: store.address,
                          subtitle: ([store.city, store.state].filter { !$0.isEmpty }.joined(separator: ", ") + " · "
-                                    + (store.external?.name ?? "Haliable Atlas")).trimmingCharacters(in: CharacterSet(charactersIn: " ·"))) {
+                                    + (store.external?.name ?? "Haliable")).trimmingCharacters(in: CharacterSet(charactersIn: " ·"))) {
                     openInMaps()
                 }
 
@@ -106,9 +108,10 @@ struct StoreDetailView: View {
 
     private var chips: some View {
         HStack(spacing: 5) {
-            chip(store.halalScope.displayName, on: true)
+            chip(store.halalScope.displayName, on: store.halalScope != .unverified)
             if store.status == .approved { chip("Verified", on: false) }
-            chip(confirms == 1 ? "1 confirm" : "\(confirms) confirms", on: false)
+            // Apple Maps / OSM places can't be voted on, so "0 confirms" says nothing.
+            if !store.isExternal { chip(confirms == 1 ? "1 confirm" : "\(confirms) confirms", on: false) }
         }
     }
 
