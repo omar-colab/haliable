@@ -41,6 +41,7 @@ struct ScanSessionView: View {
     /// A typo, not a failed lookup: shown under the field, without the
     /// "check the label / ask for a review" fallbacks that a typo doesn't need.
     @State private var typedBarcodeInvalid = false
+    @FocusState private var typingBarcode: Bool
     @State private var showManualEntry = false
     @State private var showManualReview = false
     @State private var showLabelScan = false
@@ -206,6 +207,15 @@ struct ScanSessionView: View {
                 .background(DSColor.surface, in: Capsule())
                 .overlay(Capsule().strokeBorder(DSColor.outlineStrong, lineWidth: 1))
                 .accessibilityLabel("Barcode number")
+                .focused($typingBarcode)
+                .onAppear { typingBarcode = true }   // the keyboard bubble means "I want to type"
+                .toolbar {
+                    // The number pad has no return key.
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Done") { typingBarcode = false }.bold()
+                    }
+                }
                 .onChange(of: manualBarcode) { _, _ in errorMessage = nil; typedBarcodeInvalid = false }
             Button {
                 impactLight()

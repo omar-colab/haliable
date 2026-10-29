@@ -43,6 +43,8 @@ Covered by a unit test and the checker UI test. 197 unit tests green, Release gr
 
 Scanner: a mistyped barcode now shows a short hint under the field ("Type every digit under the
 bars") instead of the not-found card with "check the label / ask for a review", which don't help with a typo.
+Tapping the keyboard bubble now opens the number pad straight away, and a "Done" key above the
+pad hides it (the pad has no return key).
 196 unit + 9 UI tests green, Release green.
 
 **For Omar to look at:** checking "pork" in the ingredient checker shows "Pending review" with a draft
