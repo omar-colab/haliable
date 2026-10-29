@@ -65,6 +65,10 @@ Other screens:
   chip on places that can't be voted on.
 - Largest text size (AX XXXL) on Home, History, Reviews, About, Settings, scanner: Settings title broke
   "Setting / s" and "PREFER-ENCES", About cut "Questionabl". Headings now shrink to fit on one line.
+- Apple accessibility audit (performAccessibilityAudit) per tab: grey text tokens darkened to pass WCAG AA
+  (light TextSecondary 4.4→5.5:1, TextTertiary 3.3→4.8:1; dark TextTertiary 3.6→5.2:1); "See all" / "List"
+  now 44pt tap targets. FOR OMAR (design calls): amber/green verdict words are ~2.7–3:1 on white, white
+  subtitles on the green Home buttons are low-contrast, and most text uses fixed sizes (no Dynamic Type).
 - Note: Find shows "Couldn't load places" in the worktree only (placeholder Secrets.xcconfig).
 196 unit + 9 UI tests green, Release green.
 

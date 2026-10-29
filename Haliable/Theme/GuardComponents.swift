@@ -314,10 +314,17 @@ struct GuardSection: View {
             Spacer(minLength: DSSpacing.sm)
             if let trailing {
                 if let action {
-                    Button(trailing, action: action)
-                        .font(.system(size: 13))
-                        .foregroundStyle(DSColor.textSecondary)
-                        .pressable()
+                    Button(action: action) {
+                        Text(trailing)
+                            .font(.system(size: 13))
+                            .foregroundStyle(DSColor.textSecondary)
+                            // 44pt tap target ("See all" / "List" were too small to hit),
+                            // without making the header row taller.
+                            .frame(minWidth: 44, minHeight: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .pressable()
+                    .padding(.vertical, -14)
                 } else {
                     Text(trailing)
                         .font(.system(size: 13))
