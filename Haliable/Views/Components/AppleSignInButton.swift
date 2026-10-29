@@ -24,6 +24,10 @@ struct AppleSignInButton: View {
             }
         }
         .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
+        // Apple's button takes its style once, at creation. The in-app Theme lands
+        // after launch, so a tab built under the phone's dark mode stayed white on a
+        // white card in Light theme. Rebuild it when the scheme changes.
+        .id(colorScheme)
         .frame(height: 48)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }

@@ -81,7 +81,7 @@ struct AcknowledgementsView: View {
                     .listRowBackground(DSColor.surface)
                 }
             } footer: {
-                Text("Halal rulings cite IFANCA, ISNA, and AMJA guidance. Citations should be independently verified before relying on them.")
+                Text("Halal rulings cite published halal bodies (SANHA, AHF, IFANCA, MUIS and others) and fatwas. Citations should be independently verified before relying on them.")
                     .font(DSFont.caption)
                     .foregroundStyle(DSColor.textSecondary)
             }

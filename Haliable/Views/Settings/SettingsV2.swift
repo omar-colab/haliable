@@ -103,13 +103,6 @@ struct SettingsV2: View {
             } label: {
                 rowLabel("Theme", "paintbrush.fill")
             }
-
-            HStack {
-                rowLabel("App Icon", "app.badge.fill")
-                Spacer()
-                Text("Default").foregroundStyle(DSColor.textSecondary)
-            }
-            .opacity(0.5)
         } header: {
             sectionHeader("Appearance")
         } footer: {
@@ -282,7 +275,7 @@ struct SettingsV2: View {
         } header: {
             sectionHeader("About & Support")
         } footer: {
-            Text("Made for the Ummah. Verdicts cite IFANCA, ISNA, and AMJA — always verify before relying on them.")
+            Text("Made for the Ummah. Verdicts cite published halal bodies and fatwas — always verify before relying on them.")
                 .settingsFooterV2()
         }
         .listRowBackground(DSColor.surface)

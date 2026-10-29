@@ -46,6 +46,16 @@ bars") instead of the not-found card with "check the label / ask for a review", 
 Tapping the keyboard bubble now opens the number pad straight away, and a "Done" key above the
 pad hides it (the pad has no return key).
 Scanner dock buttons have short captions: Type · Rescan · Photos (icons alone were unclear).
+Other screens:
+- Tabs: scrolled content now passes under a blurred status bar (About text ran under the clock), and
+  About's last card no longer ends under the dock (`contentMargins` on every tab).
+- Sign in with Apple was white-on-white on Reviews when the in-app Theme is Light but the phone is dark
+  (Apple's button keeps its first style; now rebuilt on scheme change).
+- About's "Standards referenced" listed AMJA, which no citation uses. Now lists the bodies actually cited
+  most (SANHA, AHF, IFANCA, MUIS, HMC, JAKIM, ISNA, Darul Ifta fatwas); same fix in Settings footer,
+  Acknowledgements and the standards explainer. About's privacy note now mentions the map.
+- Settings: removed the greyed-out "App Icon · Default" row (no alternate icons exist).
+- Note: Find shows "Couldn't load places" in the worktree only (placeholder Secrets.xcconfig).
 196 unit + 9 UI tests green, Release green.
 
 **For Omar to look at:** checking "pork" in the ingredient checker shows "Pending review" with a draft

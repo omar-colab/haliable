@@ -28,7 +28,7 @@ struct HalalStandardEducationView: View {
                     .cardStyle()
                 }
 
-                Text("Haliable's rulings reference IFANCA, ISNA, and AMJA guidance. Standard mappings are a first pass and should be independently verified — they're a guide, not a fatwa.")
+                Text("Haliable's rulings cite published halal bodies (SANHA, AHF, IFANCA, MUIS and others) and fatwas. Standard mappings are a first pass and should be independently verified — they're a guide, not a fatwa.")
                     .font(DSFont.caption)
                     .foregroundStyle(DSColor.textSecondary)
             }

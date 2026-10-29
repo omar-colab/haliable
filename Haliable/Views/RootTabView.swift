@@ -70,6 +70,10 @@ struct RootTabView: View {
     private func page<Content: View>(_ tag: AppTab, @ViewBuilder _ content: () -> Content) -> some View {
         content()
             .safeAreaInset(edge: .bottom, spacing: 0) { Color.clear.frame(height: 74) }
+            // The inset alone didn't reach About's ScrollView (last card ended under the dock).
+            .contentMargins(.bottom, 90, for: .scrollContent)
+            // Scrolled content passes under a blurred status bar, not under the clock.
+            .safeAreaInset(edge: .top, spacing: 0) { Color.clear.frame(height: 0).background(.bar) }
             .toolbar(.hidden, for: .tabBar)
             .tag(tag)
     }
