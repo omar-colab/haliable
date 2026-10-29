@@ -76,6 +76,7 @@ struct AboutV2: View {
                 Text(title)
                     .font(DSFont.headline)
                     .foregroundStyle(verdict.tint)
+                    .lineLimit(1).minimumScaleFactor(0.5)   // "Questionabl" at accessibility sizes
                 Text(body)
                     .font(DSFont.body)
                     .foregroundStyle(DSColor.textSecondary)

@@ -63,6 +63,8 @@ Other screens:
   green "Unverified" pill, and its "…not verified by Haliable. Ask before you order." warning was cut
   off. Now: amber question mark, grey pill, warning wraps (`GuardRow.subtitleLines`), no "0 confirms"
   chip on places that can't be voted on.
+- Largest text size (AX XXXL) on Home, History, Reviews, About, Settings, scanner: Settings title broke
+  "Setting / s" and "PREFER-ENCES", About cut "Questionabl". Headings now shrink to fit on one line.
 - Note: Find shows "Couldn't load places" in the worktree only (placeholder Secrets.xcconfig).
 196 unit + 9 UI tests green, Release green.
 

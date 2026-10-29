@@ -53,6 +53,7 @@ struct AppScreenHeader<Trailing: View>: View {
                     .font(DSFont.label)
                     .tracking(2.2)
                     .foregroundStyle(DSColor.accentDeep)
+                    .lineLimit(1).minimumScaleFactor(0.5)   // "PREFER-ENCES" at accessibility sizes
                 titleView
             }
             Spacer(minLength: DSSpacing.sm)
@@ -76,6 +77,7 @@ struct AppScreenHeader<Trailing: View>: View {
             Text(title)
                 .font(DSFont.display)
                 .foregroundStyle(DSColor.textPrimary)
+                .lineLimit(1).minimumScaleFactor(0.5)   // "Setting / s" at accessibility sizes
         }
     }
 }
