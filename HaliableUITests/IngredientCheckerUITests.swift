@@ -4,7 +4,8 @@
 //
 //  The ingredient checker works with no barcode, no network and no AI: type a
 //  list on Home and the live check flags what the bundled rules flag, then the
-//  full result opens.
+//  full result opens
+//  and is saved to History.
 //
 
 import XCTest
@@ -34,6 +35,15 @@ final class IngredientCheckerUITests: XCTestCase {
         let verdict = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS[c] 'Ingredients you checked'")).firstMatch
         XCTAssertTrue(verdict.waitForExistence(timeout: 8), "verdict opens after the checker closes")
         attach(app, "checker-verdict")
+
+        // Saved to History by its first items; tapping the row grades the list again.
+        verdict.swipeDown(velocity: .fast)
+        app.buttons["dock.history"].tap()
+        let row = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS 'Label: sugar, pork gelatin, water'")).firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 5), "label check is in History")
+        attach(app, "checker-history")
+        row.tap()
+        XCTAssertTrue(verdict.waitForExistence(timeout: 8), "History row re-checks the saved list")
     }
 
     private func attach(_ app: XCUIApplication, _ name: String) {

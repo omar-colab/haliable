@@ -36,6 +36,11 @@ Second pass (same branch):
   now names USDA and Open Food Facts (both are searched).
 - 235 tests green, Release green. Dark mode checked on every tab: no issues.
 
+Third pass: **label checks are saved to History** ("Label: sugar, gelatin, water…"), one row per
+list, and tapping the row grades the saved text again. They also get re-graded on app updates. They follow
+the auto-save setting. `ScanRecord.ingredientsText` is optional, so the store migrates without a hitch.
+Covered by a unit test and the checker UI test. 197 unit tests green, Release green.
+
 **For Omar to look at:** checking "pork" in the ingredient checker shows "Pending review" with a draft
 Haram grade — correct under rule 3 (the cell isn't cleared yet), but it reads oddly for pork. Clearing
 that cell through the citation pipeline would fix it.

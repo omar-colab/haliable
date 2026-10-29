@@ -21,6 +21,8 @@ import UIKit
 struct ScanSessionView: View {
     /// When set (e.g. tapping a Home row), look this barcode up immediately.
     var initialBarcode: String? = nil
+    /// When set (a label check in History), grade this ingredient list again.
+    var initialLabel: String? = nil
 
     @Environment(RulesEngine.self) private var engine
     @Environment(AppSettings.self) private var settings
@@ -60,7 +62,7 @@ struct ScanSessionView: View {
             .padding(.horizontal, DSSpacing.screen)
             .padding(.bottom, DSSpacing.xs)
 
-            if warming && !cameraUnavailable && initialBarcode == nil { statusOverlay("Starting camera…") }
+            if warming && !cameraUnavailable && initialBarcode == nil && initialLabel == nil { statusOverlay("Starting camera…") }
             if isLoading { statusOverlay("Reading barcode…", "Checking ingredients…", "Matching scholarly rulings…") }
         }
         .animation(DSMotion.move, value: showManualEntry)
@@ -78,6 +80,7 @@ struct ScanSessionView: View {
         }
         .task {
             if let initialBarcode { await handleScan(barcode: initialBarcode) }
+            if let initialLabel { checkLabel(initialLabel) }
             try? await Task.sleep(for: .seconds(0.7))
             withAnimation(.easeOut(duration: 0.4)) { warming = false }
         }
@@ -309,13 +312,16 @@ struct ScanSessionView: View {
     }
 
     /// Grades ingredients the person read off the pack and confirmed. Same
-    /// engine and worst-case roll-up as a barcode; not saved to History, which
-    /// is keyed by barcode.
+    /// engine and worst-case roll-up as a barcode, and saved to History the same way.
     private func checkLabel(_ text: String) {
         let product = LabelScanView.product(text)
         errorMessage = nil
         hapticSuccess()
-        currentVerdict = engine.evaluate(product: product, standard: settings.halalStandard)
+        let verdict = engine.evaluate(product: product, standard: settings.halalStandard)
+        currentVerdict = verdict
+        if settings.autoSaveScans {
+            ScanRecord.saveLabelCheck(text, verdict: verdict, standard: settings.halalStandard, in: modelContext)
+        }
     }
 
     // MARK: - Haptics (respect the Settings toggle)

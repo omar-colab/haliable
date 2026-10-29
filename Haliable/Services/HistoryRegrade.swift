@@ -5,7 +5,7 @@
 //  A History row stores the verdict from the day it was scanned. When the
 //  rules get better (a new alias, a stricter match), an old "Halal" row must
 //  not keep saying Halal. Once per app version, every row with a cached
-//  product is graded again under the standard it was saved with.
+//  product (or saved label text) is graded again under the standard it was saved with.
 //
 
 import Foundation
@@ -28,7 +28,8 @@ enum HistoryRegrade {
         let cache = SwiftDataProductCache(context: context)
         for record in records {
             if Task.isCancelled { return }   // try again next launch
-            guard let product = cache.cached(barcode: record.barcode) else { continue }
+            guard let product = record.ingredientsText.map(LabelScanView.product)
+                    ?? cache.cached(barcode: record.barcode) else { continue }
             let verdict = engine.evaluate(product: product, standard: record.standard ?? .general)
             if record.overallVerdict != verdict.overall || record.score != verdict.clearedScore {
                 record.overallVerdict = verdict.overall

@@ -15,8 +15,8 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
-    /// Opens the scanner; a barcode re-checks that product under the current standard.
-    var onScan: (String?) -> Void
+    /// Opens the scanner; a History row re-checks that product under the current standard.
+    var onScan: (ScanRecord?) -> Void
     var onSeeHistory: () -> Void
     var onSeeReviews: () -> Void
 
@@ -24,6 +24,7 @@ struct HomeView: View {
     @Environment(AuthManager.self) private var auth
     @Environment(ReviewStore.self) private var reviews
     @Environment(RulesEngine.self) private var engine
+    @Environment(\.modelContext) private var modelContext
     @Query(sort: \ScanRecord.scannedAt, order: .reverse) private var history: [ScanRecord]
 
     @State private var showSettings = false
@@ -103,7 +104,11 @@ struct HomeView: View {
         .sheet(isPresented: $showChecker, onDismiss: {
             if let text = checkedText {
                 checkedText = nil
-                checked = engine.evaluate(product: LabelScanView.product(text), standard: settings.halalStandard)
+                let verdict = engine.evaluate(product: LabelScanView.product(text), standard: settings.halalStandard)
+                checked = verdict
+                if settings.autoSaveScans {
+                    ScanRecord.saveLabelCheck(text, verdict: verdict, standard: settings.halalStandard, in: modelContext)
+                }
             }
         }) {
             LabelScanView { checkedText = $0 }
@@ -192,7 +197,7 @@ struct HomeView: View {
                         tint: rec.overallVerdict.tint,
                         title: rec.productName,
                         subtitle: detail) {
-            onScan(rec.barcode)
+            onScan(rec)
         }
     }
 }

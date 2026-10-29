@@ -12,8 +12,8 @@ import SwiftUI
 import SwiftData
 
 struct HistoryV2: View {
-    /// Re-check a product (opens the scanner on that barcode).
-    var onOpen: (String) -> Void = { _ in }
+    /// Re-check a product (its barcode, or the label text it was checked from).
+    var onOpen: (ScanRecord) -> Void = { _ in }
 
     @Query(sort: \ScanRecord.scannedAt, order: .reverse) private var records: [ScanRecord]
     @Environment(\.modelContext) private var modelContext
@@ -100,7 +100,7 @@ struct HistoryV2: View {
                         title: rec.productName,
                         subtitle: [rec.standard?.displayName, when].compactMap { $0 }.joined(separator: " · "),
                         score: rec.score) {
-            onOpen(rec.barcode)
+            onOpen(rec)
         }
         .accessibilityHint("Re-checks this product. Swipe left to delete.")
     }

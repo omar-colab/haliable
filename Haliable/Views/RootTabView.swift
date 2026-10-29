@@ -29,27 +29,33 @@ struct RootTabView: View {
 
     struct ScanRequest: Identifiable {
         let id = UUID()
-        let barcode: String?
+        var barcode: String? = nil
+        var label: String? = nil
+
+        /// A History row re-checks by its label text, or else its barcode.
+        init(_ record: ScanRecord?) {
+            if let text = record?.ingredientsText { label = text } else { barcode = record?.barcode }
+        }
     }
 
     var body: some View {
         TabView(selection: $tab) {
             page(.home) {
-                HomeView(onScan: { scan = ScanRequest(barcode: $0) },
+                HomeView(onScan: { scan = ScanRequest($0) },
                          onSeeHistory: { tab = .history },
                          onSeeReviews: { tab = .reviews })
             }
             page(.find) { AtlasV2() }
             page(.about) { AboutV2() }
             page(.reviews) { MyReviewsV2() }
-            page(.history) { HistoryV2(onOpen: { scan = ScanRequest(barcode: $0) }) }
+            page(.history) { HistoryV2(onOpen: { scan = ScanRequest($0) }) }
         }
         .overlay(alignment: .bottom) {
-            GuardDock(tab: $tab, haptics: settings.hapticsEnabled) { scan = ScanRequest(barcode: nil) }
+            GuardDock(tab: $tab, haptics: settings.hapticsEnabled) { scan = ScanRequest(nil) }
                 .padding(.bottom, 4)
                 .ignoresSafeArea(.keyboard)
         }
-        .fullScreenCover(item: $scan) { ScanSessionView(initialBarcode: $0.barcode) }
+        .fullScreenCover(item: $scan) { ScanSessionView(initialBarcode: $0.barcode, initialLabel: $0.label) }
         // Old History rows pick up rule improvements (once per launch).
         .task { await HistoryRegrade.run(context: modelContext, engine: engine) }
         // Home's "awaiting an answer" count: load on sign-in and on every return
