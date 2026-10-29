@@ -45,6 +45,7 @@ Scanner: a mistyped barcode now shows a short hint under the field ("Type every 
 bars") instead of the not-found card with "check the label / ask for a review", which don't help with a typo.
 Tapping the keyboard bubble now opens the number pad straight away, and a "Done" key above the
 pad hides it (the pad has no return key).
+Scanner dock buttons have short captions: Type · Rescan · Photos (icons alone were unclear).
 196 unit + 9 UI tests green, Release green.
 
 **For Omar to look at:** checking "pork" in the ingredient checker shows "Pending review" with a draft

@@ -159,18 +159,40 @@ struct ScanSessionView: View {
     }
 
     private var dock: some View {
-        HStack(spacing: -9) {
-            DockBubble(symbol: "keyboard", label: "Enter barcode manually", selected: showManualEntry) {
-                impactLight(); showManualEntry.toggle()
+        // Short captions: the icons alone didn't say what they do.
+        HStack(alignment: .lastTextBaseline, spacing: -9) {
+            captioned("Type") {
+                DockBubble(symbol: "keyboard", label: "Enter barcode manually", selected: showManualEntry) {
+                    impactLight(); showManualEntry.toggle()
+                }
             }
-            DockMainBubble(symbol: "barcode.viewfinder", label: "Scan again") {
-                impactLight(); errorMessage = nil; scanAgain()
+            captioned("Rescan") {
+                DockMainBubble(symbol: "barcode.viewfinder", label: "Scan again") {
+                    impactLight(); errorMessage = nil; scanAgain()
+                }
             }
-            DockBubble(symbol: "camera.viewfinder", label: "Send photos for a human review") {
-                showManualReview = true
+            .zIndex(1)
+            captioned("Photos") {
+                DockBubble(symbol: "camera.viewfinder", label: "Send photos for a human review") {
+                    showManualReview = true
+                }
             }
         }
         .padding(.top, DSSpacing.xxs)
+    }
+
+    private func captioned<B: View>(_ caption: String, @ViewBuilder _ bubble: () -> B) -> some View {
+        VStack(spacing: 4) {
+            bubble()
+            Text(caption)
+                .font(.system(size: 11, weight: .semibold))
+                // White over the camera; the no-camera backdrop follows light/dark mode.
+                .foregroundStyle(cameraUnavailable ? DSColor.textPrimary : .white)
+                .shadow(color: .black.opacity(cameraUnavailable ? 0 : 0.6), radius: 2)
+                .lineLimit(1)
+                .fixedSize()
+                .accessibilityHidden(true)   // the button already says what it does
+        }
     }
 
     private var unavailableCard: some View {
