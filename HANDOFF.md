@@ -41,6 +41,10 @@ list, and tapping the row grades the saved text again. They also get re-graded o
 the auto-save setting. `ScanRecord.ingredientsText` is optional, so the store migrates without a hitch.
 Covered by a unit test and the checker UI test. 197 unit tests green, Release green.
 
+Scanner: a mistyped barcode now shows a short hint under the field ("Type every digit under the
+bars") instead of the not-found card with "check the label / ask for a review", which don't help with a typo.
+196 unit + 9 UI tests green, Release green.
+
 **For Omar to look at:** checking "pork" in the ingredient checker shows "Pending review" with a draft
 Haram grade — correct under rule 3 (the cell isn't cleared yet), but it reads oddly for pork. Clearing
 that cell through the citation pipeline would fix it.

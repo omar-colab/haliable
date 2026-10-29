@@ -38,6 +38,9 @@ struct ScanSessionView: View {
     @State private var currentVerdict: ProductVerdict?
     @State private var errorMessage: String?
     @State private var manualBarcode = ""
+    /// A typo, not a failed lookup: shown under the field, without the
+    /// "check the label / ask for a review" fallbacks that a typo doesn't need.
+    @State private var typedBarcodeInvalid = false
     @State private var showManualEntry = false
     @State private var showManualReview = false
     @State private var showLabelScan = false
@@ -139,6 +142,16 @@ struct ScanSessionView: View {
                 GuardChip(text: "Line up the barcode inside the frame")
             }
             if showManualEntry { manualField.transition(.opacity.combined(with: .move(edge: .bottom))) }
+            if showManualEntry && typedBarcodeInvalid {
+                Label("That number doesn't check out. Type every digit under the bars.",
+                      systemImage: "exclamationmark.circle.fill")
+                    .font(.system(size: 13.5, weight: .medium))
+                    .foregroundStyle(DSColor.danger)
+                    .padding(.horizontal, DSSpacing.sm)
+                    .padding(.vertical, 8)
+                    .background(DSColor.surface, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .transition(.opacity)
+            }
             if let errorMessage { errorCard(errorMessage).transition(.opacity) }
             dock
         }
@@ -193,12 +206,13 @@ struct ScanSessionView: View {
                 .background(DSColor.surface, in: Capsule())
                 .overlay(Capsule().strokeBorder(DSColor.outlineStrong, lineWidth: 1))
                 .accessibilityLabel("Barcode number")
-                .onChange(of: manualBarcode) { _, _ in errorMessage = nil }
+                .onChange(of: manualBarcode) { _, _ in errorMessage = nil; typedBarcodeInvalid = false }
             Button {
                 impactLight()
                 let code = manualBarcode.filter { !$0.isWhitespace }
                 guard ProductLookupService.isPlausibleTypedBarcode(code) else {
-                    errorMessage = "That number doesn't check out. Type all 8, 12 or 13 digits under the bars."
+                    errorMessage = nil
+                    withAnimation { typedBarcodeInvalid = true }
                     return
                 }
                 Task { await handleScan(barcode: code) }
