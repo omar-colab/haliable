@@ -52,7 +52,7 @@ struct StoreDetailView: View {
                          title: store.halalScope.displayName,
                          subtitle: store.external.map { "\($0.claim) — not verified by Haliable. Ask before you order." }
                             ?? (store.certifications.isEmpty
-                                ? "Listed in the Haliable Store Atlas"
+                                ? "Listed on Haliable"
                                 : "Certified: " + store.certifications.joined(separator: ", ")),
                          showsArrow: false)
 

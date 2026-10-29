@@ -26,7 +26,7 @@ struct AcknowledgementsView: View {
                url: "https://world.openfoodfacts.org"),
         Credit(name: "OpenStreetMap",
                license: "Open Database License (ODbL) 1.0",
-               detail: "Store Atlas locations. Data © OpenStreetMap contributors, used under ODbL.",
+               detail: "Halal places on the Find map. Data © OpenStreetMap contributors, used under ODbL.",
                url: "https://www.openstreetmap.org/copyright"),
         Credit(name: "USDA FoodData Central",
                license: "U.S. Public Domain",

@@ -55,6 +55,10 @@ Other screens:
   most (SANHA, AHF, IFANCA, MUIS, HMC, JAKIM, ISNA, Darul Ifta fatwas); same fix in Settings footer,
   Acknowledgements and the standards explainer. About's privacy note now mentions the map.
 - Settings: removed the greyed-out "App Icon · Default" row (no alternate icons exist).
+- Dark theme pass on every tab, Settings, Acknowledgements, scanner, review request: all clean.
+- Copy: no more internal "Store Atlas" name (Acknowledgements, place detail); review sign-in says we
+  send "the sources" back (not "your verdict" — reviews return sources, not rulings).
+- Verdict "3 of 5 flagged" stays without listing the passed items (Omar, Oct 29: keep as is).
 - Note: Find shows "Couldn't load places" in the worktree only (placeholder Secrets.xcconfig).
 196 unit + 9 UI tests green, Release green.
 

@@ -37,7 +37,7 @@ struct RequestReviewView: View {
             Form {
                 if !auth.isSignedIn {
                     Section {
-                        Text("Sign in with Apple so we can return your verdict to you. We only use it to track your requests.")
+                        Text("Sign in with Apple so we can send the sources back to you. We only use it to track your requests.")
                             .font(DSFont.body).foregroundStyle(DSColor.textSecondary)
                         AppleSignInButton { errorMessage = $0 }
                     }
