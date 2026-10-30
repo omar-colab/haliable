@@ -41,7 +41,7 @@ struct AboutV2: View {
                         }
 
                         section("Privacy") {
-                            paragraph("The scanner runs on your device. Barcodes are only sent to the anonymous Open Food Facts / USDA lookups, and the map sends only the area on screen to Apple Maps and OpenStreetMap. Sign-in (Apple) is required only to submit a manual review or a store — never to scan.")
+                            paragraph("The scanner runs on your device. Barcodes are only sent to the anonymous Open Food Facts / USDA lookups, and the Find map's Connecticut places ship inside the app, so your location never leaves your phone. Sign-in (Apple) is required only to submit a manual review or a store — never to scan.")
                         }
                     }
                     .padding(.horizontal, DSSpacing.screen)

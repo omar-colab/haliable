@@ -65,6 +65,9 @@ struct VerdictView: View {
                     }
                 }
 
+                ingredientList
+                    .padding(.top, DSSpacing.xs)
+
                 if live.overall != .halal {
                     GuardAction(symbol: "pencil.line",
                                 title: "Ask a scholar",
@@ -120,7 +123,40 @@ struct VerdictView: View {
     /// Every ingredient on the label, not just the ones a rule matched — the ring
     /// and the "1 of 3 flagged" header must agree.
     private var checkedCount: Int {
-        max(ProductVerdict.ingredientCount(live.product.rawIngredientsText ?? ""), live.matched.count)
+        max(ProductVerdict.ingredientCount(live.product.rawIngredientsText ?? ""), live.matched.count,
+            RulesEngine.isPlainWater(live.product) ? 1 : 0)
+    }
+
+    /// What's in it, as printed on the label — a plain list, no grades. The
+    /// Flagged section above is where the judgements live.
+    @ViewBuilder private var ingredientList: some View {
+        let text = live.product.rawIngredientsText ?? ""
+        let items = ProductVerdict.ingredientItems(text)
+        GuardSection(title: "Ingredients", trailing: items.isEmpty ? nil : "\(items.count)")
+        VStack(alignment: .leading, spacing: 0) {
+            if items.isEmpty {
+                Text(RulesEngine.isPlainWater(live.product)
+                     ? "Water. The databases have no list for this one, so it's read from the product name."
+                     : "No ingredient list in the databases we check. Read it off the package.")
+                    .font(.footnote)
+                    .foregroundStyle(DSColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(DSSpacing.sm)
+            } else {
+                ForEach(Array(items.enumerated()), id: \.offset) { i, item in
+                    if i > 0 { Divider().padding(.leading, DSSpacing.sm) }
+                    Text(item.prefix(1).uppercased() + item.dropFirst())
+                        .font(.subheadline)
+                        .foregroundStyle(DSColor.textPrimary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, DSSpacing.sm)
+                        .padding(.vertical, 10)
+                }
+            }
+        }
+        .background(DSColor.surfaceElevated, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .accessibilityIdentifier("verdict.ingredients")
     }
 
     /// Ring, grade, product, and how many of the checked ingredients flagged.

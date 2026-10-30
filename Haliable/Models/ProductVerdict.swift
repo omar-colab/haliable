@@ -47,21 +47,30 @@ struct ProductVerdict: Identifiable, Hashable {
     }
 
     /// Top-level comma/semicolon items: "sugar, gelatin (beef, pork), salt" is 3.
-    static func ingredientCount(_ text: String) -> Int {
-        var depth = 0, count = 0, hasText = false
+    static func ingredientCount(_ text: String) -> Int { ingredientItems(text).count }
+
+    /// The label's top-level items in order, sub-ingredients kept in their brackets:
+    /// "sugar, gelatin (beef, pork), salt." → ["sugar", "gelatin (beef, pork)", "salt"].
+    static func ingredientItems(_ text: String) -> [String] {
+        var depth = 0, items: [String] = [], current = ""
+        func flush() {
+            let item = current.trimmingCharacters(in: .whitespacesAndNewlines.union(CharacterSet(charactersIn: ".")))
+            if !item.isEmpty { items.append(item) }
+            current = ""
+        }
         for ch in text {
             switch ch {
             case "(", "[": depth += 1
             case ")", "]": depth = max(0, depth - 1)
             case "," where depth == 0, ";" where depth == 0:
-                if hasText { count += 1 }
-                hasText = false
+                flush()
                 continue
             default: break
             }
-            if !ch.isWhitespace && ch != "." { hasText = true }
+            current.append(ch)
         }
-        return count + (hasText ? 1 : 0)
+        flush()
+        return items
     }
 
     /// True when the grade driving the headline verdict is still a DRAFT cell

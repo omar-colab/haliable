@@ -4,8 +4,8 @@
 //
 //  Board screen 6 — one Atlas place: why it's listed, where the data came from,
 //  and community confirm/dispute backed by the Supabase `vote_store` RPC (one
-//  vote per user; only on approved stores). No opening hours: the data has none,
-//  so the board's "open until 9pm" is deliberately absent.
+//  vote per user; only on approved stores). The place's own menu opens in-app;
+//  hours and photos come from Apple's place card, not from us.
 //
 
 import SwiftUI
@@ -22,6 +22,8 @@ struct StoreDetailView: View {
     @State private var placeCard: MKMapItem?
     @State private var findingCard = false
     @State private var cardMissing = false
+    @State private var page: WebPage?
+    @Environment(\.openURL) private var openURL
 
     init(store: Store, service: StoreService) {
         self.store = store
@@ -66,14 +68,35 @@ struct StoreDetailView: View {
                     openInMaps()
                 }
 
-                GuardAction(symbol: "menucard",
-                            title: findingCard ? "Opening Apple Maps…" : "Menu, hours & photos",
-                            subtitle: cardMissing ? "Apple Maps doesn't have this place yet."
-                                                  : "Apple Maps place card · check the menu before you order") {
+                // The place's own menu, opened right here.
+                if let menu = store.menuURL {
+                    GuardAction(symbol: "menucard", title: "Menu",
+                                subtitle: "\(Self.host(menu)) · the place's own menu") {
+                        page = WebPage(url: menu)
+                    }
+                    .padding(.top, DSSpacing.xs)
+                    .accessibilityIdentifier("store.menu")
+                } else if let site = store.website {
+                    GuardAction(symbol: "safari", title: "Website",
+                                subtitle: "\(Self.host(site)) · no menu online we could find") {
+                        page = WebPage(url: site)
+                    }
+                    .padding(.top, DSSpacing.xs)
+                }
+
+                GuardRow(symbol: "clock",
+                         tint: DSColor.textPrimary,
+                         title: findingCard ? "Opening Apple Maps…" : "Hours, photos & directions",
+                         subtitle: cardMissing ? "Apple Maps doesn't have this place yet." : "Apple Maps place card") {
                     Task { await openPlaceCard() }
                 }
                 .disabled(findingCard)
-                .padding(.top, DSSpacing.xs)
+
+                if let phone = store.phone, let tel = URL(string: "tel:" + phone.filter { "+0123456789".contains($0) }) {
+                    GuardRow(symbol: "phone", tint: DSColor.textPrimary, title: phone, subtitle: "Call to ask about halal") {
+                        openURL(tel)
+                    }
+                }
 
                 if !store.isExternal {
                 GuardAction(symbol: "checkmark.circle",
@@ -99,6 +122,7 @@ struct StoreDetailView: View {
         .presentationCornerRadius(30)
         .presentationBackground(DSColor.surface)
         .mapItemDetailSheet(item: $placeCard)
+        .sheet(item: $page) { SafariView(url: $0.url).ignoresSafeArea() }
         .confirmationDialog("Is this listing still accurate?", isPresented: $asking, titleVisibility: .visible) {
             Button("Yes — still accurate") { Task { await act(confirm: true) } }
             Button("No — report an issue", role: .destructive) { Task { await act(confirm: false) } }
@@ -126,6 +150,11 @@ struct StoreDetailView: View {
                            : AnyShapeStyle(DSColor.surfaceElevated), in: Capsule())
             .overlay(Capsule().strokeBorder(on ? .clear : DSColor.outline, lineWidth: 1))
             .foregroundStyle(on ? .white : DSColor.textSecondary)
+    }
+
+    /// "shahshalalfood.com", not "https://www.shahshalalfood.com/menu/".
+    static func host(_ url: URL) -> String {
+        (url.host() ?? url.absoluteString).replacingOccurrences(of: "www.", with: "")
     }
 
     private func openPlaceCard() async {

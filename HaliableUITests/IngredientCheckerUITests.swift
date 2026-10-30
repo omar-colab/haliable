@@ -35,6 +35,10 @@ final class IngredientCheckerUITests: XCTestCase {
         let verdict = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS[c] 'Ingredients you checked'")).firstMatch
         XCTAssertTrue(verdict.waitForExistence(timeout: 8), "verdict opens after the checker closes")
         attach(app, "checker-verdict")
+        // The plain list of what was typed, every item — not only the flagged one.
+        XCTAssertTrue(app.descendants(matching: .any)["verdict.ingredients"].waitForExistence(timeout: 3),
+                      "ingredient list shows on the result")
+        XCTAssertTrue(app.staticTexts["Water"].exists, "every item is listed, not only the flagged ones")
 
         // Saved to History by its first items; tapping the row grades the list again.
         verdict.swipeDown(velocity: .fast)

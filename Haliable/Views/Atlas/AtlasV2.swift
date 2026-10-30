@@ -2,10 +2,9 @@
 //  AtlasV2.swift
 //  Haliable
 //
-//  Board screen 5 — the Find tab. Real pins from StoreService (live Supabase,
-//  never invented offline), drawn as capsule labels, plus a list panel with the
-//  board's scope filters. "Real halal places near campus" reads harder as a list
-//  than as five dots, so the list is open by default.
+//  Board screen 5 — the Find tab, Connecticut only: the verified Atlas places
+//  (live Supabase) plus the bundled Connecticut list, each with its own menu.
+//  Drawn as capsule labels, plus a list panel sorted by distance from you.
 //
 
 import SwiftUI
@@ -13,7 +12,6 @@ import MapKit
 
 struct AtlasV2: View {
     @Environment(AuthManager.self) private var auth
-    @Environment(AppSettings.self) private var settings
     @State private var stores = StoreService()
     @State private var location = LocationManager()
     @State private var camera: MapCameraPosition = .automatic
@@ -27,33 +25,37 @@ struct AtlasV2: View {
     @State private var stacked: [Store] = []
     /// Centre on the person once, at the first GPS fix; after that the map stays where they put it.
     @State private var centeredOnUser = false
-    @State private var appleSearch: Task<Void, Never>?
 
     private let fallback = CLLocationCoordinate2D.atlasFallback
 
     enum ScopeFilter: Hashable {
-        case all, fullyHalal, meat, options
+        case all, food, groceries, verified
 
-        func admits(_ scope: HalalScope) -> Bool {
+        func admits(_ store: Store) -> Bool {
             switch self {
-            case .all:        return true
-            case .fullyHalal: return scope == .fullyHalal
-            case .meat:       return scope == .halalMeatOnly
-            case .options:    return scope == .halalOptions
+            case .all:       return true
+            case .food:      return [.restaurant, .cafe, .bakery].contains(store.category)
+            case .groceries: return [.grocery, .supermarket, .butcher].contains(store.category)
+            case .verified:  return !store.isExternal
             }
         }
     }
 
-    /// Places show only once you're zoomed in to roughly a town (~20 km tall).
-    /// Zoomed out further, the map stays empty rather than guessing.
-    private static let maxSpanDegrees = 0.2
-    private var zoomedIn: Bool { (region?.span.latitudeDelta ?? 0) <= Self.maxSpanDegrees }
+    /// Connecticut, with a little sea and border around it. The camera can't leave it.
+    static let connecticut = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 41.52, longitude: -72.76),
+                                                span: MKCoordinateSpan(latitudeDelta: 1.25, longitudeDelta: 2.1))
 
     private var visible: [Store] {
-        guard zoomedIn else { return [] }
-        return (stores.stores + stores.osmStores + stores.appleStores)
-            .filter { filter.admits($0.halalScope) && inView($0.coordinate) }
+        stores.places(near: location.coordinate)
+            .filter { filter.admits($0) && inView($0.coordinate) }
             .sorted { ($0.distanceM ?? .greatestFiniteMagnitude) < ($1.distanceM ?? .greatestFiniteMagnitude) }
+    }
+
+    private var userInConnecticut: Bool {
+        guard let c = location.coordinate else { return true }
+        let r = Self.connecticut
+        return abs(c.latitude - r.center.latitude) <= r.span.latitudeDelta / 2
+            && abs(c.longitude - r.center.longitude) <= r.span.longitudeDelta / 2
     }
 
     var body: some View {
@@ -99,7 +101,9 @@ struct AtlasV2: View {
     // MARK: - Map
 
     private var map: some View {
-        Map(position: $camera) {
+        Map(position: $camera,
+            bounds: MapCameraBounds(centerCoordinateBounds: Self.connecticut,
+                                    minimumDistance: 400, maximumDistance: 400_000)) {
             UserAnnotation()
             ForEach(clusters) { c in
                 Annotation(c.stores[0].name, coordinate: c.coordinate, anchor: .bottom) {
@@ -109,13 +113,7 @@ struct AtlasV2: View {
             }
         }
         .mapStyle(.standard(pointsOfInterest: .excludingAll))
-        // Wherever the map is pointed, load verified places and Apple Maps results there.
-        .onMapCameraChange(frequency: .onEnd) { ctx in
-            region = ctx.region
-            appleSearch?.cancel()
-            guard zoomedIn else { return }
-            appleSearch = Task { await stores.loadVisible(ctx.region, user: location.coordinate) }
-        }
+        .onMapCameraChange(frequency: .onEnd) { ctx in region = ctx.region }
     }
 
     // MARK: - Clustering
@@ -221,7 +219,7 @@ struct AtlasV2: View {
 
     private var topBar: some View {
         HStack(spacing: 6) {
-            GuardChip(text: areaName, live: !stores.stores.isEmpty)
+            GuardChip(text: "Halal places in Connecticut", live: !visible.isEmpty)
             Spacer(minLength: 0)
             RingButton(symbol: "location", label: "Centre on me") { Task { await refreshAtUser() } }
             RingButton(symbol: "plus", label: "Add a halal place") { showSubmit = true }
@@ -229,17 +227,9 @@ struct AtlasV2: View {
         .padding(.top, DSSpacing.xs)
     }
 
-    private var areaName: String {
-        zoomedIn ? "Halal places in view" : "Zoom in to find halal places"
-    }
-
     @ViewBuilder private var statusChip: some View {
-        if !zoomedIn {
-            GuardChip(text: "Zoom in on an area to see halal places there")
-        } else if stores.isLoading {
-            GuardChip(text: "Finding halal places here…")
-        } else if let message = stores.lastError {
-            GuardChip(text: message)
+        if !userInConnecticut {
+            GuardChip(text: "Haliable's map covers Connecticut only")
         }
     }
 
@@ -250,8 +240,8 @@ struct AtlasV2: View {
                 .frame(maxWidth: .infinity)
                 .accessibilityHidden(true)
 
-            GuardSegments(options: [(ScopeFilter.all, "All"), (.fullyHalal, "Fully halal"),
-                                    (.meat, "Meat"), (.options, "Options")],
+            GuardSegments(options: [(ScopeFilter.all, "All"), (.food, "Food"),
+                                    (.groceries, "Groceries"), (.verified, "Verified")],
                           selection: $filter)
 
             GuardSection(title: visible.count == 1 ? "1 place in view" : "\(visible.count) places in view",
@@ -261,7 +251,7 @@ struct AtlasV2: View {
 
             if listOpen {
                 if visible.isEmpty {
-                    Text(stores.isLoading ? "Loading…" : "No places match this filter yet.")
+                    Text("No places here match this filter. Zoom out or pick All.")
                         .font(.system(size: 12.5))
                         .foregroundStyle(DSColor.textSecondary)
                         .padding(.vertical, DSSpacing.xs)
@@ -281,9 +271,10 @@ struct AtlasV2: View {
                     .frame(maxHeight: 230)
                     .scrollIndicators(.hidden)
                 }
-                Text("Data © OpenStreetMap contributors (ODbL) · grey pins: Apple Maps / OpenStreetMap, not verified")
+                Text("Grey pins: listed as halal on Apple Maps or OpenStreetMap (© contributors, ODbL), checked Oct 2026 — not verified by Haliable. Ask before you order.")
                     .font(.system(size: 9.5))
                     .foregroundStyle(DSColor.textTertiary)
+                    .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity, alignment: .center)
             }
         }
@@ -296,33 +287,39 @@ struct AtlasV2: View {
     }
 
     private func rowDetail(_ store: Store) -> String {
-        [store.external.map { "\($0.name) · not verified" } ?? store.halalScope.displayName.lowercased(), store.distanceText].compactMap { $0 }.joined(separator: " · ")
+        [store.isExternal ? store.city : store.halalScope.displayName,
+         store.distanceText,
+         store.menuURL == nil ? nil : "menu"].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " · ")
     }
 
     // MARK: - Logic
 
-    /// Frames the Settings search radius (1° latitude ≈ 111 km).
-    /// Open close in on the person (~1.3 km tall, a few blocks); they can zoom out.
-    /// The Settings radius still sets how far the first load searches.
-    private var radiusSpan: MKCoordinateSpan {
-        MKCoordinateSpan(latitudeDelta: 0.012, longitudeDelta: 0.012)
+    /// Opens on the person (Storrs if they're outside Connecticut), zoomed out just
+    /// far enough to take in the eight places nearest them.
+    private var home: CLLocationCoordinate2D {
+        userInConnecticut ? location.coordinate ?? fallback : fallback
+    }
+
+    private var nearbyRegion: MKCoordinateRegion {
+        let c = home
+        let nearest = stores.places(near: c)
+            .sorted { ($0.distanceM ?? 0) < ($1.distanceM ?? 0) }
+            .prefix(8)
+        let reach = nearest.map { max(abs($0.lat - c.latitude), abs($0.lng - c.longitude) * 0.75) }.max() ?? 0.05
+        let lat = min(max(reach * 2.4, 0.04), 1.2)
+        return MKCoordinateRegion(center: c, span: MKCoordinateSpan(latitudeDelta: lat, longitudeDelta: lat / 0.75))
     }
 
     private func begin() async {
         location.request()
-        let center = location.coordinate ?? fallback
-        camera = .region(MKCoordinateRegion(center: center,
-                          span: radiusSpan))
-        await stores.loadNearby(center: center, radiusKm: settings.searchRadiusKm)
+        camera = .region(nearbyRegion)
+        // The verified places: one load covers the whole state.
+        await stores.loadNearby(center: Self.connecticut.center, radiusKm: 150)
+        withAnimation { camera = .region(nearbyRegion) }
     }
 
     private func refreshAtUser() async {
-        guard let c = location.coordinate else { return }
-        withAnimation {
-            camera = .region(MKCoordinateRegion(center: c,
-                              span: radiusSpan))
-        }
-        await stores.loadNearby(center: c, radiusKm: settings.searchRadiusKm)
+        withAnimation { camera = .region(nearbyRegion) }
     }
 
     private func tint(for scope: HalalScope) -> Color {

@@ -62,7 +62,7 @@ enum ExternalSource: Hashable {
     /// What the source claims, in its own words — reported, not ruled on.
     var claim: String {
         switch self {
-        case .appleMaps: return "Found by Apple Maps search"
+        case .appleMaps: return "Listed under halal on Apple Maps"
         case .openStreetMap(let only): return only ? "Tagged \"only halal\" by OpenStreetMap mappers"
                                                    : "Tagged \"halal options\" by OpenStreetMap mappers"
         }
@@ -92,6 +92,11 @@ struct Store: Identifiable, Codable, Hashable {
     /// to or read from the DB.
     var external: ExternalSource? = nil
     var isExternal: Bool { external != nil }
+    /// The place's own menu or ordering page, and its website / phone, from the
+    /// bundled Connecticut list. Not in CodingKeys: the DB doesn't carry them.
+    var menuURL: URL? = nil
+    var website: URL? = nil
+    var phone: String? = nil
 
     var coordinate: CLLocationCoordinate2D { .init(latitude: lat, longitude: lng) }
 

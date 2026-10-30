@@ -359,4 +359,23 @@ final class IngredientCheckerTests: XCTestCase {
         XCTAssertEqual(verdict("potatoes, oil, natural bacon flavor").overallGrade, .haram)
         XCTAssertEqual(verdict("beans, bacon (cured with water, salt)").overallGrade, .haram)
     }
+
+    /// Plain bottled water with no list in the databases is water, not "no data —
+    /// Questionable". Anything flavoured, fizzy or fortified still goes through the net.
+    func testPlainWaterWithNoListIsWater() {
+        func water(_ name: String, brand: String? = nil, text: String? = nil) -> GradeLevel {
+            Self.engine.evaluate(product: Product(id: "w", name: name, brand: brand, rawIngredientsText: text,
+                                                  additivesENumbers: [])).overallGrade
+        }
+        XCTAssertEqual(water("Poland Spring 100% Natural Spring Water 16.9 fl oz", brand: "Poland Spring"), .halal)
+        XCTAssertEqual(water("Dasani Purified Water", brand: "Dasani"), .halal)
+        XCTAssertEqual(water("Water"), .halal)
+        XCTAssertEqual(water("Spring Water", text: "NATURAL SPRING WATER. Calcium 5mg/L Magnesium 1mg/L Sodium 2mg/L"), .halal)
+        XCTAssertNotEqual(water("Vitamin Water XXX", brand: "Glaceau"), .halal)
+        XCTAssertNotEqual(water("Sparkling Water"), .halal)
+        XCTAssertNotEqual(water("Lemon Water"), .halal)
+        XCTAssertNotEqual(water("Coconut Water"), .halal)
+        // A list that names a concern still counts, whatever the name says.
+        XCTAssertNotEqual(water("Spring Water", text: "spring water, natural flavors"), .halal)
+    }
 }

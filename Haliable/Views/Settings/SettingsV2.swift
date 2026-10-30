@@ -155,17 +155,10 @@ struct SettingsV2: View {
                 rowLabel("Open System Settings", "arrow.up.forward.app.fill")
             }
 
-            Picker(selection: $settings.searchRadiusKm) {
-                ForEach([1.0, 3.0, 5.0, 10.0, 25.0], id: \.self) { km in
-                    Text("\(Int(km)) km").tag(km)
-                }
-            } label: {
-                rowLabel("Search Radius", "scope")
-            }
         } header: {
             sectionHeader("Location & Map")
         } footer: {
-            Text("Used only to center the Find Halal map. Place searches send the area on screen; your location is never stored.")
+            Text("Used only to center the Find map on you and show how far each place is. Your location never leaves your phone.")
                 .settingsFooterV2()
         }
         .listRowBackground(DSColor.surface)

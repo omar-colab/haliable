@@ -1,8 +1,38 @@
 # HANDOFF — Haliable → TestFlight
 
-Last updated: **Oct 23, 2026** · **Build 8 is on TestFlight** ·
+Last updated: **Oct 29, 2026** · **Build 19 is on TestFlight** ·
 site live · review agent built · **136 tests green**
 Plan: `docs/phases/TESTFLIGHT.md` · Rules for AI: `CLAUDE.md`
+
+## ▶️ RESUME HERE (Oct 29) — Omar's last pass: water, ingredient list, Connecticut map
+
+Omar: "why does water say not halal… list the ingredients, not a report on each… fix the maps to
+show the actual menus, only the things near me in Connecticut… this is the last thing I need."
+- **Water.** The engine always graded plain "water" Halal; bottles came out "Pending review" because
+  the databases often have *no ingredient list* for water, which hits the no-data safety net.
+  `RulesEngine.isPlainWater`: when every word of the name is the brand, a size, or a plain-water
+  word ("Poland Spring 100% Natural Spring Water 16.9 fl oz") and there's no list, the list is
+  "water"; a mineral analysis in place of a list no longer counts as "incomplete". Vitamin /
+  lemon / sparkling / coconut water still go through the net. Tested.
+- **Ingredients list** on the result screen: the label's items, one per line, no grades
+  (`ProductVerdict.ingredientItems`). Flagged section unchanged.
+- **Find map = Connecticut only.** The live "search wherever you pan" (Apple Maps + Overpass) is gone.
+  The map shows the verified Atlas places (Supabase, as before) plus a bundled list,
+  `Resources/ct-halal-places.json`: 66 places from Apple Maps + OpenStreetMap, kept only when the
+  name, the place's own website, or an OSM halal tag says halal (dropped: Dave's Hot Chicken, wine
+  bars, etc.). The camera can't leave Connecticut; opens ~40 km around you (Storrs if you're elsewhere).
+  Filters are now All / Food / Groceries / Verified. Settings' unused search-radius picker removed.
+- **Menus.** Each place card has **Menu** (its own menu/ordering page, opened in-app) — 34 of the
+  bundled places plus 10 verified Storrs places (UConn dining halls link to UConn's live daily menus,
+  Gelfenbien → its Halal & Kosher station). No menu online → **Website**; every place keeps
+  "Hours, photos & directions" (Apple's card) and **Call** when there's a number.
+- Privacy copy (About, Settings): location never leaves the phone now — true, nothing is searched live.
+
+### Decisions made while Omar was away (Oct 29)
+- Plain-water inference from the product name (above) — water isn't a graded cell; this only fills a
+  missing list. Every bundled place stays "Unverified"; nothing was promoted.
+- Menus are the restaurants' own pages, not copied into the app: copied menus go stale and could
+  misstate what's halal.
 
 ## ▶️ RESUME HERE (Oct 27) — polish pass, branch `polish/oct27`, NOT merged or uploaded
 

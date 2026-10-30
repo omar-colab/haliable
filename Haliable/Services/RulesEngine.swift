@@ -104,7 +104,10 @@ final class RulesEngine {
     // (e.g. Zabiha escalates unconfirmed meat to Haram). Defaults to the mainstream
     // baseline so existing callers and the unit tests are unaffected.
     func evaluate(product: Product, standard: HalalStandard = .general) -> ProductVerdict {
-        let raw = product.rawIngredientsText ?? ""
+        // A bottle of plain water often has no list in the databases: its name is the list.
+        let plainWater = Self.isPlainWater(product)
+        let raw = plainWater && (product.rawIngredientsText ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            ? "water" : product.rawIngredientsText ?? ""
         let labelItems = IngredientParser.flatten(IngredientParser.parse(IngredientParser.normalize(raw)))
         // Open Food Facts' English taxonomy tags ("en:pork-gelatin") read a label
         // in any language. They only fill in for what the text itself doesn't say.
@@ -172,7 +175,8 @@ final class RulesEngine {
 
         // A nutrition panel or marketing line where the list should be: what we
         // checked isn't the whole label, so it can't come out clean.
-        if Self.looksIncomplete(raw) {
+        // (Plain water's label is often a mineral analysis — that IS the whole story.)
+        if Self.looksIncomplete(raw) && !plainWater {
             matched.append(MatchedIngredient(
                 originalText: "Ingredient list looks incomplete",
                 matchedRule: nil, standard: standard,
@@ -341,6 +345,27 @@ final class RulesEngine {
         let items = t.split(whereSeparator: { ",;".contains($0) }).filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
         return items.count < 2 && t.split(separator: " ").count > 6
     }
+
+    /// The product's name says it's unflavoured water and nothing else ("Poland Spring
+    /// 100% Natural Spring Water 16.9 fl oz"). Every word must be the brand, a size, or
+    /// a plain-water word; anything else ("vitamin", "lemon", "sparkling") means it isn't.
+    static func isPlainWater(_ product: Product) -> Bool {
+        let words = { (s: String) in s.lowercased().split { !$0.isLetter && !$0.isNumber }.map(String.init) }
+        let brand = Set(words(product.brand ?? ""))
+        let name = words(product.name)
+        return name.contains("water") && name.allSatisfy { w in
+            brand.contains(w) || plainWaterWords.contains(w)
+                || w.range(of: #"^\d+(oz|fl|ml|l|lt|ct|pk|x|g)?$"#, options: .regularExpression) != nil
+        }
+    }
+
+    private static let plainWaterWords: Set<String> = [
+        "water", "waters", "spring", "natural", "purified", "pure", "mineral", "distilled", "artesian", "alkaline",
+        "drinking", "still", "premium", "bottled", "fresh", "mountain", "glacier", "vapor", "filtered", "ionized",
+        "ph", "balanced", "eau", "de", "source", "agua", "the", "and", "of", "with", "added", "minerals", "for", "taste",
+        "fl", "oz", "ml", "l", "liter", "liters", "litre", "gallon", "gallons", "gal", "pack", "pk", "count", "ct",
+        "bottle", "bottles", "x",
+    ]
 
     private static let wholeWordOnly: Set<String> = ["porc", "vino", "babi", "sake", "arak", "bira", "lager"]
 
